@@ -1,0 +1,20 @@
+.custom-scroll {
+    --size: 0.25rem;
+    --reach-over: 0.1rem;
+    padding-inline-end: var(--size);
+
+    &::-webkit-scrollbar {
+        width: var(--size);
+    }
+    &::-webkit-scrollbar-track {
+        background-color: var(--primary-80);
+    }
+    &::-webkit-scrollbar-thumb {
+        background-color: var(--primary);
+        outline: 2px solid var(--primary);
+        outline-offset: 2px;
+
+        border-radius: var(--size);
+        height: var(--size);
+    }
+}

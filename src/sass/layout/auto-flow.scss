@@ -1,0 +1,5 @@
+.auto-flow {
+    > * + * {
+        margin-block-start: var(--spacing);
+    }
+}

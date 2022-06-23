@@ -1,0 +1,44 @@
+:root {
+    --primary: hsl(34deg 74% 50%);
+    --primary-40: hsl(34deg 74% 40%);
+    --primary-80: hsl(34deg 74% 80%);
+    --primary-90-a50: hsl(34deg 74% 90% / 0.5);
+}
+
+.panel.root {
+    --spacing: 0.5rem;
+    padding: var(--spacing);
+    height: 100vh;
+}
+
+.panel-layout {
+    .panel {
+        background: var(--primary-90-a50);
+    }
+}
+
+.brand-panel {
+    .logo {
+        width: 20ch;
+    }
+}
+
+.panel {
+    > .caption {
+        font-size: 2rem;
+        text-align: center;
+
+        margin-block-end: 1rem;
+    }
+    > .body {
+        padding: var(--spacing);
+    }
+
+    &.-stretch-content {
+        display: flex;
+        flex-direction: column;
+        .caption + * {
+            flex: 1;
+        }
+    }
+}
