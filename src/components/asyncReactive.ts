@@ -8,8 +8,9 @@ type AsyncWrapperControls<T> = {
     _await: (source: Promise<T>) => Promise<T>,
     _clear: () => void,
 }
+export type AsyncRef<T> = AsyncWrapper<T> & AsyncWrapperControls<T>
 
-export default function asyncReactive<T>(promise?: Promise<T>) {
+export default function asyncReactive<T>(promise?: Promise<T>): AsyncRef<T> {
     const status = ref<AsyncStatus>('n/a')
 
     const awaitValue = (promise: Promise<T>) => {
@@ -46,7 +47,7 @@ export default function asyncReactive<T>(promise?: Promise<T>) {
         awaitValue(promise)
     }
 
-    return ar as AsyncWrapper<T> & AsyncWrapperControls<T>
+    return ar as AsyncRef<T>
 }
 
 export type AsyncDataController<T = any> = ReturnType<typeof asyncReactive<T>>

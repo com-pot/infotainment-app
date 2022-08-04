@@ -1,0 +1,25 @@
+.separator {
+    &.-lines {
+        --thickness: 1px;
+        --spacing: 1em;
+
+        display: flex;
+        gap: var(--spacing);
+        align-items: center;
+
+
+        &::before, &::after {
+            content: ''; display: block;
+            block-size: var(--thickness);
+            min-inline-size: 1rem;
+            flex: 1;
+            background: var(--hsl-neutral-30);
+        }
+    }
+}
+
+hr.separator {
+    &.-spaced {
+        margin-inline: 1rem;
+    }
+}

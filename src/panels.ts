@@ -1,4 +1,5 @@
 export type PanelSpecification<TConfig extends object = any> = {
+    name?: string,
     type: string,
     config: TConfig,
 

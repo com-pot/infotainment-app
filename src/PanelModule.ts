@@ -1,4 +1,4 @@
-import { PanelAnyDataProvider } from "./panels/dataProviders";
+import { PanelDataProviderUntyped } from "./panels/dataProviders";
 import { PanelEntrySpec } from "./panels/panelRegistry";
 
 export const defineItPanelModule = <T extends ItPanelModule>(module: T) => module
@@ -6,5 +6,5 @@ export const defineItPanelModule = <T extends ItPanelModule>(module: T) => modul
 export type ItPanelModule = {
     name: string,
     panels: PanelEntrySpec[],
-    dataProviders?: Record<string, PanelAnyDataProvider>,
+    dataProviders?: Record<string, PanelDataProviderUntyped>,
 }

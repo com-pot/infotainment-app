@@ -38,13 +38,13 @@ export const createLoader = (opts: {
             
             return provider.load.call(this, args)
                 .then(async (res) => {
-                    await new Promise((res) => setTimeout(res, 5000))
+                    await new Promise((res) => setTimeout(res, 250 + Math.random() * 750))
                     return res
                 })
         },
 
         watch(src) {
-            const data = asyncReactive()
+            const data = asyncReactive<any>()
             watch(src, (config) => {                
                 if (!config) {
                     return data._clear()

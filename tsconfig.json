@@ -19,11 +19,15 @@
       "@com-pot/infotainment-app/*": ["src/*"],
 
       "@custom/*": ["custom/*"],
+
+      "@typeful/data/*": ["./libs/typeful-data/src/*"],
     },
   },
+
   "include": [
     "src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue",
     "custom/**/*.ts", "custom/**/*.d.ts", "custom/**/*.tsx", "custom/**/*.vue",
+    "libs/**/*.ts", "libs/**/*.d.ts", "libs/**/*.tsx", "libs/**/*.vue",
   ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

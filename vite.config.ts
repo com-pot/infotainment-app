@@ -16,6 +16,7 @@ export default defineConfig({
       // For some reason, the vite-tsconfig-paths plugin is not enough
       '@com-pot/infotainment-app': new URL("./src", import.meta.url).pathname,
       '@custom': new URL("./custom", import.meta.url).pathname,
+      "@typeful/data": new URL("./libs/typeful-data/src", import.meta.url).pathname,
     }
   }
 })

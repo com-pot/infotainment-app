@@ -31,7 +31,7 @@ onMounted(() => {
             <span class="date">{{ time.format({year: 'numeric', month: '2-digit', day: '2-digit'}) }}</span>
             <span class="time">{{ time.format({hour: '2-digit', minute: '2-digit', second: '2-digit'}) }}</span>
         </div>
-        <div class="messages custom-scroll" ref="elMessages">
+        <div class="messages custom-scroll -outline" ref="elMessages">
             <div class="message">
                 Lorem ipsum dolor sit amet consectetur adipisicing elit. Expedita animi magni excepturi, mollitia dolores explicabo, molestiae fuga culpa recusandae, totam obcaecati consequuntur corporis iure labore nesciunt sequi. Voluptates, ducimus aspernatur.
                 Voluptas harum eaque expedita odit! Reiciendis debitis labore nemo. Soluta, aspernatur a asperiores vero incidunt magnam cumque nobis sunt consequatur magni deleniti, expedita sit. Illo est commodi ducimus quis delectus.

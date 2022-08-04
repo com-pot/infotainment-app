@@ -1,34 +1,29 @@
-<script lang="ts">
-import { computed, defineComponent, PropType } from 'vue'
+<script lang="ts" setup>
+import { computed, defineComponent, onBeforeUnmount, PropType, ref } from 'vue'
 import ItPanel from '../it-panels/ItPanel.vue'
 import type { PanelSpecification } from "../panels"
+import { RotationStatus } from '../rotation/rotationConsumer'
+import { createRotationFollowController } from '../rotation/engines/follow'
 
 type GridLayoutPanelConfig = {
     panels: PanelSpecification[],
 }
 
-export default defineComponent({
-    components: {
-        ItPanel,
-    },
-    props: {
-        config: {type: Object as PropType<GridLayoutPanelConfig>, required: true}
-    },
-    setup(props) {
-        const panels = computed(() => props.config?.panels)
-        
-        return {
-            panels,
-        }
-    },
+const props = defineProps({
+    config: {type: Object as PropType<GridLayoutPanelConfig>, required: true}
 })
+
+const followController = createRotationFollowController()
+onBeforeUnmount(() => followController.destroy())
 </script>
 
 
 <template>
     <div class="panel panel-layout grid-layout-panel">
-        <template v-for="(childPanel, i) in panels" :key="i">
-            <ItPanel v-bind="childPanel" />
+        <template v-for="(childPanel, i) in props.config?.panels" :key="i">
+            <ItPanel v-bind="childPanel"
+                @update:rotationState="followController.dispatch(childPanel, $event)"
+            />
         </template>
     </div>
 </template>

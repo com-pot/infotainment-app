@@ -11,10 +11,15 @@
     }
     &::-webkit-scrollbar-thumb {
         background-color: var(--primary);
-        outline: 2px solid var(--primary);
-        outline-offset: 2px;
 
         border-radius: var(--size);
         height: var(--size);
+    }
+
+    &.-outline {
+        &::-webkit-scrollbar-thumb {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
     }
 }
