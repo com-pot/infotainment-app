@@ -6,8 +6,14 @@ import { RotationStatus } from "../rotationConsumer";
 export const createFollowEngine = defineRotationEngineFactory<FollowEngineConfig>((rotate, config) =>{
     const ctrl = useFollowController()
     const channelListener: any = (e: UpdateEvent) => {
-        const isMatch = e.detail.panel.name === config.target
-        isMatch && rotate.tick(e)
+        if (e.detail.panel.name !== config.target) {
+            return
+        }
+        if (config.filter?.length && !config.filter.includes(e.detail.rotationState.status)) {
+            return
+        }
+
+        rotate.tick(e)
     }
 
     return {
@@ -20,7 +26,7 @@ export const createFollowEngine = defineRotationEngineFactory<FollowEngineConfig
     }
 })
 
-export type FollowEngineConfig = { type: 'follow', target: string}
+export type FollowEngineConfig = { type: 'follow', target: string, filter?: string[]}
 
 export const followBusInjectionKey = Symbol('follow bus')
 export const useFollowController = () => inject(followBusInjectionKey) as FollowController

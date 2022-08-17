@@ -1,11 +1,12 @@
-import { nextTick, onMounted, reactive, Ref, watch } from "vue";
+import { nextTick, onMounted, reactive, Ref, watch, WatchOptions } from "vue";
 import { scrollContentTo, ScrollContentToOptions } from "../components/snapScroll";
 import { RotationConsumer } from "./rotationConsumer";
 
 export type LinearRotationConsumer = RotationConsumer & {
     step: number | undefined,
 
-    bindScroll(parent: Ref<HTMLElement|undefined>): LinearRotationConsumer, 
+    bindScroll(parent: Ref<HTMLElement|undefined>): LinearRotationConsumer,
+    onStep(cb: (step: number | undefined) => void, options?: WatchOptions): LinearRotationConsumer,
 }
 
 type LinearRotationConfig = {
@@ -15,7 +16,11 @@ type LinearRotationConfig = {
 }
 export function createLinearRotation(rotationConfig: LinearRotationConfig, totalStepsRef: Ref<number>): LinearRotationConsumer {
     const consumer: LinearRotationConsumer = reactive({
-        step: 0,
+        step: undefined,
+        restart() {
+            consumer.step = 0
+        },
+        
         tick() {
             const totalSteps = totalStepsRef.value
             if (typeof totalSteps !== 'number' || totalSteps <= 0) {
@@ -26,7 +31,7 @@ export function createLinearRotation(rotationConfig: LinearRotationConfig, total
             }
             
             
-            let step: LinearRotationConsumer['step'] = this.step + 1
+            let step: LinearRotationConsumer['step'] = consumer.step + 1
             if (step >= totalSteps) {
                 step = rotationConfig.whenDone === 'stop' ? undefined : 0
             }
@@ -47,7 +52,14 @@ export function createLinearRotation(rotationConfig: LinearRotationConfig, total
             })
             return this
         },
+
+        onStep(cb, options) {
+            watch(() => consumer.step, cb, options)
+            return this
+        },
     })
+
+    consumer.restart?.()
 
     return consumer
 }

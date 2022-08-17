@@ -27,6 +27,7 @@ export default defineDataProvider.withSchema({
             for (let i = 0; i < count; i++) {
                 group.items.push(mockProgramEntry())
             }
+            group.items.sort((a, b) => a.time.start.getTime() - b.time.start.getTime())
             groups.push(group)
         }
         return groups

@@ -26,8 +26,9 @@ const rootContent = {
           rotationConfig: {
             type: 'follow',
             target: 'schedule-detail',
-            whenDone: 'stop',
-            
+            filter: ['done'],
+
+            whenDone: 'loop',
             scroll: {
               sel: { container: '.content', target: '.active'},
             },
@@ -49,7 +50,7 @@ const rootContent = {
           providerConfig: {
             name: '@com-pot/schedule.program-schedule',
             args: {
-              perPage: 5,
+              day: {eval: 'state', required: true, path: ['schedule-rough', 'currentDay'],},
             },
           },
         },

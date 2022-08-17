@@ -13,8 +13,9 @@ export function createRotationController(rotationConfig: RotationConfig, tick: (
         tick(e) {
             const result = tick(e) ?? {status: 'n/a'}
             if (result.status === 'stopped' || result.status === 'done') {
-                engineCtrl.stop()
-                return result
+                // we don't want to use engineCtrl because we're forwarding the result event
+                engine.stop()
+                engineRunning = false
             }
             emit?.('update:rotationState', result)
 
@@ -22,14 +23,21 @@ export function createRotationController(rotationConfig: RotationConfig, tick: (
         },
     }
     
+    let engineRunning = false
     const engineCtrl: RotationEngineCtrl = {
         start: () => {
+            if (engineRunning) return
+            engineRunning = true
+
             engine.start()
             emit?.('update:rotationState', {
                 status: 'running',
             })
         },
         stop: () => {
+            if (!engineRunning) return
+            engineRunning = false
+
             engine.stop()
             emit?.('update:rotationState', {
                 status: 'stopped',
@@ -42,9 +50,10 @@ export function createRotationController(rotationConfig: RotationConfig, tick: (
 
             return this
         },
-        bindReady(ref) {
-            watch(() => ref.status, (status) => {
-                status === 'ready' ? engineCtrl.start() : engineCtrl.stop()
+        bindReady(ref, onReadyChange) {
+            watch(() => ref.ready, (ready) => {
+                onReadyChange?.(ready)
+                ready ? engineCtrl.start() : engineCtrl.stop()
             })
             return this
         },
@@ -76,6 +85,6 @@ const rotationEngineFactories: Record<string, RotationEngineFactory<any>> = {
 
 
 export interface RotationEngineCtrl extends RotationEngine {
-    bindReady(ref: AsyncRef<any>): this;
+    bindReady(ref: AsyncRef<any>, onReadyChange?: (ready: boolean) => void): this;
     bindComponent(onMount?: 'start' | 'ignore', beforeUnmount?: 'stop' | 'ignore'): this;
 }

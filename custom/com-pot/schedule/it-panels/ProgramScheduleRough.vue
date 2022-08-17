@@ -8,7 +8,7 @@ import { useRender } from "@typeful/data/rendering";
 import { createLinearRotation } from "@com-pot/infotainment-app/rotation/linearRotationConsumer";
 import ProgramEntryDetail from "../components/ProgramEntryDetail.vue"
 import { createRotationController, rotationUi } from "@com-pot/infotainment-app/rotation";
-import { isUpdateEvent } from "@com-pot/infotainment-app/rotation/engines/follow";
+import { stateHubUi } from "@com-pot/infotainment-app/components/stateHub";
 
 const props = defineProps({
     providerConfig: providerConfigProp,
@@ -16,6 +16,7 @@ const props = defineProps({
 })
 const emit = defineEmits({
     ...rotationUi.emits,
+    ...stateHubUi.emits,
 })
 
 const render = useRender()
@@ -26,22 +27,23 @@ const totalSteps = computed(() => panelData.ready ? panelData.value.length : -1)
 const panelEl = ref<HTMLElement>()
 const rotate = createLinearRotation(props.rotationConfig, totalSteps)
     .bindScroll(panelEl)
-const rotateEngine = createRotationController(props.rotationConfig, (e) => {
-    if (isUpdateEvent(e)) {
-        if (e.detail.rotationState.status === 'running') {
-            console.log('rough tick, running', e);
-            return {status: 'running'}
+    .onStep((step) => {
+        let day: Date|undefined = new Date(props.providerConfig?.args.from)
+        if (Number.isInteger(day.getDate()) && typeof step === "number") {
+            day.setDate(day.getDate() + step)
+        } else {
+            day = undefined
         }
-    }
-    
-    return rotate.tick(e)
-}, emit)
+        emit('update:panelState', ['currentDay'], day)
+    }, {immediate: true})
+const rotateEngine = createRotationController(props.rotationConfig, (e) => rotate.tick(e), emit)
     .bindComponent('start')
 
 </script>
 
 <template>
-    <div class="panel -stretch-content program-schedule-rough" ref="panelEl">
+    <div class="panel -stretch-content program-schedule-rough" :class="rotate.step !== undefined && '-has-active'"
+         ref="panelEl">
         <div class="caption separator -lines">Program schedule rough</div>
 
         <AsyncContent :ctrl="panelData">
@@ -73,8 +75,10 @@ const rotateEngine = createRotationController(props.rotationConfig, (e) => {
             font-size: 2rem;
             font-weight: 900;
         }
+    }
 
-        &:not(.active) {
+    &.-has-active {
+        .group:not(.active) {
             filter: #{'opacity(var(--inactive-opacity))'};
         }
     }

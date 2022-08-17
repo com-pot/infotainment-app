@@ -3,6 +3,7 @@ export function defineRotationConsumer<T extends RotationConsumer>(consumer: T) 
 }
 
 export type RotationConsumer = {
+    restart?(): void;
     tick(e: Event): RotationStatus;
 }
 export type RotationStatus = {

@@ -1,6 +1,8 @@
-import { App, inject, PropType, provide, watch } from "vue"
+import { isNil } from "lodash"
+import { App, computed, ComputedRef, inject, PropType, provide, watch } from "vue"
 import { ApiAdapter, ApiOpts } from "../ApiAdapter"
 import asyncReactive from "../components/asyncReactive"
+import { StateHub } from "../components/stateHub"
 import { PanelDataProviderUntyped } from "./dataProviders"
 
 export type PanelDataLoader = {
@@ -56,6 +58,54 @@ export const createLoader = (opts: {
     }
 
     return loader
+}
+
+const $nada = Symbol('nada')
+const prepareArgument = (arg: any, stateHub?: StateHub) => {
+    if (!arg || typeof arg !== 'object') {
+        return arg
+    }
+    
+    if (arg.eval === 'state') {
+        if (!stateHub) {
+            return $nada
+        }
+        const value = stateHub.get(arg.path)
+        if (isNil(value) && arg.required) {
+            return $nada
+        }
+        return value
+    }
+    if (arg.val) {
+        return arg.val
+    }
+    
+    console.warn("Unknown argument spec, using as value. If this is intentional, wrap your value in {val: your_object}", arg);
+    return arg
+}
+const prepareProviderConfig = (config?: ProviderConfig, stateHub?: StateHub): ProviderConfig | undefined => {
+    if (!config || !config.args || typeof config.args !== 'object') {
+        return config
+    }
+
+    const entries = Object.entries(config.args)
+    for (let entry of entries) {
+        const value = prepareArgument(entry[1], stateHub)
+        if (value === $nada) {
+            return undefined
+        }
+        entry[1] = value
+    }
+    const result = {
+        ...config,
+        args: Object.fromEntries(entries),
+    }
+
+    return result   
+}
+
+export const useDependentConfig = (getConfig: () => ProviderConfig|undefined, stateHub?: StateHub): ComputedRef<ProviderConfig|undefined> => {
+    return computed(() => prepareProviderConfig(getConfig(), stateHub))
 }
 
 type ProviderConfig = {name: string, args: any}

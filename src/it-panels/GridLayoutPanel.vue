@@ -1,8 +1,9 @@
 <script lang="ts" setup>
-import { computed, defineComponent, onBeforeUnmount, PropType, ref } from 'vue'
+import { onBeforeUnmount, PropType, watch } from 'vue'
 import ItPanel from '../it-panels/ItPanel.vue'
 import type { PanelSpecification } from "../panels"
 import { RotationStatus } from '../rotation/rotationConsumer'
+import { createHub } from "../components/stateHub"
 import { createRotationFollowController } from '../rotation/engines/follow'
 
 type GridLayoutPanelConfig = {
@@ -13,15 +14,18 @@ const props = defineProps({
     config: {type: Object as PropType<GridLayoutPanelConfig>, required: true}
 })
 
+const stateHub = createHub()
+
 const followController = createRotationFollowController()
 onBeforeUnmount(() => followController.destroy())
-</script>
 
+</script>
 
 <template>
     <div class="panel panel-layout grid-layout-panel">
         <template v-for="(childPanel, i) in props.config?.panels" :key="i">
             <ItPanel v-bind="childPanel"
+                @update:panelState="(path, value) => stateHub.set([childPanel.name || '-', ...path], value)"
                 @update:rotationState="followController.dispatch(childPanel, $event)"
             />
         </template>

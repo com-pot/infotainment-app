@@ -15,13 +15,14 @@ export default defineDataProvider.withSchema({
     } as const,
 
     async load(args) {
-        const perPage = args.perPage ?? 10
+        const perPage = args.perPage ?? 2
 
         const items = []
 
         for (let i = 0; i < perPage; i++) {
             items.push(mockProgramEntry() )
         }
+        items.sort((a, b) => a.time.start.getTime() - b.time.start.getTime())
 
         return items
     },

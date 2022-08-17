@@ -1,10 +1,11 @@
 <script lang="ts" setup>
-import { computed, ref } from "@vue/runtime-core";
-import { providerConfigProp, useLoader } from "@com-pot/infotainment-app/panels/panelData"
+import { computed, ref, watch } from "@vue/runtime-core";
+import { providerConfigProp, useDependentConfig, useLoader } from "@com-pot/infotainment-app/panels/panelData"
 import AsyncContent from "@com-pot/infotainment-app/components/AsyncContent.vue";
 import { createRotationController, rotationUi } from "@com-pot/infotainment-app/rotation";
-import { ProgramEntry } from "../dataProviders/program-schedule";
+import { stateHubUi, useStateHub } from "@com-pot/infotainment-app/components/stateHub";
 import { createLinearRotation } from "@com-pot/infotainment-app/rotation/linearRotationConsumer"
+import { ProgramEntry } from "../dataProviders/program-schedule";
 import ProgramEntryDetail from "../components/ProgramEntryDetail.vue"
 
 
@@ -15,19 +16,21 @@ const props = defineProps({
 
 const emit = defineEmits({
     ...rotationUi.emits,
+    ...stateHubUi.emits,
 })
 
 const loader = useLoader()
-const panelData = loader.watch<ProgramEntry['app'][]>(() => props.providerConfig)
+const panelDataConfig = useDependentConfig(() => props.providerConfig, useStateHub())
+const panelData = loader.watch<ProgramEntry['app'][]>(() => panelDataConfig.value)
 
 const totalSteps = computed(() => panelData.ready ? panelData.value.length : -1)
 const panelEl = ref<HTMLElement>()
 const rotate = createLinearRotation(props.rotationConfig, totalSteps)
     .bindScroll(panelEl)
+    .onStep((step) => emit('update:panelState', ['highlightEvent'], step))
 const rotateEngine = createRotationController(props.rotationConfig, (e) => rotate.tick(e), emit)
-    .bindReady(panelData)
+    .bindReady(panelData, (ready) => ready && rotate.restart?.())
     .bindComponent('ignore')
-
 
 </script>
 
