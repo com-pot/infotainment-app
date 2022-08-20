@@ -1,7 +1,7 @@
 import { O } from "ts-toolbelt"
 import { defineDataProvider } from "@com-pot/infotainment-app/panels/dataProviders"
 import { FromSchema } from "json-schema-to-ts"
-import { mockProgramEntry } from "../utils/mock"
+import _programData from "./_programData"
 
 
 export default defineDataProvider.withSchema({
@@ -15,16 +15,7 @@ export default defineDataProvider.withSchema({
     } as const,
 
     async load(args) {
-        const perPage = args.perPage ?? 2
-
-        const items = []
-
-        for (let i = 0; i < perPage; i++) {
-            items.push(mockProgramEntry() )
-        }
-        items.sort((a, b) => a.time.start.getTime() - b.time.start.getTime())
-
-        return items
+        return _programData.load('detail', args)
     },
 })
 
