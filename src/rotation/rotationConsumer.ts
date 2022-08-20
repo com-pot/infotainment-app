@@ -8,7 +8,7 @@ export type RotationConsumer = {
 }
 export type RotationStatus = {
     status: 'n/a' | 'running' | 'paused' | 'done' | 'stopped',
-    step?: number,
+    step?: number, prevStep?: number,
     totalSteps?: number,
 }
 

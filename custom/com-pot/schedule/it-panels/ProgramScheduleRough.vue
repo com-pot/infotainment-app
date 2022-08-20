@@ -12,7 +12,7 @@ import { stateHubUi } from "@com-pot/infotainment-app/components/stateHub";
 
 const props = defineProps({
     providerConfig: providerConfigProp,
-    rotationConfig: rotationUi.prop,
+    ...rotationUi.props,
 })
 const emit = defineEmits({
     ...rotationUi.emits,

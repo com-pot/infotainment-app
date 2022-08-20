@@ -14,6 +14,8 @@ export const rotationEmits = {
 }
 
 export const rotationUi = {
-    prop: rotationConfigProp,
+    props: {
+        rotationConfig: rotationConfigProp,
+    },
     emits: rotationEmits,
 }

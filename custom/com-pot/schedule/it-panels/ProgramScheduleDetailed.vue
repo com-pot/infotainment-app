@@ -11,7 +11,7 @@ import ProgramEntryDetail from "../components/ProgramEntryDetail.vue"
 
 const props = defineProps({
     providerConfig: providerConfigProp,
-    rotationConfig: rotationUi.prop,
+    ...rotationUi.props,
 })
 
 const emit = defineEmits({

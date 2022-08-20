@@ -28,10 +28,19 @@
 
 .brand-panel {
     display: grid;
-    place-content: center;
+    place-items: center;
+
+    > * {
+        grid-column: 1; grid-row: 1;
+    }
     
     .logo {
         width: 20ch;
+    }
+
+    .locale-switcher {
+        place-self: center end;
+        margin-inline-end: var(--spacing);
     }
 }
 

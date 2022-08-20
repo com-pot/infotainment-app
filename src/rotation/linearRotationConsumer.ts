@@ -31,7 +31,8 @@ export function createLinearRotation(rotationConfig: LinearRotationConfig, total
             }
             
             
-            let step: LinearRotationConsumer['step'] = consumer.step + 1
+            const prevStep = consumer.step
+            let step: LinearRotationConsumer['step'] = prevStep + 1
             if (step >= totalSteps) {
                 step = rotationConfig.whenDone === 'stop' ? undefined : 0
             }
@@ -39,7 +40,7 @@ export function createLinearRotation(rotationConfig: LinearRotationConfig, total
 
             return {
                 status: step !== undefined ? 'running' : 'done',
-                step,
+                step, prevStep,
                 totalSteps,
             }
         },

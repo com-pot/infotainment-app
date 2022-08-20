@@ -11,6 +11,11 @@ const rootContent = {
           config: {
             logo,
           },
+          rotationConfig: {
+            type: 'follow',
+            target: 'schedule-rough',
+            filter: [{type: 'loop'}],
+          },
         },
         {
           name: 'schedule-rough',
