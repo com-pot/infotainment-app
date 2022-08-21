@@ -1,12 +1,12 @@
 <script lang="ts" setup>
 import { useRender } from '@typeful/data/rendering';
 import { PropType } from '@vue/runtime-core';
-import { ProgramEntry } from '../dataProviders/program-schedule';
+import { ProgramItemOccurence } from '@com-pot/schedule/model/ProgramItemOccurrence';
 
 const render = useRender()
 
 const props = defineProps({
-    entry: {type: Object as PropType<ProgramEntry['app']>, required: true},
+    entry: {type: Object as PropType<ProgramItemOccurence['app']>, required: true},
 
     showDescription: {type: Boolean},
 })
@@ -14,7 +14,7 @@ const props = defineProps({
 </script>
 <template>
     <div class="program-entry">
-        <div class="title">{{ entry.title }}</div>
+        <div class="title">{{ render.insertParams(render.localized(entry.item.title), entry.params) }}</div>
         <div class="time">
             <span class="start">{{ render.time(entry.time.start) }}</span>
             <template v-if="entry.time.end">
@@ -22,7 +22,7 @@ const props = defineProps({
             </template>
             
         </div>
-        <div class="location">{{ entry.location }}</div>
-        <p v-if="showDescription">{{ entry.description }}</p>
+        <div class="location">{{ render.localized(entry.location?.title) }}</div>
+        <p v-if="showDescription">{{ render.localized(entry.item.description) }}</p>
     </div>
 </template>

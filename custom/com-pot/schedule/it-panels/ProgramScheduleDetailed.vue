@@ -5,7 +5,7 @@ import AsyncContent from "@com-pot/infotainment-app/components/AsyncContent.vue"
 import { createRotationController, rotationUi } from "@com-pot/infotainment-app/rotation";
 import { stateHubUi, useStateHub } from "@com-pot/infotainment-app/components/stateHub";
 import { createLinearRotation } from "@com-pot/infotainment-app/rotation/linearRotationConsumer"
-import { ProgramEntry } from "../dataProviders/program-schedule";
+import { ProgramItemOccurence } from "@com-pot/schedule/model/ProgramItemOccurrence";
 import ProgramEntryDetail from "../components/ProgramEntryDetail.vue"
 
 
@@ -21,7 +21,7 @@ const emit = defineEmits({
 
 const loader = useLoader()
 const panelDataConfig = useDependentConfig(() => props.providerConfig, useStateHub())
-const panelData = loader.watch<ProgramEntry['app'][]>(() => panelDataConfig.value)
+const panelData = loader.watch<ProgramItemOccurence['app'][]>(() => panelDataConfig.value)
 
 const totalSteps = computed(() => panelData.ready ? panelData.value.length : -1)
 const panelEl = ref<HTMLElement>()

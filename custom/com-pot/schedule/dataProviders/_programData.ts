@@ -30,7 +30,7 @@ async function mockGroups(from: Date, to: Date) {
 
         const count = Math.floor(2 + Math.random() * 4)
         for (let i = 0; i < count; i++) {
-            group.items.push(mock.mockProgramEntry())
+            group.items.push(mock.mockItemOccurence())
         }
         group.items.sort((a, b) => a.time.start.getTime() - b.time.start.getTime())
         groups.push(group)

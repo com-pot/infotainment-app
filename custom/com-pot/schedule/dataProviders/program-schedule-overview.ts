@@ -1,5 +1,7 @@
 import { defineDataProvider } from "@com-pot/infotainment-app/panels/dataProviders";
-import { ProgramEntry } from "./program-schedule";
+import { ModelState } from "@typeful/model";
+import { ProgramItemOccurence } from "libs/com-pot/schedule/src/model/ProgramItemOccurrence";
+import { ProgramScheduleItem } from "@com-pot/schedule/model/ProgramScheduleItem";
 
 import programData from "./_programData"
 
@@ -18,7 +20,7 @@ export default defineDataProvider.withSchema({
     },
 })
 
-export type ProgramEntriesGroup = {
+export type ProgramEntriesGroup<TState extends ModelState = 'app'> = {
     date: Date,
-    items: ProgramEntry['app'][],
+    items: ProgramItemOccurence[TState][],
 }

@@ -21,6 +21,10 @@
       "@custom/*": ["custom/*"],
 
       "@typeful/data/*": ["./libs/typeful-data/src/*"],
+      "@typeful/model/*": ["./libs/typeful-model/src/*"],
+      "@typeful/model": ["./libs/typeful-model/src/index.ts"],
+
+      "@com-pot/schedule/*": ["./libs/com-pot/schedule/src/*"],
     },
   },
 

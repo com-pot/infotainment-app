@@ -17,6 +17,8 @@ export default defineConfig({
       '@com-pot/infotainment-app': new URL("./src", import.meta.url).pathname,
       '@custom': new URL("./custom", import.meta.url).pathname,
       "@typeful/data": new URL("./libs/typeful-data/src", import.meta.url).pathname,
-    }
+
+      '@com-pot/schedule': new URL("./libs/com-pot/schedule/src", import.meta.url).pathname,
+    },
   }
 })
