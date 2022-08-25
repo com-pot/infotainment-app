@@ -25,6 +25,7 @@ export type ProgramItemOccurence = {
         time: { start: Date, end?: Date },
 
         params?: Record<string, string|Localized<string>>,
+        description?: Localized<string>,
     },
     api: never,
 }

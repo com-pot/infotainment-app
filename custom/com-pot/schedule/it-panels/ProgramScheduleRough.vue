@@ -102,6 +102,9 @@ const rotateEngine = createRotationController(props.rotationConfig, (e) => rotat
         .time {
             grid-area: time;
         }
+        .description {
+            grid-column: span 2;
+        }
     }
 }
 </style>

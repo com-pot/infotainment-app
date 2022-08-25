@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useRender } from '@typeful/data/rendering';
-import { PropType } from '@vue/runtime-core';
+import { computed, PropType } from '@vue/runtime-core';
 import { ProgramItemOccurence } from '@com-pot/schedule/model/ProgramItemOccurrence';
 
 const render = useRender()
@@ -10,6 +10,8 @@ const props = defineProps({
 
     showDescription: {type: Boolean},
 })
+
+const description = computed(() => props.showDescription && (props.entry.description || props.entry.item.description))
 
 </script>
 <template>
@@ -22,7 +24,7 @@ const props = defineProps({
             </template>
             
         </div>
-        <div class="location">{{ render.localized(entry.location?.title) }}</div>
-        <p v-if="showDescription">{{ render.localized(entry.item.description) }}</p>
+        <div class="location">{{ entry.location && render.localized(entry.location.title) || '' }}</div>
+        <p class="description" v-if="description">{{ render.insertParams(render.localized(description)) }}</p>
     </div>
 </template>

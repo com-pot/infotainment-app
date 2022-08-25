@@ -4,11 +4,14 @@ import { ItPanelModule } from "../PanelModule";
 import { PanelDataProviderUntyped } from "./dataProviders";
 import { createLoader, provideLoader } from "./panelData";
 import { createPanelRegistry, providePanelRegistry } from "./panelRegistry";
+import * as globalArgs from "./globalArgs"
 
 type ItPanelsPluginOpts = {
     modules: ItPanelModule[],
 
     apiOptions: ApiOpts,
+
+    globalArgs?: Record<string, any>,
 }
 export default {
     install(app: App, opts: ItPanelsPluginOpts) {
@@ -22,6 +25,9 @@ export default {
                 providers[fqn] = provider
             })
         })
+
+        const gArgs = globalArgs.createGlobalArgs(opts.globalArgs)
+        globalArgs.provideGlobalArgs(app, gArgs)
 
         const loader = createLoader({
             providers,

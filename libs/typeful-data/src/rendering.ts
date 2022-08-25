@@ -1,3 +1,4 @@
+import { useGlobalArgs } from "@com-pot/infotainment-app/panels/globalArgs"
 import { LocaleController, useLocaleController } from "@custom/com-pot/i18n/localeController"
 import { Localized } from "@typeful/model/types/I18n"
 import { computed } from "vue"
@@ -11,10 +12,12 @@ export function useRender(): ReturnType<typeof createRender> {
     if (!rendererCache.has(key)) {
         rendererCache.set(key, createRender(localeController))
     }
+
     return rendererCache.get(key)
 }
 
 function createRender(localeCtrl?: LocaleController) {
+    const globalArgs = useGlobalArgs()
     const locale = computed(() => {
         return localeCtrl?.activeLocale || 'cs'
     })
@@ -47,19 +50,29 @@ function createRender(localeCtrl?: LocaleController) {
         },
     
         localized(val?: Localized<string>|null) {
-            if (!val) {
+            const result = val?.[locale.value]
+            if (!result) {
+                console.warn("Localized bundle ", val, " does not contain locale value for ", locale.value);                
                 return ''
-            }            
+            }
 
-            return val[locale.value]
+            return result
         },
 
         insertParams(text: string, params?: Record<string, string|Localized<string>>) {
+            if (!text) {
+                return text
+            }
+
             return text.replace(substitutionParamRegex, (match) => {
                 const key = match.substring(1, match.length - 1)
-                const replacement = params?.[key]
-                if (!replacement || typeof replacement === 'string') {
+                const replacement = params?.[key] ?? globalArgs.get(key)
+                
+                if (!replacement) {
                     return `{${key}}`
+                }
+                if (typeof replacement === 'string') {
+                    return replacement
                 }
 
                 return this.localized(replacement)
