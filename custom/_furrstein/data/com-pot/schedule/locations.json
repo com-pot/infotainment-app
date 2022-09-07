@@ -1,0 +1,52 @@
+[
+    {
+      "id": "main-courtyard",
+      "title": {
+        "cs": "Hlavní nádvoří",
+        "en": "Main courtyard"
+      }
+    },
+    {
+      "id": "second-courtyard",
+      "title": {
+        "cs": "Druhé nádvoří",
+        "en": "Second courtyard"
+      }
+    },
+    {
+      "id": "chapel",
+      "title": {
+        "cs": "Kaple",
+        "en": "The chapel"
+      }
+    },
+    {
+      "id": "feast-hall",
+      "title": {
+        "cs": "Hodovna",
+        "en": "Feast hall"
+      }
+    },
+    {
+      "id": "theater",
+      "title": {
+        "cs": "Divadlo",
+        "en": "Theater"
+      }
+    },
+    {
+      "id": "meadow:parking-lot",
+      "title": {
+        "cs": "Louka u hlavního parkoviště",
+        "en": "Meadow near the main parking lot"
+      }
+    },
+    {
+      "id": "forbidden-forest",
+      "title": {
+        "cs": "Zapovězený les",
+        "en": "Forbidden forest"
+      }
+    }
+  ]
+  

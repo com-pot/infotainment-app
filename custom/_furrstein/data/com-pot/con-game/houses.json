@@ -1,0 +1,39 @@
+[
+    {
+      "id": "skrz",
+      "name": "Skrzkrk",
+      "color": "hsl(125deg 85% 44%)",
+      "effect": "thunder"
+    },
+    {
+      "id": "juli",
+      "name": "Juliolej",
+      "color": "hsl(296deg 69% 50%)",
+      "effect": "water"
+    },
+    {
+      "id": "riz",
+      "name": "Řízdřív",
+      "color": "hsl(0deg 0% 100%)",
+      "effect": "water"
+    },
+    {
+      "id": "prok",
+      "name": "Prokopro",
+      "color": "hsl(220deg 99% 56%)",
+      "effect": "thunder"
+    },
+    {
+      "id": "svis",
+      "name": "Svištipiš",
+      "color": "hsl(349deg 100% 50%)",
+      "effect": "thunder"
+    },
+    {
+      "id": "tytr",
+      "name": "Tytrych",
+      "color": "hsl(61deg 100% 70%)",
+      "effect": "water"
+    }
+  ]
+  
