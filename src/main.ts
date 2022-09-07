@@ -20,6 +20,9 @@ createApp(App)
     })
     .use(conGameVuePlugin)
     .use(itPanelsVuePlugin, {
+        apiOptions: {
+            baseUrl: getBaseUrl(),
+        },
         modules: [
             itPanelsDefaultModuleItPanelModule,
             scheduleModuleItPanelModule,

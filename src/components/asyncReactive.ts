@@ -1,4 +1,4 @@
-import { computed, reactive, ref } from "vue";
+import { computed, reactive, ref, watch } from "vue";
 
 type AsyncStatus = 'n/a' | 'busy' | 'ready' | 'error'
 type AsyncWrapper<T> = 
@@ -7,6 +7,7 @@ type AsyncWrapper<T> =
 type AsyncWrapperControls<T> = {
     _await: (source: Promise<T>) => Promise<T>,
     _clear: () => void,
+    _set: (value: T) => void,
 }
 export type AsyncRef<T> = AsyncWrapper<T> & AsyncWrapperControls<T>
 
@@ -37,6 +38,10 @@ export default function asyncReactive<T>(promise?: Promise<T>): AsyncRef<T> {
         value: null as null | T,
 
         _await: awaitValue,
+        _set: (value: T) => {
+            ar.value = value as typeof ar['value']
+            status.value = 'ready'
+        },
         _clear: () => {
             status.value = 'n/a'
             ar.value = null
@@ -48,6 +53,28 @@ export default function asyncReactive<T>(promise?: Promise<T>): AsyncRef<T> {
     }
 
     return ar as AsyncRef<T>
+}
+export function asyncComputed<TRes, T1>(cb: (v1: T1) => TRes, aRef1: AsyncWrapper<T1>): AsyncWrapper<TRes>;
+export function asyncComputed<TRes, T1, T2>(cb: (v1: T1, v2: T2) => TRes, aRef1: AsyncWrapper<T1>, aRef2: AsyncWrapper<T2>): AsyncWrapper<TRes>;
+export function asyncComputed<TRes>(cb: (...values: any[]) => TRes, ...refs: AsyncWrapper<any>[]): AsyncWrapper<TRes> {
+    const ready = computed(() => refs.every((ref) => ref.ready))
+    const error = computed(() => !ready.value && refs.some((ref) => ref.status === 'error'))
+    const status = computed<AsyncWrapper<any>['status']>(() => {
+        if (ready.value) return 'ready'
+        if (error.value) return 'error'
+        return 'busy'
+    })
+    
+    const value = computed<TRes>(() => {
+        if (!ready.value) return null as unknown as TRes
+        return cb(...refs.map((ref) => (ref as typeof ref & {status: 'ready'}).value))
+    })
+
+    return reactive({
+        ready,
+        status,
+        value,
+    }) as AsyncWrapper<TRes>
 }
 
 export type AsyncDataController<T = any> = ReturnType<typeof asyncReactive<T>>

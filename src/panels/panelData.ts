@@ -1,9 +1,10 @@
 import { isNil } from "lodash"
-import { App, computed, ComputedRef, inject, PropType, provide, watch } from "vue"
+import { App, computed, ComputedRef, inject, onBeforeUnmount, PropType, watch } from "vue"
 import { ApiAdapter, ApiOpts } from "../ApiAdapter"
 import asyncReactive from "../components/asyncReactive"
 import { StateHub } from "../components/stateHub"
 import { PanelDataProviderUntyped } from "./dataProviders"
+import { PollConfig, usePoll } from "./polling"
 
 export type PanelDataLoader = {
     api: ApiAdapter,
@@ -37,7 +38,7 @@ export const createLoader = (opts: {
             if (!provider) {
                 return Promise.reject(`No provider with name ${name}`)
             }
-            
+
             return provider.load.call(this, args)
                 .then(async (res) => {
                     await new Promise((res) => setTimeout(res, 250 + Math.random() * 750))
@@ -47,12 +48,31 @@ export const createLoader = (opts: {
 
         watch(src) {
             const data = asyncReactive<any>()
-            watch(src, (config) => {                
+            let poll: ReturnType<typeof usePoll> | null = null
+            watch(src, (config) => {
+                if (poll !== null) {
+                    poll.stop()
+                    poll = null
+                }
                 if (!config) {
                     return data._clear()
                 }
+
                 data._await(this.load(config.name, config.args))
+
+                if (config.poll) {
+                    poll = usePoll(config.poll, async () => {
+                        const value = await this.load(config.name, config.args)
+                        data._set(value)
+                    })
+                    poll.start()
+                }
             }, {immediate: true})
+
+            onBeforeUnmount(() => {
+                poll && poll.stop()
+            })
+
             return data
         },
     }
@@ -65,7 +85,7 @@ const prepareArgument = (arg: any, stateHub?: StateHub) => {
     if (!arg || typeof arg !== 'object') {
         return arg
     }
-    
+
     if (arg.eval === 'state') {
         if (!stateHub) {
             return $nada
@@ -79,7 +99,7 @@ const prepareArgument = (arg: any, stateHub?: StateHub) => {
     if (arg.val) {
         return arg.val
     }
-    
+
     console.warn("Unknown argument spec, using as value. If this is intentional, wrap your value in {val: your_object}", arg);
     return arg
 }
@@ -101,14 +121,14 @@ const prepareProviderConfig = (config?: ProviderConfig, stateHub?: StateHub): Pr
         args: Object.fromEntries(entries),
     }
 
-    return result   
+    return result
 }
 
 export const useDependentConfig = (getConfig: () => ProviderConfig|undefined, stateHub?: StateHub): ComputedRef<ProviderConfig|undefined> => {
     return computed(() => prepareProviderConfig(getConfig(), stateHub))
 }
 
-type ProviderConfig = {name: string, args: any}
+type ProviderConfig = {name: string, args: any, poll?: PollConfig}
 export const providerConfigProp = {
     type: Object as PropType<ProviderConfig>, required: true
 }
