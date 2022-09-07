@@ -26,6 +26,10 @@ createApp(App)
             scheduleModuleItPanelModule,
             conGameItPanelModule,
         ],
+
+        globalArgs: {
+            'con.title': "Furrstein 2022",
+        },
     })
     .mount('#app')
 

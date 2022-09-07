@@ -15,6 +15,18 @@
     --spacing: 0.5rem;
     padding: var(--spacing);
     height: 100vh;
+
+    &::after {
+        pointer-events: none;
+        content: ''; display: block;
+        position: absolute;
+        inset: 0;
+
+        background: url("./assets/seamless-4820050_1280.png") repeat;
+        filter: opacity(0.15) hue-rotate(-0.1turn);
+        z-index: -1;
+    }
+
 }
 
 .panel-layout {
@@ -27,15 +39,20 @@
 }
 
 .brand-panel {
+    --bleed-logo: 30px;
     display: grid;
     place-items: center;
+    margin-block-start: var(--bleed-logo);
 
     > * {
         grid-column: 1; grid-row: 1;
     }
     
     .logo {
+        margin-block-start: calc(-1 * var(--bleed-logo));
         width: 20ch;
+
+        filter: drop-shadow(0px 2px 8px gray) drop-shadow(0px 2px 2px white) drop-shadow(0px 2px 8px lightgray);
     }
 
     .locale-switcher {

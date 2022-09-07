@@ -1,5 +1,5 @@
 import { PanelSpecification } from "@com-pot/infotainment-app/panels"
-import logo from "./assets/title.2.svg"
+import logo from "./assets/logo-Furrstein.svg?raw"
 
 const rootContent = {
     type: 'common.grid-layout',
@@ -9,7 +9,7 @@ const rootContent = {
           type: "common.brand",
           style: "grid-area: brand;",
           config: {
-            logo,
+            logo: {raw: logo},
           },
           rotationConfig: {
             type: 'follow',
@@ -44,7 +44,7 @@ const rootContent = {
           type: '@com-pot/schedule.program-schedule-detailed',
           rotationConfig: {
             type: 'interval',
-            period: 'PT2S',
+            period: 'PT7S',
             whenDone: 'stop',
 
             scroll: {
@@ -72,9 +72,10 @@ const rootContent = {
   }
 
 const withGauges: PanelSpecification = {
-    type: 'furrstein.house-points',
+    type: '@com-pot/con-game.house-points',
     config: {
         contentPanel: rootContent,
+        scorePollFrequency: 'PT5S',
     }
 }
 
