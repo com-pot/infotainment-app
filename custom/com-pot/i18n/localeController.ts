@@ -5,12 +5,12 @@ export function createLocaleController(opts: I18nPluginOptions) {
     return reactive({
         opts,
 
-        activeLocale: opts.availableLocales[0],
+        activeLocale: opts.availableLocales[0].value,
 
         cycleLocale() {
-            const iActive = opts.availableLocales.indexOf(this.activeLocale)
+            const iActive = opts.availableLocales.findIndex((locale) => locale.value === this.activeLocale)
             const next = (iActive + 1) % opts.availableLocales.length
-            this.activeLocale = opts.availableLocales[next]
+            this.activeLocale = opts.availableLocales[next].value
         },
     })
 }

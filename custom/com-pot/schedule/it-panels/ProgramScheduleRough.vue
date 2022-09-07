@@ -23,6 +23,11 @@ const render = useRender()
 const loader = useLoader()
 const panelData = loader.watch<ProgramEntriesGroup[]>(() => props.providerConfig)
 
+const headerLocalized = ref({
+    cs: "Nadcházející program",
+    en: "Upcomming program",
+})
+
 const totalSteps = computed(() => panelData.ready ? panelData.value.length : -1)
 const panelEl = ref<HTMLElement>()
 const rotate = createLinearRotation(props.rotationConfig, totalSteps)
@@ -44,7 +49,7 @@ const rotateEngine = createRotationController(props.rotationConfig, (e) => rotat
 <template>
     <div class="panel -stretch-content program-schedule-rough" :class="rotate.step !== undefined && '-has-active'"
          ref="panelEl">
-        <div class="caption separator -lines">Program schedule rough</div>
+        <div class="caption separator -lines">{{ render.localized(headerLocalized) }}</div>
 
         <AsyncContent :ctrl="panelData">
             <template v-if="panelData.status === 'ready'">

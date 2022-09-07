@@ -16,13 +16,14 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^7.4.0",
+    "@iconify/vue": "^3.2.1",
     "@types/lodash": "^4.14.182",
-    "@vitejs/plugin-vue": "^2.3.3",
+    "@vitejs/plugin-vue": "^3.0.3",
     "json-schema-to-ts": "^2.5.4",
     "ts-toolbelt": "^9.6.0",
     "tsconfig-paths": "^4.0.0",
     "typescript": "^4.5.4",
-    "vite": "^2.9.12",
+    "vite": "^3.0.9",
     "vite-tsconfig-paths": "^3.5.0",
     "vue-tsc": "^0.34.7"
   }

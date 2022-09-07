@@ -1,8 +1,9 @@
 import { App } from "vue";
 import { createLocaleController, provideLocaleController } from "./localeController";
 
+export type LocaleObject = {value: string, icon: string}
 export type I18nPluginOptions = {
-    availableLocales: string[]
+    availableLocales: LocaleObject[]
 }
 
 export default {

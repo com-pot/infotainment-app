@@ -13,7 +13,10 @@ import i18nPlugin from '@custom/com-pot/i18n/i18n.plugin'
 
 createApp(App)
     .use(i18nPlugin, {
-        availableLocales: ['cs', 'en'],
+        availableLocales: [
+            {value: 'cs', icon: "twemoji:flag-czechia"},
+            {value: 'en', icon: "twemoji:flag-united-kingdom"},
+        ],
     })
     .use(conGameVuePlugin)
     .use(itPanelsVuePlugin, {

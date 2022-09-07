@@ -38,6 +38,7 @@ const rotateEngine = createRotationController(props.rotationConfig, (e) => {
         <LocaleSwitcher v-if="localeController"
                         :available-locales="localeController.opts.availableLocales"
                         v-model:active-locale="localeController.activeLocale"
+                        @clickActive="() => localeController!.cycleLocale()"
         ></LocaleSwitcher>
     </div>
 </template>

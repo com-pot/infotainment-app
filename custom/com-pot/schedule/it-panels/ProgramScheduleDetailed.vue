@@ -7,6 +7,7 @@ import { stateHubUi, useStateHub } from "@com-pot/infotainment-app/components/st
 import { createLinearRotation } from "@com-pot/infotainment-app/rotation/linearRotationConsumer"
 import { ProgramItemOccurence } from "@com-pot/schedule/model/ProgramItemOccurrence";
 import ProgramEntryDetail from "../components/ProgramEntryDetail.vue"
+import { useRender } from "@typeful/data/rendering";
 
 
 const props = defineProps({
@@ -23,6 +24,12 @@ const loader = useLoader()
 const panelDataConfig = useDependentConfig(() => props.providerConfig, useStateHub())
 const panelData = loader.watch<ProgramItemOccurence['app'][]>(() => panelDataConfig.value)
 
+const render = useRender()
+const headerLocalized = {
+    cs: "Denní přehled",
+    en: "Daily overview",
+}
+
 const totalSteps = computed(() => panelData.ready ? panelData.value.length : -1)
 const panelEl = ref<HTMLElement>()
 const rotate = createLinearRotation(props.rotationConfig, totalSteps)
@@ -38,7 +45,7 @@ const rotateEngine = createRotationController(props.rotationConfig, (e) => rotat
     <div class="panel -stretch-content program-schedule-detailed" :class="rotate.step !== undefined && '-has-active'"
          ref="panelEl"
     >
-        <div class="caption separator -lines">Program entry detail</div>
+        <div class="caption separator -lines">{{ render.localized(headerLocalized) }}</div>
         <AsyncContent :ctrl="panelData">
             <template v-if="panelData.status === 'ready'">
             <div class="content custom-scroll">
