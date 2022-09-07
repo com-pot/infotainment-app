@@ -7,14 +7,11 @@
         <ItPanel v-bind="config.contentPanel"/>
 
         <template v-if="standings.ready">
-            <div class="score-tab" v-for="(score, i) in standings.value" :key="score.house.name"
-             :style="`--score-color: ${score.house.color}; --fill-ratio: ${overview.fillRatios[i]}`"
-            >
-                <div class="gauge">
-                    <div class="bar"></div>
-                    <div class="name">{{score.house.name}}</div>
-                </div>
-            </div>
+            <template v-for="(standing, i) in standings.value" :key="standing.house.name">
+                <ScoreGauge :house="standing.house"
+                            :points="housePoints[i]" :max-points="pointsCap"
+                />
+            </template>
         </template>
     </div>
 </template>
@@ -70,10 +67,9 @@ export default defineComponent({
             })
         })
 
-        const maxScore = computed(() => scores.ready ? Math.max(100, ...scores.value.map((score) => score.points + 10)) : -1)
+        const pointsCap = computed(() => Math.max(100, ...housePoints.value) + 10)
         const overview = reactive({
-            fillRatios: computed(() => scores.ready ? scores.value.map((score) => 1 / maxScore.value * score.points) : []),
-            rows: computed(() => scores.ready ? Math.ceil(scores.value.length / 2) : 1),
+            rows: computed(() => standings.ready ? Math.ceil(standings.value.length / 2) : 1),
         })
 
         const gaugesVisible = delayedValue(() => standings.ready, {
@@ -106,11 +102,6 @@ export default defineComponent({
     > .panel {
         grid-column: 2;
         grid-row: 1 / span var(--score-rows);
-    }
-
-    .score-tab {
-        display: grid;
-        place-items: stretch;
     }
 
     :is(&, .score-gauge) {
