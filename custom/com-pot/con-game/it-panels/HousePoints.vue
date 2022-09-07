@@ -1,12 +1,13 @@
 <template>
     <div class="panel house-points" :style="`--score-rows: ${overview.rows};`"
          :class="[
-            '-houses-status-' + scores.status,
+            '-houses-status-' + standings.status,
             gaugesVisible && '-gauges-visible',
-            ]">
+        ]">
         <ItPanel v-bind="config.contentPanel"/>
-        <template v-if="scores.ready">
-            <div class="score-tab" v-for="(score, i) in scores.value" :key="score.house.name"
+
+        <template v-if="standings.ready">
+            <div class="score-tab" v-for="(score, i) in standings.value" :key="score.house.name"
              :style="`--score-color: ${score.house.color}; --fill-ratio: ${overview.fillRatios[i]}`"
             >
                 <div class="gauge">
@@ -20,26 +21,54 @@
 
 <script lang="ts">
 import { reactive } from '@vue/reactivity';
-import { computed, PropType } from '@vue/runtime-core';
+import { computed, defineComponent, PropType, watch } from '@vue/runtime-core';
 
-import ItPanel from '../../../src/it-panels/ItPanel.vue';
-import asyncReactive from '@com-pot/infotainment-app/components/asyncReactive';
-import { useConGameApi } from '@custom/com-pot/con-game/conGameApi';
-import delayedValue from "../../../src/components/delayedValue";
+import ItPanel from '@com-pot/infotainment-app/it-panels/ItPanel.vue';
+import delayedValue from "@com-pot/infotainment-app/components/delayedValue";
+import ScoreGauge from '../components/ScoreGauge.vue';
+import { useLoader } from '@com-pot/infotainment-app/panels/panelData';
+import { GameHouse, HouseScore } from '@custom/com-pot/con-game/model';
+import { asyncComputed } from '@com-pot/infotainment-app/components/asyncReactive';
+
+import { assignScores, createStandings } from "@custom/com-pot/con-game/houseStandings"
 
 type HousePointsConfig = {
-    contentPanel: {}
+    contentPanel: {},
+    scorePollFrequency: string,
 }
-export default {
+export default defineComponent({
     components: {
-        ItPanel
-    },
+    ItPanel,
+    ScoreGauge
+},
     props: {
         config: {type: Object as PropType<HousePointsConfig>, required: true},
     },
-    setup() {
-        const conGameApi = useConGameApi()
-        const scores = asyncReactive(conGameApi.fetchHousesOverview())
+
+    setup(props) {
+        const loader = useLoader()
+        const houses = loader.watch<GameHouse[]>(() => {
+            return { name: '@com-pot/con-game.houses', args: {} }
+        })
+        const scores = loader.watch<HouseScore[]>(() => {
+            return { name: '@com-pot/con-game.scores', args: {}, poll: props.config.scorePollFrequency }
+        })
+
+        // TODO: This could be optimized to only create standings once and only update points
+        const standings = asyncComputed((houses, scores) => {
+            const standings = createStandings(houses)
+            assignScores(standings, scores)
+            return standings
+        }, houses, scores)
+        
+        const housePoints = computed(() => {
+            if (!standings.ready) {
+                return []
+            }
+            return standings.value.map((standing) => {
+                return standing.scores.reduce((sum, score) => sum + score.points, 0)
+            })
+        })
 
         const maxScore = computed(() => scores.ready ? Math.max(100, ...scores.value.map((score) => score.points + 10)) : -1)
         const overview = reactive({
@@ -47,18 +76,20 @@ export default {
             rows: computed(() => scores.ready ? Math.ceil(scores.value.length / 2) : 1),
         })
 
-        const gaugesVisible = delayedValue(() => scores.status === 'ready', {
+        const gaugesVisible = delayedValue(() => standings.ready, {
             delay: 50,
             filter: (val) => val,
         })
 
         return {
-            scores,
+            standings,
+            housePoints,
             overview,
             gaugesVisible,
+            pointsCap,
         }
     },
-}
+})
 </script>
 
 <style lang="scss">
@@ -82,43 +113,7 @@ export default {
         place-items: stretch;
     }
 
-    .gauge {
-        display: grid;
-        grid-template-areas: 'gauge';
-
-        width: var(--gauge-width);
-        background: lightgray;
-        border-radius: 2rem;
-        overflow: hidden;
-        opacity: 0;
-        
-        writing-mode: vertical-lr;
-
-        > * {
-            grid-area: gauge;
-        }
-        .name {
-            place-self: center;
-            font-weight: bold;
-            font-size: 3em;
-            transform: rotate(0.5turn);
-        }
-
-        .bar {
-            place-self: end;
-            width: 100%;
-            height: calc(var(--fill-ratio) * 100%);
-            background: var(--score-color);
-        }
-
-        &::after {
-            content: ""; display: block; grid-area: gauge;
-            border-radius: inherit;
-            box-shadow: inset -2px -2px 8px lightgray;
-        }
-    }
-
-    :is(&, .gauge) {
+    :is(&, .score-gauge) {
         transition: all 0.3s;
     }
     
@@ -128,7 +123,7 @@ export default {
         margin-inline-end: calc(-1 * (var(--gauge-width) + var(--gauge-gap)));
     }
     &.-gauges-visible {
-        .gauge {
+        .score-gauge {
             opacity: 1;
         }
     }

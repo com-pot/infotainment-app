@@ -29,3 +29,13 @@ export type ProgramItemOccurence = {
     },
     api: never,
 }
+
+export type OccurrenceItemRawData = {
+    item: string,
+    time: string[],
+
+    location?: string,
+
+    params?: Record<string, any>,
+    description?: Localized<string>,
+}

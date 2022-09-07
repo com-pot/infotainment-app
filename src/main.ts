@@ -7,8 +7,7 @@ import scheduleModuleItPanelModule from '../custom/com-pot/schedule/scheduleModu
 
 import "./sass/infotainment.scss"
 import "../custom/_furrstein/furrsteinTheme.scss"
-import furrsteinItPanelModule from 'custom/_furrstein/furrstein.itPanelModule'
-import conGameVuePlugin from '@custom/com-pot/con-game/conGame.vuePlugin'
+import conGameItPanelModule from '@custom/com-pot/con-game/conGame.itPanelModule'
 import i18nPlugin from '@custom/com-pot/i18n/i18n.plugin'
 
 createApp(App)
@@ -18,7 +17,6 @@ createApp(App)
             {value: 'en', icon: "twemoji:flag-united-kingdom"},
         ],
     })
-    .use(conGameVuePlugin)
     .use(itPanelsVuePlugin, {
         apiOptions: {
             baseUrl: getBaseUrl(),
@@ -26,7 +24,17 @@ createApp(App)
         modules: [
             itPanelsDefaultModuleItPanelModule,
             scheduleModuleItPanelModule,
-            furrsteinItPanelModule,
+            conGameItPanelModule,
         ],
     })
     .mount('#app')
+
+function getBaseUrl() {
+    const path = import.meta.env.VITE_API_BASE_URL
+    if (!path) {
+        console.warn("No API base url provided")
+        return "/"
+    }
+
+    return path.replace('BASE_URL', window.location.origin + import.meta.env.BASE_URL)
+}

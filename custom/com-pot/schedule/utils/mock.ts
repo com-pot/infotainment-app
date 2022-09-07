@@ -12,8 +12,7 @@ const programEntryParams = {
 function randomPick<T>(items: T[]): T {
     return items[Math.floor(Math.random() * items.length)]
 }
-export const mockItemOccurence = (day?: Date): ProgramItemOccurence['app'] => {
-    const locales = ['cs', 'en']
+export const mockItemOccurence = (locales: string[], day?: Date): ProgramItemOccurence['app'] => {
 
     const start = day ? new Date(day) : new Date()
     start.setHours(Math.random() * 24, Math.random() * 60)
