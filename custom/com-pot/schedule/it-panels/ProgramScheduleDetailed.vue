@@ -57,6 +57,8 @@ const rotateEngine = createRotationController(props.rotationConfig, (e) => rotat
                                         show-description
                     />
                 </div>
+        
+                <div class="footing-image"></div>
             </div>
             </template>
         </AsyncContent>

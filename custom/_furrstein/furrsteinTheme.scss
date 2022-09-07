@@ -83,4 +83,15 @@
             overflow-y: auto;
         }
     }
+
+    .footing-image {
+        margin: 2rem auto 1rem;
+
+        background: url('./assets//sponsor-w3-fullsize-dracice_klobouk-crop-semifill.png') center no-repeat;
+        background-size: contain;
+        width: 50%;
+        aspect-ratio: 1;
+        filter: drop-shadow(2px 4px 4px hsla(0deg 0% 40% / 0.8));
+    
+    }
 }
