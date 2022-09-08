@@ -45,7 +45,9 @@ const rotateEngine = createRotationController(props.rotationConfig, (e) => rotat
     <div class="panel -stretch-content program-schedule-detailed" :class="rotate.step !== undefined && '-has-active'"
          ref="panelEl"
     >
-        <div class="caption separator -lines">{{ render.localized(headerLocalized) }}</div>
+        <div class="caption separator -lines"
+             @click.raw="rotate.tick($event)"
+        >{{ render.localized(headerLocalized) }}</div>
         <AsyncContent :ctrl="panelData">
             <template v-if="panelData.status === 'ready'">
             <div class="content custom-scroll">
