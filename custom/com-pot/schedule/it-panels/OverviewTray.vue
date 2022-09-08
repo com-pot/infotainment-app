@@ -1,66 +1,131 @@
 <script lang="ts" setup>
-import { onBeforeUnmount, onMounted, PropType, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, PropType, ref } from 'vue'
 import useTime from "@com-pot/infotainment-app/components/useTime"
-import useAutoScroll from "@com-pot/infotainment-app/components/useAutoScroll"
+import { useLoader } from '@com-pot/infotainment-app/panels/panelData';
+import { QuickMessage } from '@com-pot/infotainment-app/dataProviders/quickMessages';
+import { useRender } from '@typeful/data/rendering';
+import AsyncContent from '@com-pot/infotainment-app/components/AsyncContent.vue';
+import { createLinearRotation } from '@com-pot/infotainment-app/rotation/linearRotationConsumer';
+import { createRotationController, rotationUi } from '@com-pot/infotainment-app/rotation';
+import { stateHubUi } from '@com-pot/infotainment-app/components/stateHub';
 
 type OverviewTrayConfig = {
-    durationPer1Em?: number,
+    messagePollFrequency: string,
 }
 const props = defineProps({
     config: {type: Object as PropType<OverviewTrayConfig>},
+    ... rotationUi.props,
 })
+const emit = defineEmits({
+    ...rotationUi.emits,
+    ...stateHubUi.emits,
+})
+
+const loader = useLoader()
+const messages = loader.watch<QuickMessage[]>(() => ({
+    name: 'common.quickMessages',
+    args: {
+        now: {$get: 'date:now'},
+    },
+    poll: props.config?.messagePollFrequency,
+}))
+const messagesContents = computed(() => messages.ready ? messages.value.map((message) => renderMessageContent(message)) : [])
 
 const time = useTime({
     syncWithSystemTime: true,
 })
-const elMessages = ref<HTMLDivElement>()
 
-onMounted(() => {
-    const destroyAutoscroll = useAutoScroll(elMessages.value!, {
-        durationPer1Em: props.config?.durationPer1Em,
-    })
-    onBeforeUnmount(() => destroyAutoscroll())
-})
+const render = useRender()
+function renderMessageContent(message: QuickMessage) {
+    if (message.content.type === 'plain') {
+        return message.content.text
+    }
+    
+    let content = render.localized(message.content)
+    if (typeof content === 'string') {
+        return content
+    }
+
+    return content
+}
+
+const panelEl = ref<HTMLElement>()
+const rotate = createLinearRotation(props.rotationConfig, () => messages.ready ? messages.value.length : 0)
+    .bindScroll(panelEl)
+    .onStep((step) => emit('update:panelState', ['highlightEvent'], step))
+const rotateEngine = createRotationController(props.rotationConfig, (e) => rotate.tick(e), emit)
+    .bindReady(messages, (ready) => ready && rotate.restart?.())
+    .bindComponent('ignore')
 
 </script>
 
 
 <template>
-    <div class="panel overview-tray">
-        <div class="time-box">
+    <div class="overview-tray" ref="panelEl">
+        <div class="time-box panel">
             <span class="date">{{ time.format({year: 'numeric', month: '2-digit', day: '2-digit'}) }}</span>
             <span class="time">{{ time.format({hour: '2-digit', minute: '2-digit', second: '2-digit'}) }}</span>
         </div>
-        <div class="messages custom-scroll -outline" ref="elMessages">
-            <div class="message">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Expedita animi magni excepturi, mollitia dolores explicabo, molestiae fuga culpa recusandae, totam obcaecati consequuntur corporis iure labore nesciunt sequi. Voluptates, ducimus aspernatur.
-                Voluptas harum eaque expedita odit! Reiciendis debitis labore nemo. Soluta, aspernatur a asperiores vero incidunt magnam cumque nobis sunt consequatur magni deleniti, expedita sit. Illo est commodi ducimus quis delectus.
-                Dolorem aperiam autem laborum cum provident? Pariatur molestiae voluptas architecto optio sint veniam dolores adipisci deleniti eos vero qui, facere dolor explicabo dicta nemo accusantium corrupti assumenda quae totam laboriosam.
-                Illum labore eligendi architecto alias praesentium fugit, dignissimos non minus ducimus, reiciendis recusandae mollitia natus dolor! Aliquid architecto veritatis dicta voluptas voluptatibus labore voluptatum quibusdam doloremque odio, voluptate culpa repudiandae!
-            </div>
+
+        <div class="panel messages custom-scroll">
+            <AsyncContent :ctrl="messages">
+            <template v-if="messages.ready">
+                <template v-for="(message, i) of messages.value" :key="message.id">
+                    <div class="message" :class="i === rotate.step && 'active'">
+                        <p class="content" v-if="typeof messagesContents[i] === 'string'">{{ messagesContents[i] }}</p>
+                        <p class="content" v-else-if="messagesContents[i]" v-html="(messagesContents[i] as any).html"></p>
+                        <span class="author" v-if="message.author">- {{ render.localized(message.author) }}</span>
+                    </div>
+                </template>
+            </template>
+            </AsyncContent>
         </div>
     </div>
 </template>
 
 <style lang="scss">
 .overview-tray {
-    padding: var(--spacing);
-
-    display: flex;
-    align-items: center;
+    display: grid;
+    align-items: stretch;
+    grid-template-columns: auto 1fr;
+    
     gap: var(--spacing);
 
+    > .time-box, .message {
+        padding: var(--spacing);
+    }
+
     .time-box {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+        display: grid;
+        place-content: center;
+        place-items: center;
+        
     }
 
     .messages {
-        flex: 1;
-
         max-block-size: 4em;
         overflow-y: auto;
+    }
+
+    .message {
+        display: grid;
+        place-content: stretch center;
+
+        height: 100%;
+
+        &:not(:first-child) {
+            margin-block-start: 1rem;
+        }
+
+        > * {
+            grid-column: 1; grid-row: 1;
+        }
+        .content {
+            margin: 0;
+        }
+        .author {
+            place-self: end;
+        }
     }
 }
 </style>

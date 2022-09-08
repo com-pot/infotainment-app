@@ -49,7 +49,7 @@ function createRender(localeCtrl?: LocaleController) {
             return formatters.value.date.format(val)
         },
     
-        localized(val?: Localized<string>|null) {
+        localized<T = string>(val?: Localized<T>|null): ''|T {
             const result = val?.[locale.value]
             if (!result) {
                 console.warn("Localized bundle ", val, " does not contain locale value for ", locale.value);                

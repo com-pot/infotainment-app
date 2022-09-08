@@ -30,6 +30,34 @@ export const createLoader = (opts: {
         },
     })
 
+
+    const variableArgFactories: Record<string, () => any> = {
+        'date:now': () => new Date()
+    }
+    function getVariableArg(subject: string) {
+        const factory = variableArgFactories[subject]
+        if (!factory) {
+            console.warn("Unknown variable arg", subject);
+            return null
+        }
+        return factory()
+    }
+
+    function fillVariableArgs(args: unknown) {
+        if (!args || typeof args !== 'object') {
+            return args
+        }
+        const entries = Object.entries(args)
+            .map(([name, val]) => {
+                if (val && typeof val === 'object' && val.$get) {
+                    return [name, getVariableArg(val.$get)]
+                }
+                return [name, val]
+            })
+
+        return Object.fromEntries(entries)
+    }
+
     const loader: PanelDataLoader = {
         api,
 
@@ -39,7 +67,7 @@ export const createLoader = (opts: {
                 return Promise.reject(`No provider with name ${name}`)
             }
 
-            return provider.load.call(this, args)
+            return provider.load.call(this, fillVariableArgs(args))
                 .then(async (res) => {
                     await new Promise((res) => setTimeout(res, 250 + Math.random() * 750))
                     return res

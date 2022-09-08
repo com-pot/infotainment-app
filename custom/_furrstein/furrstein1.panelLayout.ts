@@ -61,7 +61,18 @@ const rootContent = {
         },
         {
           type: '@com-pot/schedule.overview-tray',
-          config: {},
+          rotationConfig: {
+            type: 'interval',
+            period: 'PT5S',
+
+            scroll: {
+              sel: { container: '.messages', target: '.active'},
+              offset: 0,
+            },
+          },
+          config: {
+            messagePollFrequency: 'PT30S',
+          },
           style: "grid-area: tray;"
         },
       ],

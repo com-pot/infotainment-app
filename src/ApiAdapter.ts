@@ -45,7 +45,7 @@ export class ApiAdapter {
             }, (err) => {throw new ApiClientError("Failed to execute request", request, undefined, err)})
     }
 
-    async req<TResultPayload = any>(method: string, path: string, payload?: Record<string, unknown>, query?: Query, opts?: RequestOpts) {
+    async req<TResultPayload = any>(method: string, path: string, payload?: Record<string, unknown>, query?: Query, opts?: RequestOpts): Promise<TResultPayload> {
         const response = await this.request<TResultPayload>(method, path, payload, query, opts)
         return response.payload
     }

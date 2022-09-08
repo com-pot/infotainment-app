@@ -1,6 +1,7 @@
 import { defineItPanelModule } from "../PanelModule";
 import GridLayoutPanel from "../it-panels/GridLayoutPanel.vue";
 import BrandPanel from "../it-panels/BrandPanel.vue";
+import quickMessages from "../dataProviders/quickMessages";
 
 export default defineItPanelModule({
     name: 'common',
@@ -15,4 +16,7 @@ export default defineItPanelModule({
             component: BrandPanel,
         },
     ],
+    dataProviders: {
+        quickMessages: quickMessages,
+    },
 })

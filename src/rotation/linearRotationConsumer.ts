@@ -14,7 +14,7 @@ type LinearRotationConfig = {
 
     scroll?: ScrollContentToOptions,
 }
-export function createLinearRotation(rotationConfig: LinearRotationConfig, totalStepsRef: Ref<number>): LinearRotationConsumer {
+export function createLinearRotation(rotationConfig: LinearRotationConfig, totalStepsRef: Ref<number> | (() => number)): LinearRotationConsumer {
     const consumer: LinearRotationConsumer = reactive({
         step: undefined,
         restart() {
@@ -22,7 +22,7 @@ export function createLinearRotation(rotationConfig: LinearRotationConfig, total
         },
         
         tick() {
-            const totalSteps = totalStepsRef.value
+            const totalSteps = typeof totalStepsRef === 'function' ? totalStepsRef() : totalStepsRef.value
             if (typeof totalSteps !== 'number' || totalSteps <= 0) {
                 return {status: 'n/a'}
             }
