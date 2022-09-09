@@ -57,6 +57,7 @@ function toggleEffect() {
     >
         <div class="bar"></div>
         <div class="name">{{house.name}}</div>
+        <span class="points" v-if="typeof points === 'number'">{{ points }}</span>
         <canvas class="effect" ref="elCanvas"></canvas>
     </div>
 </template>
@@ -81,10 +82,24 @@ function toggleEffect() {
     }
     .name {
         z-index: 3;
-        place-self: center;
+        place-self: center end;
+        margin-inline-end: 3.75rem;
         font-weight: bold;
         font-size: 3em;
         transform: rotate(0.5turn);
+    }
+
+    .points {
+        place-self: center end;
+        margin-inline-end: 0.5rem;
+        font-size: 2rem;
+        font-weight: bold;
+        z-index: 6;
+        transform: rotate(-0.25turn);
+        background: rgba(255, 255, 255, 0.75);
+        border-radius: 20rem;
+        padding: 4px;
+        border: 2px groove var(--score-color);
     }
 
     .bar {
