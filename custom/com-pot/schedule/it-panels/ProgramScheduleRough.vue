@@ -33,15 +33,18 @@ const panelEl = ref<HTMLElement>()
 const rotate = createLinearRotation(props.rotationConfig, totalSteps)
     .bindScroll(panelEl)
     .onStep((step) => {
-        let day: Date|undefined = new Date(props.providerConfig?.args.from)
-        if (Number.isInteger(day.getDate()) && typeof step === "number") {
-            day.setDate(day.getDate() + step)
-        } else {
-            day = undefined
+        const groups = panelData.ready && panelData.value || []
+        const group = groups[step!]
+        if (!group) {
+            console.warn("No group for step", {groups, step});
         }
-        emit('update:panelState', ['currentDay'], day)
+
+        emit('update:panelState', ['currentDay'], group && group.date || undefined)
     }, {immediate: true})
 const rotateEngine = createRotationController(props.rotationConfig, (e) => rotate.tick(e), emit)
+    .bindReady(panelData, (ready) => {
+        emit('update:panelState', ['currentDay'], panelData.ready ? panelData.value[0].date : undefined)
+    })
     .bindComponent('start')
 
 </script>

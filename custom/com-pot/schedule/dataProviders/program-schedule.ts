@@ -17,6 +17,11 @@ export default defineDataProvider<any, Args>({
         // FIXME: unless cached, this will trigger complete reload of groups
         const overviewGroups = await this.load('@com-pot/schedule.program-schedule-overview', {}) as ProgramEntriesGroup[]
         const group = overviewGroups.find((group) => group.date.getDate() === day.getDate())
-        return group?.items || []
+        if (!group) {
+            console.warn("No group found for", day);
+            return []
+        }
+        
+        return group.items
     },
 })

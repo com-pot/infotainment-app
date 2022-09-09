@@ -15,10 +15,12 @@ const argsSchema = {
     },
     required: ['from', 'to'],
 } as const
-type Args = FromSchema<typeof argsSchema>
+type Args = FromSchema<typeof argsSchema> & {now: Date}
 
 export default defineDataProvider<any, Args>({
     async load(args) {
+        const now = args.now || new Date()
+
         const results = await Promise.all([
             this.api.req('GET', 'com-pot/schedule/items.json'),
             this.api.req('GET', 'com-pot/schedule/locations.json'),
@@ -29,6 +31,7 @@ export default defineDataProvider<any, Args>({
         const occurrencesRaw = results[2] as OccurrenceItemRawData[][]
         
         return hydrateOccurrences(occurrencesRaw, items, locations)
+            .filter((group) => group.date.getDate() >= now.getDate())
     },
 })
 

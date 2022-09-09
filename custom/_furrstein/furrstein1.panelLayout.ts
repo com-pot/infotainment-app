@@ -24,6 +24,7 @@ const rootContent = {
           providerConfig: {
             name: '@com-pot/schedule.program-schedule-overview',
             args: {
+              now: {$get: 'date:now'},
               from: '2022-09-08',
               to: '2022-09-11',
             },
