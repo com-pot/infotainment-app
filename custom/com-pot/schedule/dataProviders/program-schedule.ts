@@ -6,17 +6,22 @@ const argsSchema = {
     type: 'object',
     properties: {
         day: {type: 'string', format: 'date'},
+        groups: {type: 'object'},
     },
-    required: ['page'],
 } as const
 type Args = FromSchema<typeof argsSchema>
 
 export default defineDataProvider<any, Args>({
     async load(args) {
         const day = args.day as unknown as Date
-        // FIXME: unless cached, this will trigger complete reload of groups
-        const overviewGroups = await this.load('@com-pot/schedule.program-schedule-overview', {}) as ProgramEntriesGroup[]
+        const overviewGroups = await this.load(args.groups as any) as ProgramEntriesGroup[]
+
         const group = overviewGroups.find((group) => group.date.getDate() === day.getDate())
-        return group?.items || []
+        if (!group) {
+            console.warn("No group found for", day, ' in ', overviewGroups);
+            return []
+        }
+
+        return group.items
     },
 })

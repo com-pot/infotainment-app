@@ -1,15 +1,17 @@
 import { isNil } from "lodash"
 import { App, computed, ComputedRef, inject, onBeforeUnmount, PropType, watch } from "vue"
+import { Substitutions } from "@typeful/data/substitutions"
+
 import { ApiAdapter, ApiOpts } from "../ApiAdapter"
 import asyncReactive from "../components/asyncReactive"
 import { StateHub } from "../components/stateHub"
-import { PanelDataProviderUntyped } from "./dataProviders"
+import { defineDataProvider, PanelDataProviderUntyped } from "./dataProviders"
 import { PollConfig, usePoll } from "./polling"
 
 export type PanelDataLoader = {
     api: ApiAdapter,
 
-    load<TData = any>(providerName: string, args: unknown): Promise<TData>,
+    load<TData = any>(config: ProviderConfig): Promise<TData>,
     watch<TData = any>(src: () => ProviderConfig|undefined): ReturnType<typeof asyncReactive<TData>>,
 }
 
@@ -19,10 +21,12 @@ export const useLoader = () => inject(injectionSymbol, () => {
 }, true) as PanelDataLoader
 export const provideLoader = (vue: App, loader: PanelDataLoader) => vue.provide(injectionSymbol, loader)
 
-export const createLoader = (opts: {
+type LoaderOpts = {
     providers: Record<string, PanelDataProviderUntyped>,
     apiOptions: ApiOpts,
-}): PanelDataLoader => {
+    substitutions: Substitutions,
+}
+export const createLoader = (opts: LoaderOpts): PanelDataLoader => {
     const api = new ApiAdapter({
         ...opts.apiOptions,
         requestDefaults:{
@@ -30,20 +34,34 @@ export const createLoader = (opts: {
         },
     })
 
+    const sharedData: Record<string, any> = {}
+    const providers: LoaderOpts['providers'] = {
+        ...opts.providers,
+        '~shared': defineDataProvider({
+            async load(args) {
+                if (args.key in sharedData) {
+                    return sharedData[args.key]
+                }
+                return Promise.reject(`Key ${args.key} is not shared`)
+            },
+        }),
+    }
+
     const loader: PanelDataLoader = {
         api,
 
-        async load(name, args) {
-            const provider = opts.providers[name]
+        async load(loaderConfig) {
+            const provider = providers[loaderConfig.name]
             if (!provider) {
                 return Promise.reject(`No provider with name ${name}`)
             }
 
-            return provider.load.call(this, args)
-                .then(async (res) => {
-                    await new Promise((res) => setTimeout(res, 250 + Math.random() * 750))
-                    return res
-                })
+            const loadPromise = provider.load.call(this, await opts.substitutions.replaceMultiple(loaderConfig.args, 'async'))
+            if (loaderConfig.shareAs) {
+                sharedData[loaderConfig.shareAs] = loadPromise
+            }
+
+            return loadPromise
         },
 
         watch(src) {
@@ -58,11 +76,11 @@ export const createLoader = (opts: {
                     return data._clear()
                 }
 
-                data._await(this.load(config.name, config.args))
+                data._await(this.load(config))
 
                 if (config.poll) {
                     poll = usePoll(config.poll, async () => {
-                        const value = await this.load(config.name, config.args)
+                        const value = await this.load(config)
                         data._set(value)
                     })
                     poll.start()
@@ -96,6 +114,9 @@ const prepareArgument = (arg: any, stateHub?: StateHub) => {
         }
         return value
     }
+    if (arg.eval === 'provider') {
+        return arg
+    }
     if (arg.val) {
         return arg.val
     }
@@ -128,7 +149,11 @@ export const useDependentConfig = (getConfig: () => ProviderConfig|undefined, st
     return computed(() => prepareProviderConfig(getConfig(), stateHub))
 }
 
-type ProviderConfig = {name: string, args: any, poll?: PollConfig}
+type ProviderConfig = {
+    name: string, args: any,
+    poll?: PollConfig,
+    shareAs?: string,
+}
 export const providerConfigProp = {
     type: Object as PropType<ProviderConfig>, required: true
 }

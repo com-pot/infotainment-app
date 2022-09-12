@@ -11,7 +11,10 @@ const props = defineProps({
     showDescription: {type: Boolean},
 })
 
-const description = computed(() => props.showDescription && (props.entry.description || props.entry.item.description))
+const description = computed(() => {
+    const desc = props.showDescription && (props.entry.description || props.entry.item.description)
+    return desc && render.localized(desc)
+})
 
 </script>
 <template>
@@ -22,9 +25,12 @@ const description = computed(() => props.showDescription && (props.entry.descrip
             <template v-if="entry.time.end">
                 - <span class="end">{{ render.time(entry.time.end) }}</span>
             </template>
-            
+
         </div>
         <div class="location">{{ entry.location && render.localized(entry.location.title) || '' }}</div>
-        <p class="description" v-if="description">{{ render.insertParams(render.localized(description)) }}</p>
+        <template v-if="description">
+            <p class="description" v-if="typeof description === 'string'">{{ render.insertParams((description)) }}</p>
+            <p class="description" v-else v-html="render.insertParams((description.html))"></p>
+        </template>
     </div>
 </template>

@@ -48,11 +48,11 @@ function createRender(localeCtrl?: LocaleController) {
         date(val: Date) {
             return formatters.value.date.format(val)
         },
-    
+
         localized<T = string>(val?: Localized<T>|null): ''|T {
             const result = val?.[locale.value]
             if (!result) {
-                console.warn("Localized bundle ", val, " does not contain locale value for ", locale.value);                
+                console.warn("Localized bundle ", val, " does not contain locale value for ", locale.value);
                 return ''
             }
 
@@ -67,7 +67,7 @@ function createRender(localeCtrl?: LocaleController) {
             return text.replace(substitutionParamRegex, (match) => {
                 const key = match.substring(1, match.length - 1)
                 const replacement = params?.[key] ?? globalArgs.get(key)
-                
+
                 if (!replacement) {
                     return `{${key}}`
                 }
@@ -81,4 +81,4 @@ function createRender(localeCtrl?: LocaleController) {
     }
 }
 
-const substitutionParamRegex = /{[\w.]+}/g
+const substitutionParamRegex = /{[\w.\-_]+}/g

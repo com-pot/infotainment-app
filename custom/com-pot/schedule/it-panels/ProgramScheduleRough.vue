@@ -25,7 +25,7 @@ const panelData = loader.watch<ProgramEntriesGroup[]>(() => props.providerConfig
 
 const headerLocalized = ref({
     cs: "Nadcházející program",
-    en: "Upcomming program",
+    en: "Upcoming program",
 })
 
 const totalSteps = computed(() => panelData.ready ? panelData.value.length : -1)
@@ -33,15 +33,19 @@ const panelEl = ref<HTMLElement>()
 const rotate = createLinearRotation(props.rotationConfig, totalSteps)
     .bindScroll(panelEl)
     .onStep((step) => {
-        let day: Date|undefined = new Date(props.providerConfig?.args.from)
-        if (Number.isInteger(day.getDate()) && typeof step === "number") {
-            day.setDate(day.getDate() + step)
-        } else {
-            day = undefined
+        const groups = panelData.ready && panelData.value || []
+        const group = groups[step!]
+        if (!group) {
+            console.warn("No group for step", {groups, step});
         }
-        emit('update:panelState', ['currentDay'], day)
-    }, {immediate: true})
+
+        emit('update:panelState', ['currentDay'], group && group.date || undefined)
+    })
 const rotateEngine = createRotationController(props.rotationConfig, (e) => rotate.tick(e), emit)
+    .bindReady(panelData, () => {
+        const date = panelData.ready && panelData.value[0]?.date || undefined
+        emit('update:panelState', ['currentDay'], date)
+    })
     .bindComponent('start')
 
 </script>
@@ -49,7 +53,9 @@ const rotateEngine = createRotationController(props.rotationConfig, (e) => rotat
 <template>
     <div class="panel -stretch-content program-schedule-rough" :class="rotate.step !== undefined && '-has-active'"
          ref="panelEl">
-        <div class="caption separator -lines">{{ render.localized(headerLocalized) }}</div>
+        <div class="caption separator -lines"
+             @click.raw="rotate.tick($event)"
+        >{{ render.localized(headerLocalized) }}</div>
 
         <AsyncContent :ctrl="panelData">
             <template v-if="panelData.status === 'ready'">
@@ -58,7 +64,7 @@ const rotateEngine = createRotationController(props.rotationConfig, (e) => rotat
                         <hr class="separator -dots -spaced" v-if="i"/>
                         <div class="group auto-flow" :class="i === rotate.step && 'active'">
                             <div class="caption ">{{ render.day(group.date) }}  {{ render.date(group.date) }}</div>
-                            
+
                             <ProgramEntryDetail v-for="(entry, i) in group.items" :key="i"
                                           :entry="entry"
                             />
@@ -90,7 +96,7 @@ const rotateEngine = createRotationController(props.rotationConfig, (e) => rotat
 
     .program-entry {
         display: grid;
-        grid-template-areas: 
+        grid-template-areas:
          'title title'
          'time location';
         transition: var(--entry-transition);

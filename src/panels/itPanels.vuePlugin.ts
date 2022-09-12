@@ -5,6 +5,7 @@ import { PanelDataProviderUntyped } from "./dataProviders";
 import { createLoader, provideLoader } from "./panelData";
 import { createPanelRegistry, providePanelRegistry } from "./panelRegistry";
 import * as globalArgs from "./globalArgs"
+import { createSubstitutions, SubstitutionsFactories } from "@typeful/data/substitutions";
 
 type ItPanelsPluginOpts = {
     modules: ItPanelModule[],
@@ -29,10 +30,21 @@ export default {
         const gArgs = globalArgs.createGlobalArgs(opts.globalArgs || {})
         globalArgs.provideGlobalArgs(app, gArgs)
 
+        const substitutionFactories: SubstitutionsFactories = {}
+        const debugNow = import.meta.env.VITE_DEBUG_TIME_TRAVEL_NOW as string
+        if (debugNow) {
+            console.warn("Using time travel debug");
+            substitutionFactories['date:now'] = () => new Date(debugNow)
+        } else {
+            substitutionFactories['date:now'] = () => new Date()
+        }
+
         const loader = createLoader({
             providers,
             apiOptions: opts.apiOptions,
+            substitutions: createSubstitutions(substitutionFactories),
         })
+
         provideLoader(app, loader)
     },
 }

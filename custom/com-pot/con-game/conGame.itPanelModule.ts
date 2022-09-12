@@ -23,16 +23,5 @@ export default defineItPanelModule({
                 return this.api.req('GET', 'com-pot/con-game/scores.json')
             },
         }),
-        'house-standings': defineDataProvider({
-            async load(args) {
-                const houses = await this.load('@com-pot/con-game.houses', args) as GameHouse[]
-                const scores = await this.load('@com-pot/con-game.scores', args) as HouseScore[]
-
-                const standings = createStandings(houses)
-                assignScores(standings, scores)
-
-                return standings
-            },
-        }),
     }
 })
