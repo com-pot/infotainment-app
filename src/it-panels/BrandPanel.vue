@@ -1,8 +1,7 @@
 <script lang="ts" setup>
+import { PropType } from 'vue';
 import { useLocaleController } from '@custom/com-pot/i18n/localeController';
-import { computed, PropType } from 'vue';
 import LocaleSwitcher from '@custom/com-pot/i18n/components/LocaleSwitcher.vue';
-import { createLinearRotation } from '../rotation/linearRotationConsumer';
 import { rotationUi } from '../rotation';
 import { createRotationController } from '../rotation/contentRotation';
 
