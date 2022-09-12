@@ -26,7 +26,7 @@ export default {
             })
         })
 
-        const gArgs = globalArgs.createGlobalArgs(opts.globalArgs)
+        const gArgs = globalArgs.createGlobalArgs(opts.globalArgs || {})
         globalArgs.provideGlobalArgs(app, gArgs)
 
         const loader = createLoader({

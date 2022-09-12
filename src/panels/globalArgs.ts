@@ -2,9 +2,9 @@ import { App, inject } from "vue"
 
 export type GlobalArgsData = Record<string, any>
 
-export const createGlobalArgs = (data?: GlobalArgsData): GlobalArgs => {
+export const createGlobalArgs = (data: GlobalArgsData): GlobalArgs => {
     const globalArgs = {
-        data: data || {},
+        data: data,
     }
 
     return {
