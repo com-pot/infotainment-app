@@ -8,6 +8,7 @@ const props = defineProps({
     house: {type: Object as PropType<GameHouse>, required: true},
     points: {type: Number},
     maxPoints: {type: Number},
+    showPoints: {type: Boolean, default: true},
 })
 const fillRatioAbs = computed(() => Math.max(0.05, 1 / (props.maxPoints ?? 100) * (props.points ?? 0)))
 const fillRatio = useTransition(fillRatioAbs, {
@@ -28,8 +29,8 @@ onMounted(() => {
         return
     }
     canvas.width = canvas.clientWidth
-    canvas.height = canvas.clientHeight    
-    
+    canvas.height = canvas.clientHeight
+
     const ctx = canvas.getContext("2d")
     if (!ctx) {
         return console.warn("Could not acquire canvas context");
@@ -45,18 +46,19 @@ function toggleEffect() {
         effect.status === 'running'
             ? effect.stop()
             : effect.start(elCanvas.value!.getContext('2d')!)
-    }   
+    }
 }
 
 </script>
 
 <template>
-    <div class="score-gauge"
+    <div class="score-gauge" :class="showPoints && '-show-points'"
          :style="`--score-color: ${house.color}; --fill-ratio: ${fillRatio}`"
          @click="toggleEffect"
     >
         <div class="bar"></div>
         <div class="name">{{house.name}}</div>
+        <span class="points" v-if="showPoints">{{ points || 0 }}</span>
         <canvas class="effect" ref="elCanvas"></canvas>
     </div>
 </template>
@@ -64,8 +66,9 @@ function toggleEffect() {
 <style lang="scss">
 .score-gauge {
     --border-width: 2px;
+    --gauge-parts: 1;
+
     display: grid;
-    grid-template-areas: 'gauge';
 
     width: var(--gauge-width);
     background: hsla(0deg, 20%, 80%, 0.4);
@@ -73,42 +76,73 @@ function toggleEffect() {
     border: var(--border-width) groove var(--score-color);
     overflow: hidden;
     opacity: 0;
-    
-    writing-mode: vertical-lr;
 
-    > * {
-        grid-area: gauge;
+    > *, &::after {
+        grid-column: 1;
+        grid-row:  1 / span var(--gauge-parts);
     }
+
+    &::after {
+        content: ''; display: block;
+        place-self: stretch;
+
+        background: var(--score-color);
+        opacity: 0.1;
+        z-index: -1;
+    }
+
     .name {
         z-index: 3;
         place-self: center;
+
+        writing-mode: vertical-lr;
+
+        margin-inline-end: calc(var(--gauge-width) * 0.25);
         font-weight: bold;
         font-size: 3em;
         transform: rotate(0.5turn);
     }
 
+    .points {
+        z-index: 6;
+        place-self: end center;
+
+        margin-block-start: calc(var(--gauge-width) * 0.125);
+        font-size: 1.5rem;
+        font-weight: bold;
+
+        background: rgba(255, 255, 255, 0.75);
+        border-radius: 20rem;
+        padding: 4px;
+        border: 2px groove var(--score-color);
+    }
+
     .bar {
         z-index: 2;
-        place-self: stretch end;
+
+        place-self: end stretch;
         height: calc(var(--fill-ratio) * 100%);
         background: var(--score-color);
     }
     .effect {
         z-index: 2;
-        width: calc(var(--gauge-width) - 2 * var(--border-width)); // For some reason 
+
+        width: calc(var(--gauge-width) - 2 * var(--border-width)); // For some reason
         background: transparent;
         place-self: stretch;
     }
 
-    position: relative;
-    &::after {
-        content: ''; display: block;
-        position: absolute;
-        inset: 0;
-        
-        background: var(--score-color);
-        opacity: 0.1;
-        z-index: -1;
+    &.-show-points {
+        --gauge-parts: 2;
+        grid-template-rows: auto 1fr;
+
+        .name {
+            grid-row: 2;
+            place-self: end center;
+        }
+        .points {
+            grid-row: 1;
+        }
     }
 }
 </style>
