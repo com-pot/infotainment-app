@@ -1,10 +1,19 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import viteTsconfigPaths from "vite-tsconfig-paths"
+import {viteStaticCopy as copy} from "vite-plugin-static-copy"
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
+    copy({
+      targets: [
+        // {
+        //   src: './custom/_furrstein/data/**/*', dest: 'api',
+        // },
+      ],
+      flatten: false,
+    }),
     viteTsconfigPaths({
       extensions: ['.vue'],
     }),
