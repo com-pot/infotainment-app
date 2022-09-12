@@ -32,8 +32,8 @@ function setLocale(locale: LocaleObject, i: number) {
                  :data-locale="locale"
                  @click="setLocale(locale, i)"
             >
-                <!-- <span class="flag">{{ getFlagEmoji(locale) }}</span> -->
-                <Icon :icon="locale.icon" class="flag"/>
+                <span class="flag">{{ getFlagEmoji(locale.value) }}</span>
+                <!-- <Icon :icon="locale.icon" class="flag"/> -->
             </div>
         </template>
         

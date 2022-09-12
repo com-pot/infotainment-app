@@ -92,7 +92,7 @@ function toggleEffect() {
     .points {
         place-self: center end;
         margin-inline-end: 0.5rem;
-        font-size: 2rem;
+        font-size: 1.75rem;
         font-weight: bold;
         z-index: 6;
         transform: rotate(-0.25turn);

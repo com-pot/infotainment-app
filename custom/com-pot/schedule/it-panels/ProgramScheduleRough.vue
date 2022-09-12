@@ -25,7 +25,7 @@ const panelData = loader.watch<ProgramEntriesGroup[]>(() => props.providerConfig
 
 const headerLocalized = ref({
     cs: "Nadcházející program",
-    en: "Upcomming program",
+    en: "Upcoming program",
 })
 
 const totalSteps = computed(() => panelData.ready ? panelData.value.length : -1)

@@ -165,8 +165,8 @@
         "en": "House Prefect fight"
       },
       "description": {
-        "cs": "Členové vítězné koleje se utkají s prefekty naší školy o výhodnější pozici k závěrečné hře.",
-        "en": "Members of the winning house will fight our castle’s Prefects to gain a better position for the final game."
+        "cs": {"html": "Členové vítězné koleje <b style=\"color: hsl(220deg 99% 56%);\">Prokopro</b> se utkají s prefekty naší školy o výhodnější pozici k závěrečné hře."},
+        "en": {"html": "Members of the winning house <b style=\"color: hsl(220deg 99% 56%);\">Prokopro</b> will fight our castle’s Prefects to gain a better position for the final game."}
       }
     },
     {
