@@ -1,7 +1,7 @@
+import { computed, h } from "vue"
 import { useGlobalArgs } from "@com-pot/infotainment-app/panels/globalArgs"
 import { LocaleController, useLocaleController } from "@custom/com-pot/i18n/localeController"
-import { Localized } from "@typeful/model/types/I18n"
-import { computed } from "vue"
+import { Localized, LocalizedTextContent } from "@typeful/model/types/I18n"
 
 const rendererCache = new WeakMap()
 const noController = {s: 'no locale'}
@@ -49,7 +49,7 @@ function createRender(localeCtrl?: LocaleController) {
             return formatters.value.date.format(val)
         },
 
-        localized<T = string>(val?: Localized<T>|null): ''|T {
+        localized<T = string>(val?: Localized<T> | null | undefined): ''|T {
             const result = val?.[locale.value]
             if (!result) {
                 console.warn("Localized bundle ", val, " does not contain locale value for ", locale.value);
@@ -78,6 +78,28 @@ function createRender(localeCtrl?: LocaleController) {
                 return this.localized(replacement)
             })
         },
+
+        localizedComponent(tag: string, props: Record<string, any>, content: LocalizedTextContent) {
+            const localeEntry = this.localized(content)
+            if (!localeEntry) {
+                return
+            }
+            const renderProps = {
+                ...props,
+            }
+            const children = []
+
+            if (typeof localeEntry === 'string') {
+                children.push(this.insertParams(localeEntry))
+            } else if (typeof localeEntry === 'object' && localeEntry.html) {
+                renderProps.innerHTML = this.insertParams(localeEntry.html)
+            } else {
+                console.warn("Unknown content type", content);
+                return
+            }
+
+            return h(tag, renderProps, children)
+        }
     }
 }
 

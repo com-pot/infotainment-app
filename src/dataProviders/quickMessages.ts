@@ -1,4 +1,4 @@
-import { Localized } from "@typeful/model/types/I18n";
+import { LocalizedTextContent } from "@typeful/model/types/I18n";
 import { defineDataProvider } from "../panels/dataProviders";
 
 export default defineDataProvider<QuickMessage[], {now: Date}>({
@@ -48,20 +48,11 @@ function isValid(now: Date, valid: QuickMessage['valid']) {
     return result
 }
 
-
 type QuickMessageValidObj = {since?: Date, until?: Date}
-type MessageContentPlain = {
-    type: "plain",
-    text: string
-}
-type MessageContentHTML = {
-    html: string,
-}
-type MessageContent = MessageContentPlain | Localized<string | MessageContentHTML>
 
 export type QuickMessage = {
     id: string,
     valid: boolean | QuickMessageValidObj,
-    content: MessageContent,
-    author: Localized<string>,
+    content: LocalizedTextContent,
+    author?: LocalizedTextContent,
 }

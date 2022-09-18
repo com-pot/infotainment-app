@@ -6,7 +6,7 @@ import { rotationUi } from '../rotation';
 import { createRotationController } from '../rotation/contentRotation';
 
 type BrandPanelConfig = {
-    logo?: string,
+    logo?: string | {raw: string},
     title?: string,
 }
 const props = defineProps({
@@ -29,7 +29,9 @@ const rotateEngine = createRotationController(props.rotationConfig, (e) => {
 
 <template>
     <div class="panel brand-panel">
-        <img class="logo" v-if="props.config?.logo"
+        <div class="logo" v-if="props.config?.logo && typeof props.config.logo === 'object'"
+             v-html="props.config.logo.raw"/>
+        <img class="logo" v-else-if="typeof props.config?.logo === 'string'"
              :src="props.config.logo"
         />
         <span class="title" v-if="props.config?.title">{{ props.config.title }}</span>

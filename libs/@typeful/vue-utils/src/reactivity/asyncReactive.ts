@@ -1,15 +1,18 @@
-import { computed, reactive, ref, watch } from "vue";
+import { computed, reactive, ref } from "vue";
+import { usePoll } from "../time"
 
 type AsyncStatus = 'n/a' | 'busy' | 'ready' | 'error'
-type AsyncWrapper<T> = 
+type AsyncWrapper<T> =
     {status: Readonly<'ready'>, ready: Readonly<true>, value: T}
     | {status: Readonly<'n/a' | 'busy' | 'error'>, ready: Readonly<false>}
 type AsyncWrapperControls<T> = {
+    poll: ReturnType<typeof usePoll>|null,
+
     _await: (source: Promise<T>) => Promise<T>,
     _clear: () => void,
     _set: (value: T) => void,
 }
-export type AsyncRef<T> = AsyncWrapper<T> & AsyncWrapperControls<T>
+export type AsyncRef<T=unknown> = AsyncWrapper<T> & AsyncWrapperControls<T>
 
 export default function asyncReactive<T>(promise?: Promise<T>): AsyncRef<T> {
     const status = ref<AsyncStatus>('n/a')
@@ -36,6 +39,8 @@ export default function asyncReactive<T>(promise?: Promise<T>): AsyncRef<T> {
         ready: computed(() => status.value === 'ready'),
 
         value: null as null | T,
+
+        poll: null,
 
         _await: awaitValue,
         _set: (value: T) => {
@@ -64,7 +69,7 @@ export function asyncComputed<TRes>(cb: (...values: any[]) => TRes, ...refs: Asy
         if (error.value) return 'error'
         return 'busy'
     })
-    
+
     const value = computed<TRes>(() => {
         if (!ready.value) return null as unknown as TRes
         return cb(...refs.map((ref) => (ref as typeof ref & {status: 'ready'}).value))
@@ -76,5 +81,3 @@ export function asyncComputed<TRes>(cb: (...values: any[]) => TRes, ...refs: Asy
         value,
     }) as AsyncWrapper<TRes>
 }
-
-export type AsyncDataController<T = any> = ReturnType<typeof asyncReactive<T>>

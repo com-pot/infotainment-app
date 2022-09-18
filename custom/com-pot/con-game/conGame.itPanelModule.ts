@@ -1,7 +1,5 @@
 import { defineItPanelModule } from "@com-pot/infotainment-app/PanelModule"
 import { defineDataProvider } from "@com-pot/infotainment-app/panels/dataProviders"
-import { GameHouse, HouseScore } from "./model"
-import { assignScores, createStandings } from "./houseStandings"
 import HousePoints from "./it-panels/HousePoints.vue"
 
 export default defineItPanelModule({

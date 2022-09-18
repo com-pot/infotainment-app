@@ -1,10 +1,10 @@
 <script lang="ts" setup>
-import { PropType } from "@vue/runtime-core";
-import { AsyncDataController } from "./asyncReactive";
+import { PropType } from "vue";
+import { AsyncRef } from "@typeful/vue-utils/reactivity";
 import BusySpinner from "./BusySpinner.vue";
 
 const props = defineProps({
-    ctrl: {type: Object as PropType<AsyncDataController>, required: true},
+    ctrl: {type: Object as PropType<AsyncRef<any>>, required: true},
 })
 
 </script>

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
+import { computed, PropType } from "vue";
 import { Icon } from '@iconify/vue';
 
-import { computed, PropType } from "@vue/runtime-core";
 import {getFlagEmoji} from "../flags"
 import { LocaleObject } from '../i18n.plugin';
 
@@ -32,11 +32,10 @@ function setLocale(locale: LocaleObject, i: number) {
                  :data-locale="locale"
                  @click="setLocale(locale, i)"
             >
-                <!-- <span class="flag">{{ getFlagEmoji(locale) }}</span> -->
+                <!-- <span class="flag">{{ getFlagEmoji(locale.value) }}</span> -->
                 <Icon :icon="locale.icon" class="flag"/>
             </div>
         </template>
-        
     </div>
 </template>
 
@@ -69,7 +68,7 @@ function setLocale(locale: LocaleObject, i: number) {
                 height: var(--flag-size);
                 transform: rotate(calc(-1 * var(--i-rotate))) scale(var(--scale, 1));
                 transition: all var(--flip-duration) cubic-bezier(0.19, 1, 0.22, 1);
-                
+
                 filter: contrast(var(--flag-contrast, 100%)) #{'saturate(var(--flag-saturate, 100%))'} drop-shadow(2px 2px 2px dimgray);
             }
 

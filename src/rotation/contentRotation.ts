@@ -1,5 +1,5 @@
 import { onBeforeUnmount, onMounted, watch } from "vue"
-import { AsyncRef } from "../components/asyncReactive"
+import { AsyncRef } from "@typeful/vue-utils/reactivity"
 import { RotationEngine, RotationEngineFactory } from "./engines/base"
 import { createFollowEngine } from "./engines/follow"
 import { createIntervalEngine } from "./engines/interval"
@@ -22,7 +22,7 @@ export function createRotationController(rotationConfig: RotationConfig, tick: (
             return result
         },
     }
-    
+
     let engineRunning = false
     const engineCtrl: RotationEngineCtrl = {
         start: () => {
@@ -44,6 +44,10 @@ export function createRotationController(rotationConfig: RotationConfig, tick: (
             })
         },
 
+
+        tick(e) {
+            ctrlConsumer.tick(e || new Event('tick:manual'))
+        },
         bindComponent(onMount = 'ignore', beforeUnmount = 'stop') {
             onMount === 'start' && onMounted(() => engineCtrl.start())
             beforeUnmount === 'stop' && onBeforeUnmount(() => engineCtrl.stop())
@@ -51,14 +55,31 @@ export function createRotationController(rotationConfig: RotationConfig, tick: (
             return this
         },
         bindReady(ref, onReadyChange) {
-            watch(() => ref.ready, (ready) => {
+            if (!ref) {
+                console.warn("Nothing to bindReady to");
+                return this
+            }
+
+            watch(() => (typeof ref === "function" ? ref() : ref).ready, (ready) => {
                 onReadyChange?.(ready)
                 ready ? engineCtrl.start() : engineCtrl.stop()
             })
             return this
         },
     }
-    const engine = rotationEngineFactories[rotationConfig.type](ctrlConsumer, rotationConfig)
+    let engine = rotationEngineFactories[rotationConfig?.type]?.(ctrlConsumer, rotationConfig)
+    if (!engine) {
+        console.warn("Failed to get rotation engine for config", rotationConfig);
+
+        engine = {
+            start() {
+                console.warn("Cannot start rotation engine")
+            },
+            stop() {
+                console.warn("Cannot stop rotation engine")
+            },
+        }
+    }
 
     return engineCtrl
 }
@@ -85,6 +106,8 @@ const rotationEngineFactories: Record<string, RotationEngineFactory<any>> = {
 
 
 export interface RotationEngineCtrl extends RotationEngine {
-    bindReady(ref: AsyncRef<any>, onReadyChange?: (ready: boolean) => void): this;
+    bindReady(ref: AsyncRef<any> | (() => AsyncRef<any>), onReadyChange?: (ready: boolean) => void): this;
     bindComponent(onMount?: 'start' | 'ignore', beforeUnmount?: 'stop' | 'ignore'): this;
+
+    tick(event?: Event): void,
 }

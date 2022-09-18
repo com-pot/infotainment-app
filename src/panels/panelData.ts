@@ -1,17 +1,18 @@
 import { isNil } from "lodash"
-import { App, computed, ComputedRef, inject, onBeforeUnmount, PropType, watch } from "vue"
+import { App, inject, onBeforeUnmount, watch } from "vue"
+import { asyncReactive } from "@typeful/vue-utils/reactivity"
 import { Substitutions } from "@typeful/data/substitutions"
 
 import { ApiAdapter, ApiOpts } from "../ApiAdapter"
-import asyncReactive from "../components/asyncReactive"
 import { StateHub } from "../components/stateHub"
 import { defineDataProvider, PanelDataProviderUntyped } from "./dataProviders"
-import { PollConfig, usePoll } from "./polling"
+import { PollConfig, usePoll } from "@typeful/vue-utils/time"
 
 export type PanelDataLoader = {
     api: ApiAdapter,
 
     load<TData = any>(config: ProviderConfig): Promise<TData>,
+    initialize<TData = any>(config: ProviderConfig): ReturnType<typeof asyncReactive<TData>>,
     watch<TData = any>(src: () => ProviderConfig|undefined): ReturnType<typeof asyncReactive<TData>>,
 }
 
@@ -64,14 +65,29 @@ export const createLoader = (opts: LoaderOpts): PanelDataLoader => {
             return loadPromise
         },
 
+        initialize(config) {
+            const data = asyncReactive<any>()
+            data._await(this.load(config))
+
+            if (config.poll) {
+                data.poll = usePoll(config.poll, async () => {
+                    const value = await this.load(config)
+                    data._set(value)
+                })
+            }
+
+            return data
+        },
+
         watch(src) {
             const data = asyncReactive<any>()
-            let poll: ReturnType<typeof usePoll> | null = null
+
             watch(src, (config) => {
-                if (poll !== null) {
-                    poll.stop()
-                    poll = null
+                if (data.poll !== null) {
+                    data.poll.stop()
+                    data.poll = null
                 }
+
                 if (!config) {
                     return data._clear()
                 }
@@ -79,16 +95,17 @@ export const createLoader = (opts: LoaderOpts): PanelDataLoader => {
                 data._await(this.load(config))
 
                 if (config.poll) {
-                    poll = usePoll(config.poll, async () => {
+                    data.poll = usePoll(config.poll, async () => {
                         const value = await this.load(config)
                         data._set(value)
                     })
-                    poll.start()
+                    data.poll.start()
                 }
             }, {immediate: true})
 
             onBeforeUnmount(() => {
-                poll && poll.stop()
+                data.poll?.stop()
+                data.poll = null
             })
 
             return data
@@ -120,11 +137,14 @@ const prepareArgument = (arg: any, stateHub?: StateHub) => {
     if (arg.val) {
         return arg.val
     }
+    if (arg.$get) {
+        return arg
+    }
 
     console.warn("Unknown argument spec, using as value. If this is intentional, wrap your value in {val: your_object}", arg);
     return arg
 }
-const prepareProviderConfig = (config?: ProviderConfig, stateHub?: StateHub): ProviderConfig | undefined => {
+export const prepareProviderConfig = (config: ProviderConfig, stateHub?: StateHub): ProviderConfig | undefined => {
     if (!config || !config.args || typeof config.args !== 'object') {
         return config
     }
@@ -145,15 +165,8 @@ const prepareProviderConfig = (config?: ProviderConfig, stateHub?: StateHub): Pr
     return result
 }
 
-export const useDependentConfig = (getConfig: () => ProviderConfig|undefined, stateHub?: StateHub): ComputedRef<ProviderConfig|undefined> => {
-    return computed(() => prepareProviderConfig(getConfig(), stateHub))
-}
-
 type ProviderConfig = {
     name: string, args: any,
     poll?: PollConfig,
     shareAs?: string,
-}
-export const providerConfigProp = {
-    type: Object as PropType<ProviderConfig>, required: true
 }

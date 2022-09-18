@@ -58,7 +58,7 @@ export default function useAutoScroll(el: HTMLDivElement, opts?: Partial<AutoScr
             if (scroll.scrollHeight < 0 || state !== 'running') {
                 return
             }
-            
+
             scroll.tCurrent = Date.now()
             const scrollPx = Math.round(scroll.pctCurrent * scroll.scrollHeight)
             el.scrollTop = scroll.direction === 1 ? scrollPx : scroll.scrollHeight - scrollPx
@@ -77,12 +77,12 @@ export default function useAutoScroll(el: HTMLDivElement, opts?: Partial<AutoScr
             }
         },
     })
-    
+
     watch(() => scroll.scrollHeight, (height) => {
         if (height <= 0) {
             return
         }
-        
+
         const fontSize = parseFloat(getComputedStyle(el).fontSize)
         const lines = scroll.contentHeight / fontSize // Does not account for line spacing
         resp.duration = lines * _opts.durationPer1Em

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { PropType } from "@vue/runtime-core";
+import { PropType } from "vue";
 
 const props = defineProps({
     order: {type: Number as PropType<number>, default: 6},

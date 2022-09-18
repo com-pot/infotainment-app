@@ -1,22 +1,18 @@
 <script lang="ts" setup>
-import { computed, PropType, ref } from "@vue/runtime-core";
-import { providerConfigProp, useDependentConfig, useLoader } from "@com-pot/infotainment-app/panels/panelData"
+import { PropType, ref } from "vue";
+import { AsyncRef } from "@typeful/vue-utils/reactivity";
+
 import AsyncContent from "@com-pot/infotainment-app/components/AsyncContent.vue";
 import { createRotationController, rotationUi } from "@com-pot/infotainment-app/rotation";
-import { stateHubUi, useStateHub } from "@com-pot/infotainment-app/components/stateHub";
+import { stateHubUi } from "@com-pot/infotainment-app/components/stateHub";
 import { createLinearRotation } from "@com-pot/infotainment-app/rotation/linearRotationConsumer"
 import { ProgramItemOccurence } from "@com-pot/schedule/model/ProgramItemOccurrence";
 import ProgramEntryDetail from "../components/ProgramEntryDetail.vue"
 import { useRender } from "@typeful/data/rendering";
 
-type ScheduleDetailedPanelConfig = {
-    footingImage?: string,
-}
 const props = defineProps({
-    providerConfig: providerConfigProp,
+    panelData: {type: Object as PropType<AsyncRef<ProgramItemOccurence['app'][]>>, required: true},
     ...rotationUi.props,
-
-    config: { type: Object as PropType<ScheduleDetailedPanelConfig> },
 })
 
 const emit = defineEmits({
@@ -24,23 +20,18 @@ const emit = defineEmits({
     ...stateHubUi.emits,
 })
 
-const loader = useLoader()
-const panelDataConfig = useDependentConfig(() => props.providerConfig, useStateHub())
-const panelData = loader.watch<ProgramItemOccurence['app'][]>(() => panelDataConfig.value)
-
 const render = useRender()
 const headerLocalized = {
     cs: "Denní přehled",
     en: "Daily overview",
 }
 
-const totalSteps = computed(() => panelData.ready ? panelData.value.length : -1)
 const panelEl = ref<HTMLElement>()
-const rotate = createLinearRotation(props.rotationConfig, totalSteps)
-    .bindScroll(panelEl)
+const rotate = createLinearRotation(props.rotationConfig, () => props.panelData?.ready && props.panelData.value.length)
+    .bindScroll(panelEl, { sel: { container: '.content', target: '.active'} })
     .onStep((step) => emit('update:panelState', ['highlightEvent'], step))
 const rotateEngine = createRotationController(props.rotationConfig, (e) => rotate.tick(e), emit)
-    .bindReady(panelData, (ready) => ready && rotate.restart?.())
+    .bindReady(() => props.panelData, (ready) => ready && rotate.restart?.())
     .bindComponent('ignore')
 
 </script>
@@ -50,9 +41,9 @@ const rotateEngine = createRotationController(props.rotationConfig, (e) => rotat
          ref="panelEl"
     >
         <div class="caption separator -lines"
-             @click.raw="rotate.tick($event)"
+             @click.raw="rotateEngine.tick($event)"
         >{{ render.localized(headerLocalized) }}</div>
-        <AsyncContent :ctrl="panelData">
+        <AsyncContent :ctrl="panelData" v-if="panelData">
             <template v-if="panelData.status === 'ready'">
             <div class="content custom-scroll">
                 <div class="entries auto-flow">
@@ -63,8 +54,6 @@ const rotateEngine = createRotationController(props.rotationConfig, (e) => rotat
                                         show-description
                     />
                 </div>
-
-                <img class="footing-image" v-if="config?.footingImage" :src="config.footingImage" alt=""/>
             </div>
             </template>
         </AsyncContent>

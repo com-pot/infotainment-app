@@ -17,77 +17,54 @@
     </div>
 </template>
 
-<script lang="ts">
-import { reactive } from '@vue/reactivity';
-import { computed, defineComponent, PropType, watch } from '@vue/runtime-core';
+<script lang="ts" setup>
+import { computed, PropType, reactive } from 'vue';
 
 import ItPanel from '@com-pot/infotainment-app/it-panels/ItPanel.vue';
-import delayedValue from "@com-pot/infotainment-app/components/delayedValue";
+import { PanelSpecification } from '@com-pot/infotainment-app/panels';
+import { asyncComputed, AsyncRef, delayedValue } from '@typeful/vue-utils/reactivity';
 import ScoreGauge from '../components/ScoreGauge.vue';
-import { useLoader } from '@com-pot/infotainment-app/panels/panelData';
+
 import { GameHouse, HouseScore } from '@custom/com-pot/con-game/model';
-import { asyncComputed } from '@com-pot/infotainment-app/components/asyncReactive';
 
 import { assignScores, createStandings } from "@custom/com-pot/con-game/houseStandings"
-import { PanelSpecification } from '@com-pot/infotainment-app/panels';
 
 type HousePointsConfig = {
     contentPanel: PanelSpecification,
-    scorePollFrequency: string,
     showPoints?: boolean,
 }
-export default defineComponent({
-    components: {
-    ItPanel,
-    ScoreGauge
-},
-    props: {
-        config: {type: Object as PropType<HousePointsConfig>, required: true},
-    },
 
-    setup(props) {
-        const loader = useLoader()
-        const houses = loader.watch<GameHouse[]>(() => {
-            return { name: '@com-pot/con-game.houses', args: {} }
-        })
-        const scores = loader.watch<HouseScore[]>(() => {
-            return { name: '@com-pot/con-game.scores', args: {}, poll: props.config.scorePollFrequency }
-        })
+const props = defineProps({
+    config: {type: Object as PropType<HousePointsConfig>, required: true},
+    houses: {type: Object as PropType<AsyncRef<GameHouse[]>>, required: true},
+    scores: {type: Object as PropType<AsyncRef<HouseScore[]>>, required: true},
+})
 
-        // TODO: This could be optimized to only create standings once and only update points
-        const standings = asyncComputed((houses, scores) => {
-            const standings = createStandings(houses)
-            assignScores(standings, scores)
-            return standings
-        }, houses, scores)
+// TODO: This could be optimized to only create standings once and only update points
+const standings = asyncComputed((houses, scores) => {
+    const standings = createStandings(houses)
+    assignScores(standings, scores)
+    return standings
+}, props.houses, props.scores)
 
-        const housePoints = computed(() => {
-            if (!standings.ready) {
-                return []
-            }
-            return standings.value.map((standing) => {
-                return standing.scores.reduce((sum, score) => sum + score.points, 0)
-            })
-        })
+const housePoints = computed(() => {
+    if (!standings.ready) {
+        return []
+    }
+    return standings.value.map((standing) => {
+        return standing.scores.reduce((sum, score) => sum + score.points, 0)
+    })
+})
 
-        const pointsCap = computed(() => Math.max(100, ...housePoints.value) + 10)
-        const overview = reactive({
-            rows: computed(() => Math.max(standings.ready ? Math.ceil(standings.value.length / 2) : 1, 1)),
-        })
+const pointsCap = computed(() => Math.max(100, ...housePoints.value) + 10)
+const overview = reactive({
+    rows: computed(() => Math.max(standings.ready ? Math.ceil(standings.value.length / 2) : 1, 1)),
+})
 
-        const gaugesVisible = delayedValue(() => standings.ready && standings.value.length > 0, {
-            delay: 50,
-            filter: (val) => val,
-        })
+const gaugesVisible = delayedValue(() => standings.ready && standings.value.length > 0, {
+    delay: 500,
 
-        return {
-            standings,
-            housePoints,
-            overview,
-            gaugesVisible,
-            pointsCap,
-        }
-    },
+    filter: (val) => val,
 })
 </script>
 

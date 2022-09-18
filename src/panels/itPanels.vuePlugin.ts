@@ -4,15 +4,18 @@ import { ItPanelModule } from "../PanelModule";
 import { PanelDataProviderUntyped } from "./dataProviders";
 import { createLoader, provideLoader } from "./panelData";
 import { createPanelRegistry, providePanelRegistry } from "./panelRegistry";
-import * as globalArgs from "./globalArgs"
+import {createGlobalArgs, provideGlobalArgs, type GlobalArgsData} from "./globalArgs"
 import { createSubstitutions, SubstitutionsFactories } from "@typeful/data/substitutions";
+import { PanelAppRootSpec, providePanelAppRootSpec } from "../panels";
 
 type ItPanelsPluginOpts = {
     modules: ItPanelModule[],
 
     apiOptions: ApiOpts,
 
-    globalArgs?: Record<string, any>,
+    globalArgs?: GlobalArgsData,
+
+    rootSpec?: () => Promise<PanelAppRootSpec>,
 }
 export default {
     install(app: App, opts: ItPanelsPluginOpts) {
@@ -27,13 +30,14 @@ export default {
             })
         })
 
-        const gArgs = globalArgs.createGlobalArgs(opts.globalArgs || {})
-        globalArgs.provideGlobalArgs(app, gArgs)
+        provideGlobalArgs(app, createGlobalArgs(opts.globalArgs))
+
+        opts.rootSpec && providePanelAppRootSpec(app, opts.rootSpec)
 
         const substitutionFactories: SubstitutionsFactories = {}
         const debugNow = import.meta.env.VITE_DEBUG_TIME_TRAVEL_NOW as string
         if (debugNow) {
-            console.warn("Using time travel debug");
+            console.warn("Using time travel debug to", debugNow);
             substitutionFactories['date:now'] = () => new Date(debugNow)
         } else {
             substitutionFactories['date:now'] = () => new Date()

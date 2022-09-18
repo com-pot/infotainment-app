@@ -1,0 +1,44 @@
+.overview-tray {
+    display: grid;
+    align-items: stretch;
+    grid-template-columns: auto 1fr;
+
+    gap: var(--spacing);
+
+    > .time-box, .message {
+        padding: var(--spacing);
+    }
+
+    .time-box {
+        display: grid;
+        place-content: center;
+        place-items: center;
+
+    }
+
+    .messages {
+        max-block-size: 4em;
+        overflow-y: auto;
+    }
+
+    .message {
+        display: grid;
+        place-content: stretch center;
+
+        height: 100%;
+
+        &:not(:first-child) {
+            margin-block-start: 1rem;
+        }
+
+        > * {
+            grid-column: 1; grid-row: 1;
+        }
+        .content {
+            margin: 0;
+        }
+        .author {
+            place-self: end;
+        }
+    }
+}

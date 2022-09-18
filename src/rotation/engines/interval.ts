@@ -1,4 +1,4 @@
-import { durationToMs } from "@com-pot/infotainment-app/utils/timeUtils"
+import { durationToMs } from "@typeful/vue-utils/time"
 import { defineRotationEngineFactory} from "./base"
 
 

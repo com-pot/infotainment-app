@@ -30,8 +30,7 @@ export default defineDataProvider<any, Args>({
         const locations = results[1] as OccurrenceLocation['app'][]
         const occurrencesRaw = results[2] as OccurrenceItemRawData[][]
 
-        const startDate = new Date(args.from)
-        const hydrator = createOccurrencesHydrator(startDate)
+        const hydrator = createOccurrencesHydrator(new Date(args.from))
 
         return hydrator.hydrateOccurrences(occurrencesRaw, items, locations)
             .filter((group) => group.date.getDate() >= now.getDate())
@@ -44,7 +43,7 @@ export type ProgramEntriesGroup<TState extends ModelState = 'app'> = {
 }
 
 function createOccurrencesHydrator(startDate: Date) {
-    const makeDate = (day: number, time: string) => {
+    const makeDate = (day: number, time?: string) => {
         if (!time) {
             return undefined
         }

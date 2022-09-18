@@ -1,21 +1,18 @@
 import { PropType } from "vue"
 
 import * as contentRotation from "./rotation/contentRotation"
-import { RotationStatus } from "./rotation/rotationConsumer"
 export * from "./rotation/contentRotation"
+
+import { RotationStatus } from "./rotation/rotationConsumer"
 export {defineRotationConsumer} from "./rotation/rotationConsumer"
-
-export const rotationConfigProp = {
-    type: Object as PropType<contentRotation.RotationConfig>,
-}
-
-export const rotationEmits = {
-    'update:rotationState': (newState: RotationStatus) => true,
-}
 
 export const rotationUi = {
     props: {
-        rotationConfig: rotationConfigProp,
+        rotationConfig: {
+            type: Object as PropType<contentRotation.RotationConfig>,
+        },
     },
-    emits: rotationEmits,
+    emits: {
+        'update:rotationState': (newState: RotationStatus) => true,
+    },
 }

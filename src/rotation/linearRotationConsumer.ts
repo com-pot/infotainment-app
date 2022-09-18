@@ -1,3 +1,4 @@
+import { isNil } from "lodash";
 import { nextTick, onMounted, reactive, Ref, watch, WatchOptions } from "vue";
 import { scrollContentTo, ScrollContentToOptions } from "../components/snapScroll";
 import { RotationConsumer } from "./rotationConsumer";
@@ -5,32 +6,30 @@ import { RotationConsumer } from "./rotationConsumer";
 export type LinearRotationConsumer = RotationConsumer & {
     step: number | undefined,
 
-    bindScroll(parent: Ref<HTMLElement|undefined>): LinearRotationConsumer,
+    bindScroll(parent: Ref<HTMLElement|undefined>, opts: ScrollContentToOptions): LinearRotationConsumer,
     onStep(cb: (step: number | undefined) => void, options?: WatchOptions): LinearRotationConsumer,
 }
 
 type LinearRotationConfig = {
     whenDone?: 'loop' | 'stop',
-
-    scroll?: ScrollContentToOptions,
 }
-export function createLinearRotation(rotationConfig: LinearRotationConfig, totalStepsRef: Ref<number>): LinearRotationConsumer {
+export function createLinearRotation(rotationConfig: LinearRotationConfig, totalStepsRef?: (() => number | false)): LinearRotationConsumer {
     const consumer: LinearRotationConsumer = reactive({
         step: undefined,
         restart() {
             consumer.step = 0
         },
-        
+
         tick() {
-            const totalSteps = totalStepsRef.value
-            if (typeof totalSteps !== 'number' || totalSteps <= 0) {
-                return {status: 'n/a'}
-            }
             if (consumer.step === undefined) {
                 return {status: 'stopped'}
             }
-            
-            
+
+            const totalSteps = totalStepsRef?.() ?? false
+            if (typeof totalSteps !== 'number' || totalSteps <= 0) {
+                return {status: 'n/a'}
+            }
+
             const prevStep = consumer.step
             let step: LinearRotationConsumer['step'] = prevStep + 1
             if (step >= totalSteps) {
@@ -45,10 +44,10 @@ export function createLinearRotation(rotationConfig: LinearRotationConfig, total
             }
         },
 
-        bindScroll(el) {
+        bindScroll(el, opts) {
             onMounted(() => {
-                watch(() => consumer.step, () => nextTick(() => {
-                    el.value && rotationConfig.scroll && scrollContentTo(el.value, rotationConfig.scroll)
+                watch(() => consumer.step, (step) => nextTick(() => {
+                    !isNil(step) && el.value && scrollContentTo(el.value, opts)
                 }))
             })
             return this

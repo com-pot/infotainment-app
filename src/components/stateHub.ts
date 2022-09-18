@@ -22,7 +22,7 @@ export function createHub(): StateHub {
     return hub
 }
 
-export const useStateHub = () => inject(stateHubInjectionKey) as StateHub | undefined
+export const useStateHub = () => inject(stateHubInjectionKey, () => undefined, true) as StateHub | undefined
 
 export type StateHub = {
     data: Record<string, any>;

@@ -1,6 +1,4 @@
-import { Localized } from "@typeful/model/types/I18n"
-import { FromSchema } from "json-schema-to-ts"
-import { O } from "ts-toolbelt"
+import { Localized, LocalizedTextContent } from "@typeful/model/types/I18n"
 import { OccurrenceLocation } from "./OccurrenceLocation"
 import { ProgramScheduleItem } from "./ProgramScheduleItem"
 
@@ -25,7 +23,7 @@ export type ProgramItemOccurence = {
         time: { start: Date, end?: Date },
 
         params?: Record<string, string|Localized<string>>,
-        description?: Localized<string>,
+        description?: LocalizedTextContent,
     },
     api: never,
 }
@@ -37,5 +35,5 @@ export type OccurrenceItemRawData = {
     location?: string,
 
     params?: Record<string, any>,
-    description?: Localized<string>,
+    description?: LocalizedTextContent,
 }

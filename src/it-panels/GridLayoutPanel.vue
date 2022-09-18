@@ -2,7 +2,6 @@
 import { onBeforeUnmount, PropType, watch } from 'vue'
 import ItPanel from '../it-panels/ItPanel.vue'
 import type { PanelSpecification } from "../panels"
-import { RotationStatus } from '../rotation/rotationConsumer'
 import { createHub } from "../components/stateHub"
 import { createRotationFollowController } from '../rotation/engines/follow'
 

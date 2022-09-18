@@ -1,12 +1,12 @@
 export type ScrollContentToOptions = {
     sel: {
-        container: string,
+        container?: string,
         target: string,
     },
     offset?: number,
 }
 export function scrollContentTo(el: HTMLElement, opts: ScrollContentToOptions) {
-    const container = el.querySelector(opts.sel.container) as HTMLDivElement
+    const container = (opts.sel.container ? el.querySelector(opts.sel.container) : el) as HTMLDivElement
     const activeEl = container?.querySelector(opts.sel.target) as HTMLDivElement
     if (!container || !activeEl) {
         console.warn("Can't scroll", opts.sel, container, activeEl);

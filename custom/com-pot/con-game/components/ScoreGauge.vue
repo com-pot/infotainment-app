@@ -1,8 +1,8 @@
 <script lang="ts" setup>
+import { computed, onBeforeUnmount, onMounted, PropType, ref, watch } from "vue"
 import { useTransition, TransitionPresets } from "@vueuse/core"
-import { GameHouse } from "@custom/com-pot/con-game/model";
-import { computed, onBeforeUnmount, onMounted, PropType, ref, watch } from "@vue/runtime-core";
-import { createEffect } from "@custom/com-pot/con-game/gauge/effect";
+import { GameHouse } from "@custom/com-pot/con-game/model"
+import { createEffect } from "@custom/com-pot/con-game/gauge/effect"
 
 const props = defineProps({
     house: {type: Object as PropType<GameHouse>, required: true},
@@ -33,7 +33,7 @@ onMounted(() => {
 
     const ctx = canvas.getContext("2d")
     if (!ctx) {
-        return console.warn("Could not acquire canvas context");
+        return console.warn("Could not acquire canvas context")
     }
     effect.start(ctx)
 })

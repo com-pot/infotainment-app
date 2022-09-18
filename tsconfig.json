@@ -15,7 +15,6 @@
 
     "baseUrl": ".",
     "paths": {
-      // when adding paths, also add resolve.alias to vite.config.json
       "@com-pot/infotainment-app/*": ["src/*"],
 
       "@custom/*": ["custom/*"],
@@ -23,6 +22,7 @@
       "@typeful/data/*": ["./libs/typeful-data/src/*"],
       "@typeful/model/*": ["./libs/typeful-model/src/*"],
       "@typeful/model": ["./libs/typeful-model/src/index.ts"],
+      "@typeful/vue-utils/*": ["./libs/@typeful/vue-utils/src/*"],
 
       "@com-pot/schedule/*": ["./libs/com-pot/schedule/src/*"],
     },

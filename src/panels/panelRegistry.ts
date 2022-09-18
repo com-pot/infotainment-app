@@ -29,4 +29,3 @@ export function createPanelRegistry(panelModules: ItPanelModule[]):  PanelRegist
 }
 export const providePanelRegistry = (app: App, panelRegistry: PanelRegistry) => app.provide('com-pot/infotainment.panelRegistry', panelRegistry)
 export const usePanelRegistry = (): PanelRegistry => inject<PanelRegistry>('com-pot/infotainment.panelRegistry', (): PanelRegistry => {throw new Error("PanelRegistry not available")}, true)
-

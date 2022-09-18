@@ -1,17 +1,17 @@
 <script lang="ts" setup>
-import { computed, ref } from "@vue/runtime-core";
-import { useLoader, providerConfigProp } from "@com-pot/infotainment-app/panels/panelData";
+import { PropType, ref } from "vue";
 import AsyncContent from "@com-pot/infotainment-app/components/AsyncContent.vue";
-import { ProgramEntriesGroup } from "../dataProviders/program-schedule-overview";
 import { useRender } from "@typeful/data/rendering";
+import { AsyncRef } from "@typeful/vue-utils/reactivity";
 
 import { createLinearRotation } from "@com-pot/infotainment-app/rotation/linearRotationConsumer";
+import { ProgramEntriesGroup } from "../dataProviders/program-schedule-overview";
 import ProgramEntryDetail from "../components/ProgramEntryDetail.vue"
 import { createRotationController, rotationUi } from "@com-pot/infotainment-app/rotation";
 import { stateHubUi } from "@com-pot/infotainment-app/components/stateHub";
 
 const props = defineProps({
-    providerConfig: providerConfigProp,
+    panelData: {type: Object as PropType<AsyncRef<ProgramEntriesGroup[]>>, required: true},
     ...rotationUi.props,
 })
 const emit = defineEmits({
@@ -20,20 +20,17 @@ const emit = defineEmits({
 })
 
 const render = useRender()
-const loader = useLoader()
-const panelData = loader.watch<ProgramEntriesGroup[]>(() => props.providerConfig)
 
 const headerLocalized = ref({
     cs: "Nadcházející program",
     en: "Upcoming program",
 })
 
-const totalSteps = computed(() => panelData.ready ? panelData.value.length : -1)
 const panelEl = ref<HTMLElement>()
-const rotate = createLinearRotation(props.rotationConfig, totalSteps)
-    .bindScroll(panelEl)
+const rotate = createLinearRotation(props.rotationConfig, () => props.panelData.ready && props.panelData.value.length)
+    .bindScroll(panelEl, { sel: { container: '.content', target: '.active'} })
     .onStep((step) => {
-        const groups = panelData.ready && panelData.value || []
+        const groups = props.panelData.ready && props.panelData.value || []
         const group = groups[step!]
         if (!group) {
             console.warn("No group for step", {groups, step});
@@ -42,8 +39,8 @@ const rotate = createLinearRotation(props.rotationConfig, totalSteps)
         emit('update:panelState', ['currentDay'], group && group.date || undefined)
     })
 const rotateEngine = createRotationController(props.rotationConfig, (e) => rotate.tick(e), emit)
-    .bindReady(panelData, () => {
-        const date = panelData.ready && panelData.value[0]?.date || undefined
+    .bindReady(() => props.panelData, () => {
+        const date = props.panelData.ready && props.panelData.value[0]?.date || undefined
         emit('update:panelState', ['currentDay'], date)
     })
     .bindComponent('start')
@@ -54,7 +51,7 @@ const rotateEngine = createRotationController(props.rotationConfig, (e) => rotat
     <div class="panel -stretch-content program-schedule-rough" :class="rotate.step !== undefined && '-has-active'"
          ref="panelEl">
         <div class="caption separator -lines"
-             @click.raw="rotate.tick($event)"
+             @click.raw="rotateEngine.tick($event)"
         >{{ render.localized(headerLocalized) }}</div>
 
         <AsyncContent :ctrl="panelData">
