@@ -1,0 +1,108 @@
+[
+    [
+      {
+        "item": "reg",
+        "location": "botel-reception",
+        "time": ["15:00","18:00"]
+      },
+      {
+        "item": "meal:dinner",
+        "time": ["18:00","20:00"]
+      },
+      {
+        "item": "reg",
+        "location": "botel-reception",
+        "time": ["19:00","22:00"]
+      }
+    ],
+    [
+      {
+        "item": "meal:breakfast",
+        "location": "botel-restaurant",
+        "time": ["08:00","09:30"]
+      },
+      {
+        "item": "meal:lunch",
+        "location": "botel-restaurant",
+        "time": ["12:00","13:00"]
+      },
+      {
+        "item": "reg",
+        "time": ["15:00","19:00"]
+      },
+      {
+        "item": "europe:boarding",
+        "location": "europe",
+        "time": ["19:40","19:45"]
+      },
+      {
+        "item": "europe:sailing",
+        "location": "europe",
+        "time": ["19:45","21:45"]
+      }
+    ],
+    [
+      {
+        "item": "meal:breakfast",
+        "location": "botel-restaurant",
+        "time": ["08:00","09:30"]
+      },
+      {
+        "item": "meal:lunch",
+        "location": "botel-restaurant",
+        "time": ["12:00","13:00"]
+      },
+      {
+        "item": "outing:shuttle",
+        "location": "botel-embankment",
+        "time": ["13:20", "13:35"],
+        "params": {
+          "shuttle.num": "I."
+        }
+      },
+      {
+        "item": "outing:shuttle",
+        "location": "botel-embankment",
+        "time": ["13:20", "13:35"],
+        "params": {
+          "shuttle.num": "II."
+        }
+      },
+      {
+        "item": "outing:start",
+        "location": "kampa",
+        "time": ["14:15"]
+      },
+      {
+        "item": "outing:end",
+        "location": "wharf",
+        "time": ["16:30"]
+      },
+      {
+        "item": "afterparty",
+        "location": "botel-restaurant",
+        "time": ["19:00", "02:00"]
+      },
+      {
+        "item": "raffle",
+        "location": "botel-restaurant",
+        "time": ["21:00"]
+      }
+    ],
+    [
+      {
+        "item": "meal:breakfast",
+        "location": "main-courtyard",
+        "time": ["08:00","09:30"]
+      },
+      {
+        "item": "meal:lunch",
+        "location": "feast-hall",
+        "time": ["12:00","13:00"]
+      },
+      {
+        "item": "the-end",
+        "time": ["14:00"]
+      }
+    ]
+  ]

@@ -6,8 +6,7 @@ import itPanelsDefaultModuleItPanelModule from './panels/itPanelsDefaultModule.i
 import scheduleModuleItPanelModule from '../custom/com-pot/schedule/scheduleModule.itPanelModule'
 
 import "./sass/infotainment.scss"
-import "../custom/_furrstein/furrsteinTheme.scss"
-import conGameItPanelModule from '@custom/com-pot/con-game/conGame.itPanelModule'
+import "../custom/_fhp/fhp.theme.scss"
 import i18nPlugin from '@custom/com-pot/i18n/i18n.plugin'
 
 createApp(App)
@@ -24,17 +23,19 @@ createApp(App)
         modules: [
             itPanelsDefaultModuleItPanelModule,
             scheduleModuleItPanelModule,
-            conGameItPanelModule,
         ],
 
         globalArgs: {
-            'con.title': "Furrstein 2022",
+            'con.title': "Fursuit Halloween 2022",
         },
+        rootPanelSpec: () => import("@custom/_fhp/fhp2022.panelLayout").then((mod) => mod.default)
     })
     .mount('#app')
 
 function getBaseUrl() {
     const path = import.meta.env.VITE_API_BASE_URL
+    console.log(path);
+    
     if (!path) {
         console.warn("No API base url provided")
         return "/"

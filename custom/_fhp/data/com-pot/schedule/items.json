@@ -1,0 +1,93 @@
+[
+  {
+    "id": "reg",
+    "title": {
+      "cs": "Registrace",
+      "en": "Registration"
+    },
+    "description": {
+      "cs": "Registrace na {con.title}, možnost zakoupení triček na místě",
+      "en": "Registrations for {con.title}, T-shirt additional sale"
+    }
+  },
+  {
+    "id": "the-end",
+    "title": {
+      "cs": "Ukončení {con.title}",
+      "en": "The end of {con.title}"
+    }
+  },
+
+  {
+    "id": "meal:breakfast",
+    "title": {
+      "cs": "Snídaně",
+      "en": "Breakfast"
+    }
+  },
+  {
+    "id": "meal:lunch",
+    "title": {
+      "cs": "Oběd",
+      "en": "Lunch"
+    }
+  },
+  {
+    "id": "meal:dinner",
+    "title": {
+      "cs": "Večeře",
+      "en": "Dinner"
+    }
+  },
+
+  {
+    "id": "europe:boarding",
+    "title": {
+      "cs": "Nalodění na loď Európe",
+      "en": "Boarding the Európe ship"
+    }
+  },
+  {
+    "id": "europe:sailing",
+    "title": {
+      "cs": "Plavba lodí Európe",
+      "en": "Sailing on the Európe ship"
+    }
+  },
+
+  {
+    "id": "outing:shuttle",
+    "title": {
+      "cs": "Shuttle {shuttle.num}, Botel Albatros - Kampa, loď Albatros II",
+      "en": "Shuttle {shuttle.num}, Boat Albatros - Kampa, Albatros II ship"
+    }
+  },
+  {
+    "id": "outing:start",
+    "title": {
+      "cs": "Zahájení veřejné části Halloween outingu 2022",
+      "en": "The start of the public part - Halloween Outing 2022"
+    }
+  },
+  {
+    "id": "outing:end",
+    "title": {
+      "cs": "Ukončení Haloloween outingu 2022",
+      "en": "Ending the Haloloween outing 2022"
+    }
+  },
+  {
+    "id": "afterparty",
+    "title": {
+      "cs": "Afterparty",
+      "en": "Afterparty"
+    }
+  },
+  {
+    "id": "raffle",
+    "title": {
+      "cs": "Tombola",
+      "en": "The Raffle"
+    }
+  }
+]

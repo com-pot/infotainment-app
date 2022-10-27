@@ -1,0 +1,45 @@
+[
+    {
+      "id": "botel-reception",
+      "title": {
+        "cs": "Botel Albatros - Recepte",
+        "en": "Botel Albators - Reception"
+      }
+    },
+    {
+      "id": "botel-restauration",
+      "title": {
+        "cs": "Botel Albatros - Restaurace",
+        "en": "Botel Albatros - Restauration"
+      }
+    },
+    {
+      "id": "europe",
+      "title": {
+        "cs": "Loď Európe",
+        "en": "Európe ship"
+      }
+    },
+    {
+      "id": "botel-embankment",
+      "title": {
+        "cs": "Nábřeží Botelu Albatros",
+        "en": "Botel Albatros Embankment"
+      }
+    },
+    {
+      "id": "kampa",
+      "title": {
+        "cs": "Kampa (Staré město)",
+        "en": "Kampa (Old Town)"
+      }
+    },
+    {
+      "id": "wharf",
+      "title": {
+        "cs": "Přístaviště Na Františku",
+        "en": "The wharf Na Františku"
+      }
+    }
+  ]
+  

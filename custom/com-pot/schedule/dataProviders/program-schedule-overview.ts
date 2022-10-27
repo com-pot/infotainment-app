@@ -21,6 +21,12 @@ export default defineDataProvider<any, Args>({
     async load(args) {
         const now = args.now || new Date()
 
+        let start = args.from
+        if (!start) {
+            console.warn("No args.from set, using hardcoded FHP date");
+            start = '2022-10-27'
+        }
+
         const results = await Promise.all([
             this.api.req('GET', 'com-pot/schedule/items.json'),
             this.api.req('GET', 'com-pot/schedule/locations.json'),
@@ -30,7 +36,7 @@ export default defineDataProvider<any, Args>({
         const locations = results[1] as OccurrenceLocation['app'][]
         const occurrencesRaw = results[2] as OccurrenceItemRawData[][]
         
-        return hydrateOccurrences(occurrencesRaw, items, locations)
+        return hydrateOccurrences(new Date(start), occurrencesRaw, items, locations)
             .filter((group) => group.date.getDate() >= now.getDate())
     },
 })
@@ -40,28 +46,33 @@ export type ProgramEntriesGroup<TState extends ModelState = 'app'> = {
     items: ProgramItemOccurence[TState][],
 }
 
-
-const startDate = new Date('2022-09-08')
-const makeDate = (day: number, time: string) => {
-    if (!time) {
-        return undefined
+function createDateFactory(startDate: Date) {
+    function makeDate(day: number, time: string) {
+        if (!time) {
+            return undefined
+        }
+    
+        const date = new Date()
+        const timeObj = tinyduration.parse('PT' + time.split(':').join('H') + 'M') // 🐷
+        
+        
+        date.setFullYear(startDate.getFullYear(), startDate.getMonth(), startDate.getDate() + day)
+        
+        date.setHours(timeObj.hours || 0, timeObj.minutes)    
+    
+        return date
     }
 
-    const date = new Date()
-    const timeObj = tinyduration.parse('PT' + time.split(':').join('H') + 'M') // 🐷
-    
-    
-    date.setFullYear(startDate.getFullYear(), startDate.getMonth(), startDate.getDate() + day)
-    
-    date.setHours(timeObj.hours || 0, timeObj.minutes)    
+    const makeOccurenceTime = (range: string[], iDay: number): ProgramItemOccurence['app']['time'] => {
+        return {start: makeDate(iDay, range[0])!, end: makeDate(iDay, range[1])}
+    }
 
-    return date
-}
-const makeOccurenceTime = (range: string[], iDay: number): ProgramItemOccurence['app']['time'] => {
-    return {start: makeDate(iDay, range[0])!, end: makeDate(iDay, range[1])}
+    return makeOccurenceTime
 }
 
-export const hydrateOccurrences = (scheduleOccurencesGroupedByDay: OccurrenceItemRawData[][], scheduleItems: ProgramScheduleItem['app'][], locations: OccurrenceLocation['app'][]): ProgramEntriesGroup[] => {
+export const hydrateOccurrences = (startDate: Date, scheduleOccurencesGroupedByDay: OccurrenceItemRawData[][], scheduleItems: ProgramScheduleItem['app'][], locations: OccurrenceLocation['app'][]): ProgramEntriesGroup[] => {
+    const makeOccurenceTime = createDateFactory(startDate)
+
     return scheduleOccurencesGroupedByDay.map((group, iDay) => {
         const items: ProgramEntriesGroup['items'] = group.map((occurrence: OccurrenceItemRawData) => ({
             item: scheduleItems.find((item) => item.id === occurrence.item)!,

@@ -51,7 +51,7 @@ const rotateEngine = createRotationController(props.rotationConfig, (e) => rotat
         <AsyncContent :ctrl="panelData">
             <template v-if="panelData.status === 'ready'">
             <div class="content custom-scroll">
-                <div class="entries auto-flow">
+                <div class="auto-flow">
                     <ProgramEntryDetail v-for="(entry, i) in panelData.value" :key="i"
                                         :entry="entry"
                                         :class="i === rotate.step && 'active'"

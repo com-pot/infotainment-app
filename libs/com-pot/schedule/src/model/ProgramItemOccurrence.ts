@@ -25,7 +25,7 @@ export type ProgramItemOccurence = {
         time: { start: Date, end?: Date },
 
         params?: Record<string, string|Localized<string>>,
-        description?: Localized<string>,
+        description?: Localized<string> | Localized<{html: string}>,
     },
     api: never,
 }
@@ -37,5 +37,5 @@ export type OccurrenceItemRawData = {
     location?: string,
 
     params?: Record<string, any>,
-    description?: Localized<string>,
+    description?: Localized<string> | Localized<{html: string}>,
 }

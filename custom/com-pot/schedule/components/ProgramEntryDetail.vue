@@ -11,7 +11,10 @@ const props = defineProps({
     showDescription: {type: Boolean},
 })
 
-const description = computed(() => props.showDescription && render.localized(props.entry.description || props.entry.item.description))
+const description = computed(() => {
+    const desc = props.showDescription && (props.entry.description || props.entry.item.description) as {html: string} | string
+    return desc && render.localized(desc as any) as unknown as {html: string} | string
+})
 
 </script>
 <template>

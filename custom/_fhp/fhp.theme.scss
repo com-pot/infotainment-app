@@ -1,0 +1,115 @@
+:root {
+    --primary-hsl: 41deg 84% 58%;
+    --primary: hsl(var(--primary-hsl));
+    --primary-40: hsl(41deg 84% 30%);
+    --primary-80: hsl(41deg 84% 20%);
+    --primary-90-a50: hsl(34deg 74% 10% / 0.5);
+
+    --hsl-neutral-30: hsl(69deg 50% 70%);
+    --hsl-neutral-90: hsl(69deg 50% 10%);
+
+    --inactive-opacity: 0.6;
+    --entry-transition: 0.3s ease-in-out;
+}
+
+body {
+    background-color: #1c2d41;
+    color: beige;
+}
+
+.panel.root {
+    --spacing: 0.5rem;
+    padding: var(--spacing);
+    height: 100vh;
+
+    &::after {
+        pointer-events: none;
+        content: ''; display: block;
+        position: absolute;
+        inset: 0;
+
+        background: url(./assets/seamless-4820050_1280.png) repeat;
+        filter: opacity(0.15) hue-rotate(-0.1turn);
+        z-index: -1;
+    }
+}
+
+.panel-layout {
+    .panel:not(.panel-layout) {
+        background: var(--primary-90-a50);
+        > .caption {
+            background: var(--primary-90-a50);
+        }
+    }
+}
+
+.panel {
+    .auto-flow {
+        --spacing: 1rem;
+
+        .caption {
+            margin-block-end: -0.5rem;
+        }
+    }
+}
+
+.brand-panel {
+    --bleed-logo: 30px;
+    display: grid;
+    place-items: center;
+    margin-block-start: var(--bleed-logo);
+
+    > * {
+        grid-column: 1; grid-row: 1;
+    }
+
+    .logo {
+        margin-block-start: calc(-1 * var(--bleed-logo));
+        width: 64ch;
+
+        filter: drop-shadow(0px 2px 8px hsl(0deg 0% 20% / 0.5)) drop-shadow(0px 2px 2px hsl(0deg 0% 60% / 0.5)) drop-shadow(0px 2px 8px hsl(0deg 0% 80% / 0.5));
+    }
+
+    .locale-switcher {
+        place-self: center end;
+        margin-inline-end: var(--spacing);
+    }
+}
+
+.panel {
+    > .caption {
+        font-size: 2rem;
+        text-align: center;
+    }
+    > .content {
+        padding: var(--spacing);
+    }
+
+    &.-stretch-content {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+
+        .caption + * {
+            flex: 1;
+        }
+
+        > .content {
+            overflow-y: auto;
+        }
+    }
+
+    .footing-image {
+        margin: 2rem auto 1rem;
+
+        background: url('./assets/alebrije-skica1-submit.png') center no-repeat;
+        background-size: contain;
+        width: 75%;
+        aspect-ratio: 1.5;
+        filter: drop-shadow(2px 4px 4px hsla(0deg 0% 40% / 0.8));
+    }
+}
+
+a {
+    color: var(--primary);
+}

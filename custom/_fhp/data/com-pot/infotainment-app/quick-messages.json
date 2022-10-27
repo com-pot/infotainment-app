@@ -1,0 +1,76 @@
+[
+    {
+        "id": "furditch-ad",
+        "valid": {"until": "2022-09-09T17:00:00+02:00"},
+        "content": {
+            "cs": "Furfrpál se koná v pátek od 16:30. Přijďte fandit anebo vyzvěte soupeřící koleje!",
+            "en": "The furditch is on! Come on friday 16:30 to support your favourites or even challenge your rivals."
+        },
+        "author": {
+            "cs": "Furrsteiní sportovní výbor",
+            "en": "Furrstein sports committee"
+        }
+    },
+    {
+        "id": "no-dark-rituals",
+        "content": {
+            "cs": "Žádné temné rituály na půdě Haušteinu!",
+            "en": "No dark rituals allowed on the grounds of Hauenstein!"
+        },
+        "author": {
+            "cs": "Rada Furrsteinu",
+            "en": "The council of Furrstein"
+        }
+    },
+    {
+        "id": "more-info",
+        "content": {
+            "cs": {
+                "html": "Více informací o zdejším dění naleznete na <a href=\"https://www.furrstein.eu/cs/\">https://www.furrstein.eu/cs/</a>."
+            },
+            "en": {
+                "html": "Find more info about the happenings here at <a href=\"https://www.furrstein.eu/en/\">https://www.furrstein.eu/en/</a>."
+            }
+        }
+    },
+    {
+        "id": "important-mesasge",
+        "content": {
+            "cs": "TODO: Doplnit důležitou zprávičku",
+            "en": "TODO: Add an important message here"
+        },
+        "author": {
+            "cs": "Steve",
+            "en": "Steve"
+        }
+    },
+    {
+        "id": "school-motto",
+        "content": {
+            "cs": "Nezapomeňte na školní motto - bavte se, užívejte si, vzdělávejte se.",
+            "en": "Don’t forget our school’s motto - have fun, enjoy, and learn."
+        },
+        "author": {
+            "cs": "Rada Furrsteinu",
+            "en": "The council of Furrstein"
+        }
+    },
+    {
+        "id": "useful-tips",
+        "content": {
+            "cs": "Zde se zobrazují užitečné rady.",
+            "en": "Useful tips are displayed here."
+        }
+    },
+    {
+        "contentType": "plain",
+        "content": {
+            "type": "plain",
+            "text": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Expedita animi magni excepturi, mollitia dolores explicabo, molestiae fuga culpa recusandae, totam obcaecati consequuntur corporis iure labore nesciunt sequi."
+        },
+        "author": {
+            "cs": "Latinomancer",
+            "en": "Latinmancer"
+        }
+    }
+]

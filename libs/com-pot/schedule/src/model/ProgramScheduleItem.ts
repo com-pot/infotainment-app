@@ -1,6 +1,6 @@
 import { FromSchema } from "json-schema-to-ts"
 import { O } from "ts-toolbelt"
-import { localizedType } from "@typeful/model/types/I18n"
+import { Localized, localizedType } from "@typeful/model/types/I18n"
 
 export const programEntrySchema = {
     type: 'object',
@@ -15,6 +15,6 @@ type AsApi = FromSchema<typeof programEntrySchema>
 export type ProgramScheduleItem = {
     api: AsApi,
     app: O.Overwrite<AsApi, {
-        
+        description?: Localized<string> | Localized<{html: string}>,
     }>,
 }

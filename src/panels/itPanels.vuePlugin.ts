@@ -5,11 +5,14 @@ import { PanelDataProviderUntyped } from "./dataProviders";
 import { createLoader, provideLoader } from "./panelData";
 import { createPanelRegistry, providePanelRegistry } from "./panelRegistry";
 import * as globalArgs from "./globalArgs"
+import { PanelSpecification } from "../panels";
 
 type ItPanelsPluginOpts = {
     modules: ItPanelModule[],
 
     apiOptions: ApiOpts,
+
+    rootPanelSpec?: () => Promise<PanelSpecification>,
 
     globalArgs?: Record<string, any>,
 }
@@ -26,7 +29,11 @@ export default {
             })
         })
 
-        const gArgs = globalArgs.createGlobalArgs(opts.globalArgs)
+        if (opts.rootPanelSpec) {
+            app.provide('@com-pot/infotainment-app.rootSpecLoadFn', opts.rootPanelSpec)
+        }
+
+        const gArgs = globalArgs.createGlobalArgs(opts.globalArgs || {})
         globalArgs.provideGlobalArgs(app, gArgs)
 
         const loader = createLoader({

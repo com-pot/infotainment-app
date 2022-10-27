@@ -43,7 +43,7 @@ const rotate = createLinearRotation(props.rotationConfig, totalSteps)
     }, {immediate: true})
 const rotateEngine = createRotationController(props.rotationConfig, (e) => rotate.tick(e), emit)
     .bindReady(panelData, (ready) => {
-        emit('update:panelState', ['currentDay'], panelData.ready ? panelData.value[0].date : undefined)
+        emit('update:panelState', ['currentDay'], panelData.ready ? panelData.value[0]?.date : undefined)
     })
     .bindComponent('start')
 

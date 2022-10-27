@@ -9,7 +9,7 @@ export default defineConfig({
     copy({
       targets: [
         {
-          src: './custom/_furrstein/data/**/*', dest: 'api',
+          src: './custom/_fhp/data/**/*', dest: 'api',
         },
       ],
       flatten: false,

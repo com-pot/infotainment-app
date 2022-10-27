@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import asyncReactive from './components/asyncReactive';
 import ItPanel from './it-panels/ItPanel.vue';
-import { PanelSpecification } from './panels';
+import { useRootPanelSpecification } from './panels';
 import BusySpinner from './components/BusySpinner.vue';
 
 const resolveAfter = (t: number) => new Promise((res) => setTimeout(res, t));
@@ -12,7 +12,7 @@ const resolveWith = <T=any>(arg: T, t: number = 0): Promise<T> => {
   return resolveAfter(t).then(() => arg)
 }
 
-const rootPanel = asyncReactive<PanelSpecification>(import("@custom/_furrstein/furrstein1.panelLayout").then((mod) => mod.default))
+const rootPanel = useRootPanelSpecification()
 
 </script>
 
@@ -24,7 +24,7 @@ const rootPanel = asyncReactive<PanelSpecification>(import("@custom/_furrstein/f
 <style lang="scss">
 #app {
   display: grid;
-  
+
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
