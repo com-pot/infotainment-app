@@ -13,8 +13,22 @@
 }
 
 body {
+    --body-padding: 2rem;
     background-color: #1c2d41;
     color: beige;
+    font-size: 18pt;
+    cursor: none;
+
+    #app {
+        --root-panel-height: calc(100vh - 2 * var(--body-padding));
+
+        padding: var(--body-padding);
+        height: var(--root-panel-height);
+    }
+
+    .panel.root {
+        height: var(--root-panel-height);
+    }
 }
 
 .panel.root {
