@@ -1,35 +1,12 @@
 [
     {
-        "id": "furditch-ad",
-        "valid": {"until": "2022-09-09T17:00:00+02:00"},
-        "content": {
-            "cs": "Furfrpál se koná v pátek od 16:30. Přijďte fandit anebo vyzvěte soupeřící koleje!",
-            "en": "The furditch is on! Come on friday 16:30 to support your favourites or even challenge your rivals."
-        },
-        "author": {
-            "cs": "Furrsteiní sportovní výbor",
-            "en": "Furrstein sports committee"
-        }
-    },
-    {
-        "id": "no-dark-rituals",
-        "content": {
-            "cs": "Žádné temné rituály na půdě Haušteinu!",
-            "en": "No dark rituals allowed on the grounds of Hauenstein!"
-        },
-        "author": {
-            "cs": "Rada Furrsteinu",
-            "en": "The council of Furrstein"
-        }
-    },
-    {
         "id": "more-info",
         "content": {
             "cs": {
-                "html": "Více informací o zdejším dění naleznete na <a href=\"https://www.furrstein.eu/cs/\">https://www.furrstein.eu/cs/</a>."
+                "html": "Více informací o zdejším dění naleznete na <a href=\"https://www.fursuithalloween.eu/cs/\">https://www.fursuithalloween.eu/cs/</a>."
             },
             "en": {
-                "html": "Find more info about the happenings here at <a href=\"https://www.furrstein.eu/en/\">https://www.furrstein.eu/en/</a>."
+                "html": "Find more info about the happenings here at <a href=\"https://www.fursuithalloween.eu/en/\">https://www.fursuithalloween.eu/en/</a>."
             }
         }
     },
@@ -45,21 +22,18 @@
         }
     },
     {
-        "id": "school-motto",
-        "content": {
-            "cs": "Nezapomeňte na školní motto - bavte se, užívejte si, vzdělávejte se.",
-            "en": "Don’t forget our school’s motto - have fun, enjoy, and learn."
-        },
-        "author": {
-            "cs": "Rada Furrsteinu",
-            "en": "The council of Furrstein"
-        }
-    },
-    {
         "id": "useful-tips",
         "content": {
             "cs": "Zde se zobrazují užitečné rady.",
             "en": "Useful tips are displayed here."
+        }
+    },
+    {
+        "id": "shuttle",
+        "valid": false,
+        "content": {
+            "cs": "Lodě na outing odjíždí ve 13:20 a 13:50 a cesta na molo trvá cca 5 minut. Přijďte s vhodným předstihem anebo půjdete pěšky.",
+            "en": "The shuttles for outing leave at 13:20 and 13:50. Mind that on foot it takes roughly 5 minutes to get there. Be there or be square."
         }
     },
     {
