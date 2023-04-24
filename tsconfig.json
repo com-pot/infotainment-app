@@ -23,6 +23,7 @@
       "@typeful/model/*": ["./libs/typeful-model/src/*"],
       "@typeful/model": ["./libs/typeful-model/src/index.ts"],
       "@typeful/vue-utils/*": ["./libs/@typeful/vue-utils/src/*"],
+      "@typeful/vite-custom/*": ["./libs/@typeful/vite-custom/src/*"],
 
       "@com-pot/schedule/*": ["./libs/com-pot/schedule/src/*"],
     },
