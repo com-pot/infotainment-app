@@ -1,5 +1,5 @@
 import { App } from "vue";
-import { ApiOpts } from "../ApiAdapter";
+import { ApiAdapter, ApiOpts } from "../ApiAdapter";
 import { ItPanelModule } from "../PanelModule";
 import { PanelDataProviderUntyped } from "./dataProviders";
 import { createLoader, provideLoader } from "./panelData";
@@ -13,9 +13,7 @@ type ItPanelsPluginOpts = {
 
     apiOptions: ApiOpts,
 
-    globalArgs?: GlobalArgsData,
-
-    rootSpec?: () => Promise<PanelAppRootSpec>,
+    rootSpec: () => Promise<PanelAppRootSpec>,
 }
 export default {
     install(app: App, opts: ItPanelsPluginOpts) {
@@ -30,7 +28,7 @@ export default {
             })
         })
 
-        provideGlobalArgs(app, createGlobalArgs(opts.globalArgs))
+        provideGlobalArgs(app, createGlobalArgs({}))
 
         opts.rootSpec && providePanelAppRootSpec(app, opts.rootSpec)
 
@@ -43,12 +41,25 @@ export default {
             substitutionFactories['date:now'] = () => new Date()
         }
 
-        const loader = createLoader({
+        const api = new ApiAdapter({
+            baseUrl: createBaseUrl(opts.apiOptions.baseUrl),
+            requestDefaults: {
+                accept: 'json',
+            },
+        })
+
+        const loader = createLoader(api, {
             providers,
-            apiOptions: opts.apiOptions,
             substitutions: createSubstitutions(substitutionFactories),
         })
 
         provideLoader(app, loader)
     },
+}
+
+function createBaseUrl(baseUrl: string) {
+    if (baseUrl.startsWith('//')) {
+        return window.location.origin + '/' + baseUrl.substring(2)
+    }
+    return baseUrl
 }

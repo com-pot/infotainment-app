@@ -16,7 +16,7 @@ export function selectImporter<T>(importers: Record<string, () => Promise<T>>, n
         || importers[name + '.ts']
 
     if (!importFn) {
-        return () => Promise.reject(`App spec '${name}' not found`)
+        return () => Promise.reject(new Error(`App spec '${name}' not found`))
     }
     return importFn
 }

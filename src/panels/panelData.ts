@@ -3,7 +3,7 @@ import { App, inject, onBeforeUnmount, watch } from "vue"
 import { asyncReactive } from "@typeful/vue-utils/reactivity"
 import { Substitutions } from "@typeful/data/substitutions"
 
-import { ApiAdapter, ApiOpts } from "../ApiAdapter"
+import { ApiAdapter } from "../ApiAdapter"
 import { StateHub } from "../components/stateHub"
 import { defineDataProvider, PanelDataProviderUntyped } from "./dataProviders"
 import { PollConfig, usePoll } from "@typeful/vue-utils/time"
@@ -24,17 +24,10 @@ export const provideLoader = (vue: App, loader: PanelDataLoader) => vue.provide(
 
 type LoaderOpts = {
     providers: Record<string, PanelDataProviderUntyped>,
-    apiOptions: ApiOpts,
+
     substitutions: Substitutions,
 }
-export const createLoader = (opts: LoaderOpts): PanelDataLoader => {
-    const api = new ApiAdapter({
-        ...opts.apiOptions,
-        requestDefaults:{
-            accept: 'json',
-        },
-    })
-
+export const createLoader = (api: ApiAdapter, opts: LoaderOpts): PanelDataLoader => {
     const sharedData: Record<string, any> = {}
     const providers: LoaderOpts['providers'] = {
         ...opts.providers,
@@ -54,7 +47,7 @@ export const createLoader = (opts: LoaderOpts): PanelDataLoader => {
         async load(loaderConfig) {
             const provider = providers[loaderConfig.name]
             if (!provider) {
-                return Promise.reject(`No provider with name ${name}`)
+                return Promise.reject(new Error(`No provider with name ${loaderConfig.name}`))
             }
 
             const loadPromise = provider.load.call(this, await opts.substitutions.replaceMultiple(loaderConfig.args, 'async'))

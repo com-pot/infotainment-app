@@ -34,7 +34,9 @@ const rotateEngine = createRotationController(props.rotationConfig, (e) => {
         <img class="logo" v-else-if="typeof props.config?.logo === 'string'"
              :src="props.config.logo"
         />
-        <span class="title" v-if="props.config?.title">{{ props.config.title }}</span>
+        <div class="logo -title" v-else-if="props.config?.title">
+            <span class="title" >{{ props.config.title }}</span>
+        </div>
 
         <LocaleSwitcher v-if="localeController"
                         :available-locales="localeController.opts.availableLocales"

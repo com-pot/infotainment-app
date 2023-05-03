@@ -19,7 +19,7 @@ createApp(App)
     })
     .use(itPanelsVuePlugin, {
         apiOptions: {
-            baseUrl: getBaseUrl(),
+            baseUrl: import.meta.env.VITE_APP_API_BASE_URL,
         },
         modules: [
             itPanelsDefaultModuleItPanelModule,
@@ -28,21 +28,10 @@ createApp(App)
         ],
 
         rootSpec: () => {
-            const availableSpecs = mapImporters(import.meta.glob('../custom/**/*.rootSpec.@(js|ts)'))
+            const availableSpecs = mapImporters(import.meta.glob('../custom/**/(*.)?rootSpec.@(js|ts)'))
+
             const importFn = selectImporter(availableSpecs, __ROOT_PANEL_SPEC_MODULE__)
             return importAsObj(importFn)
         },
     })
     .mount('#app')
-
-function getBaseUrl() {
-    const path = import.meta.env.VITE_API_BASE_URL
-    if (!path) {
-        console.warn("No API base url provided")
-        return "/"
-    }
-
-    return path
-        .replace('BASE_URL', window.location.origin + import.meta.env.BASE_URL)
-        .replace('VITE_APP_CUSTOM_DATA_KEY', import.meta.env.VITE_APP_CUSTOM_DATA_KEY)
-}

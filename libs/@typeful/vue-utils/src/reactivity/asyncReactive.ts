@@ -18,9 +18,16 @@ export default function asyncReactive<T>(promise?: Promise<T>): AsyncRef<T> {
     const status = ref<AsyncStatus>('n/a')
 
     const awaitValue = (promise: Promise<T>) => {
+        if (!promise) {
+            promise = Promise.reject(new Error("Await value not provided"))
+        }
+        if (typeof promise.then !== "function") {
+            debugger
+            promise = Promise.reject(new Error("Cannot await what is not a primise"))
+        }
+
         status.value = 'busy'
         ar.value = null
-
         return promise
             .then((value) => {
                 ar.value = value as typeof ar['value']

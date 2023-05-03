@@ -2,28 +2,28 @@ import {defaults} from 'lodash'
 
 export type ApiOpts = {
     baseUrl: string,
-    
+
     requestDefaults?: Partial<RequestOpts>,
 }
 
 export class ApiAdapter {
-    
+
     constructor(private opts: ApiOpts) { }
-    
+
     request<TResultPayload = any>(method: string, path: string, payload?: Record<string, unknown>, query?: Query, opts?: RequestOpts) {
         const headers: RequestInit['headers'] = {}
         const o = defaults({}, opts, this.opts.requestDefaults)
-        
+
         if (o.accept === 'json') {
             headers.accept = 'application/json'
         }
-        
+
         const request: RequestConfig = {
             method, url: this.createUrl(path, query).toString(),
             headers,
             body: JSON.stringify(payload),
         }
-        
+
         return fetch(request.url, request)
             .then(async (response) => {
                 return Object.assign(response, {
@@ -49,10 +49,10 @@ export class ApiAdapter {
         const response = await this.request<TResultPayload>(method, path, payload, query, opts)
         return response.payload
     }
-    
+
     private createUrl(path: string, query?: Query) {
         const url = new URL(path, this.opts.baseUrl)
-        
+
         if (typeof query === 'string') {
             url.search = query
         } else if (query) {
@@ -60,7 +60,7 @@ export class ApiAdapter {
                 url.searchParams.append(name, value.toString())
             })
         }
-        
+
         return url
     }
 }
