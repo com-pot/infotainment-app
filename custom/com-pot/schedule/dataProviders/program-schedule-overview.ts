@@ -66,12 +66,28 @@ function createOccurrencesHydrator(startDate: Date) {
         scheduleItems: ProgramScheduleItem['app'][],
         locations: OccurrenceLocation['app'][],
     ): ProgramEntriesGroup => {
-        const items: ProgramEntriesGroup['items'] = group.map((occurrence: OccurrenceItemRawData) => ({
-            item: scheduleItems.find((item) => item.id === occurrence.item)!,
-            location: locations.find((location) => location.id === occurrence.location),
-            time: makeOccurenceTime(occurrence.time, iDay),
-            params: occurrence.params,
-        }))
+        const itemsOrInvalid = group
+            .map((occurrence: OccurrenceItemRawData, iOcc): ProgramEntriesGroup['items'][number]|null => {
+                const item = scheduleItems.find((item) => item.id === occurrence.item)!
+                const time = makeOccurenceTime(occurrence.time, iDay)
+                if (!item || !time) {
+                    console.error(`Invalid occurrence spec '${iDay}:${iOcc}'`, occurrence)
+                    return null
+                }
+                const location = occurrence.location ? locations.find((location) => location.id === occurrence.location) : undefined
+                if (occurrence.location && !location) {
+                    console.warn(`Occurrence location '${occurrence.location}' not found in '${iDay}:${iOcc}'`);
+                }
+
+                return {
+                    item,
+                    time,
+                    location,
+                    params: occurrence.params,
+                }
+            })
+        const items = itemsOrInvalid
+            .filter(Boolean) as NonNullable<typeof itemsOrInvalid[number]>[]
 
         const date = new Date(items[0].time.start)
         date.setHours(0, 0, 0, 0)

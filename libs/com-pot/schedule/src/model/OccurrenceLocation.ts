@@ -1,9 +1,11 @@
 import { Localized } from "@typeful/model/types/I18n"
 
+type OccurrenceLocationApiForm = {
+    id: string,
+    title: Localized<string>,
+}
+
 export type OccurrenceLocation = {
-    app: {
-        id: string,
-        title: Localized<string>,
-    },
-    api: never
+    app: OccurrenceLocationApiForm,
+    api: OccurrenceLocationApiForm,
 }
