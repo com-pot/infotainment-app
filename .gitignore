@@ -12,8 +12,7 @@ dist
 dist-ssr
 *.local
 
-custom/*
-!custom/com-pot
+custom/_*
 
 # Editor directories and files
 .vscode/*

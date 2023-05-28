@@ -1,0 +1,190 @@
+[
+    {
+      "id": "reg",
+      "title": {
+        "cs": "Registrace",
+        "en": "Registration"
+      },
+      "description": {
+        "cs": "Registrace na {con.title}, registrace do kolejí, možnost zakoupení triček na místě",
+        "en": "Registrations for {con.title}, castle houses registration, T-shirt additional sale"
+      }
+    },
+    {
+      "id": "meal:breakfast",
+      "title": {
+        "cs": "Snídaně",
+        "en": "Breakfast"
+      }
+    },
+    {
+      "id": "meal:lunch",
+      "title": {
+        "cs": "Oběd",
+        "en": "Lunch"
+      }
+    },
+    {
+      "id": "meal:dinner",
+      "title": {
+        "cs": "Večeře",
+        "en": "Dinner"
+      }
+    },
+    {
+      "id": "movie-time",
+      "title": {
+        "cs": "Promítání filmu {movie.title}",
+        "en": "{movie.title} movie screening"
+      }
+    },
+    {
+      "id": "group-photo",
+      "title": {
+        "cs": "Společná fotografie",
+        "en": "Group photo"
+      }
+    },
+    {
+      "id": "the-end",
+      "title": {
+        "cs": "Ukončení {con.title}",
+        "en": "The end of {con.title}"
+      }
+    },
+    {
+      "id": "ceremony:opening",
+      "title": {
+        "cs": "Slavnostní zahájení {con.title}",
+        "en": "{con.title} Grand ceremony"
+      },
+      "description": {
+        "cs": "V půl deváté budou studenti odvedeni do místní kaple, kde proběhne rozřazení do jednotlivých kolejí, seznámení se školním řádem a průběhu celého pobytu na škole čar a kouzel",
+        "en": "At half past eight, students will be taken to a local chapel to be divided into castle houses and to be introduced to the school rules and rules of their stay at the castle"
+      }
+    },
+    {
+      "id": "bestiary",
+      "title": {
+        "cs": "Bestiář aneb najdi co nejvíce fantastických tvorů",
+        "en": "The Bestiary - searching for amazing creatures"
+      },
+      "description": {
+        "cs": "Pomozte našemu Šafáři Hugridovi najít poztrácené fantastické tvory magické říše",
+        "en": "Help our ranger Hugrid find all of his lost fantastic magical creatures"
+      }
+    },
+    {
+      "id": "nargyle-attack",
+      "title": {
+        "cs": "Škrkny útočí",
+        "en": "The nargles attack"
+      },
+      "description": {
+        "cs": "Na našem hradě opět úřadovaly škrkny a několika našim studentům sebraly části oblečení a bot. Dokonce i našemu učiteli, což je neslýchané, sebrali portréty jeho oblíbených žáků spřátelené školy v Bradavicích. Pomozte nám je najít.",
+        "en": "The nargles attacked our castle again and stole pieces of clothing from our students. More to that, from one of our teachers they even stole photos of his favorite students from our befriended Hogwarts school. Help us find them!"
+      }
+    },
+    {
+      "id": "live-chess",
+      "title": {
+        "cs": "Oživlé šachy",
+        "en": "Live chess"
+      },
+      "description": {
+        "cs": "Naše kouzelné šachy ožívají. Přijďte si zahrát šachy a staňte se sami figurkami v této královské hře. Pro školní koleje účast více než doporučená.",
+        "en": "Our magical chess is alive. Come play chess and become the figurines in this royal game. Attendance for school houses is highly recommended."
+      }
+    },
+    {
+      "id": "magical-goblet",
+      "title": {
+        "cs": "Čarotvorný pohár",
+        "en": "The Magical goblet"
+      },
+      "description": {
+        "cs": "Tajemná truhlice, Klíče, Zábava světa Mudlů, Kámen mudrců, Nagini, Sovinec, Dračí vejce, Bestiář, Lekce létání, Najdi 9 Viteálů",
+        "en": "Mystery coffer, Keys, Muggles world of fun, The Philosophers stone, Nagini, The owl house, The Dragon’s egg, The Bestiary, Flying lessons, Find nine horcruxes"
+      }
+    },
+    {
+      "id": "furditch",
+      "title": {
+        "cs": "Furfrpál",
+        "en": "Furditch"
+      },
+      "description": {
+        "cs": "Furfrpálový zápas na vás čeká. Přijďte fandit svým kolejím a vychutnejte si jeden z nejoblíbenějších sportů kouzelnického světa.",
+        "en": "The furditch match awaits you. Come and cheer your favorite team and enjoy the most famous sport in the world of wizards."
+      }
+    },
+    {
+      "id": "o_w_l-exams",
+      "title": {
+        "cs": "Zkoušky NKÚ",
+        "en": "The O.W.L.s exams"
+      },
+      "description": {
+        "cs": "Účast pro koleje povinná! Bez řádné zkoušky nemůžete pokračovat dále ve studiu.",
+        "en": "Attendance for all house members necessary! One shall not continue their studies without properly passing the exam."
+      }
+    },
+    {
+      "id": "friend-in-need",
+      "title": {
+        "cs": "Přítel v nouzi",
+        "en": "A friend in need"
+      },
+      "description": {
+        "cs": "Z každé koleje bude vybrán jeden z vás, který bude spoután, a jedině vy jej můžete zase osvobodit. Čeká vás nelehký úkol, avšak je to poslední možnost pro získání bodů pro vaší kolej.",
+        "en": "One member of each house will be selected to be tied up, so that other members of his house can rescue him. It won’t be an easy task, but it is the last chance to win any points!"
+      }
+    },
+    {
+      "id": "house-competition-wrapup",
+      "title": {
+        "cs": "Vyhlášení vítězné koleje",
+        "en": "Winning house announcement"
+      }
+    },
+    {
+      "id": "castles-thunderstorm",
+      "title": {
+        "cs": "Hradní Hromobití",
+        "en": "The Castle’s Thunderstorm"
+      },
+      "description": {
+        "cs": "Na hradě se schyluje k velké věci. Hradní hromobití, které otřese celým hradem. Připravte se na střelbu z luků a kuší, hod nožem, mistrovství sokolnické, naše věrné obránce ze skupiny Mortis, střelbu z praku a mnoho dalšího. Hradním hromobitím vás bude provázet ladná hudba skupiny Strašlivá podívaná. Pohyb ve vašem chlupatém já je vítán. Každý aktivní suiter získá hlt medoviny zdarma (poté, co shodí chlupy).",
+        "en": "A grandiose event is about to happen. The Castle’s Thunderstorm will shake the whole castle. Try archery and crossbow shooting, throwing knives, falconry, Mortis fight, slingshot shooting and much more. The Terrible spectacle (Strašlivá podívaná) band will accompany you by singing their songs for the whole afternoon. Running around in your furry self is more than welcome. Every suiter attending the activities will receive a guld of mead on the house (only after he throws the fur away)."
+      }
+    },
+    {
+      "id": "theater:hpf",
+      "title": {
+        "cs": "Boj u prefektů školy",
+        "en": "House Prefect fight"
+      },
+      "description": {
+        "cs": {"html": "Členové vítězné koleje <b style=\"color: hsl(220deg 99% 56%);\">Prokopro</b> se utkají s prefekty naší školy o výhodnější pozici k závěrečné hře."},
+        "en": {"html": "Members of the winning house <b style=\"color: hsl(220deg 99% 56%);\">Prokopro</b> will fight our castle’s Prefects to gain a better position for the final game."}
+      }
+    },
+    {
+      "id": "galleons-fight",
+      "title": {
+        "cs": "Boj o galeony",
+        "en": "Fight for the Galleons"
+      },
+      "description": {
+        "cs": "Závěrečná soutěž o definitivního vítěze letošních her.",
+        "en": "A final game for the definitive winner of this year’s games."
+      }
+    },
+    {
+      "id": "castle-ball",
+      "title": {
+        "cs": "Výroční hradní ples",
+        "en": "Annual castle’s ball"
+      }
+    }
+  ]
