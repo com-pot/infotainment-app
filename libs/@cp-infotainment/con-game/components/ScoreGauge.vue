@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import { computed, onBeforeUnmount, onMounted, PropType, ref, watch } from "vue"
 import { useTransition, TransitionPresets } from "@vueuse/core"
-import { GameHouse } from "@custom/com-pot/con-game/model"
-import { createEffect } from "@custom/com-pot/con-game/gauge/effect"
+import { GameHouse } from "../model"
+import { createEffect } from "../gauge/effect"
 
 const props = defineProps({
     house: {type: Object as PropType<GameHouse>, required: true},

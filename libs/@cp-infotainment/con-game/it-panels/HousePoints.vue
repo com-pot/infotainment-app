@@ -1,22 +1,3 @@
-<template>
-    <div class="panel house-points" :style="`--score-rows: ${overview.rows};`"
-         :class="[
-            '-houses-status-' + standings.status,
-            gaugesVisible && '-gauges-visible',
-        ]">
-        <ItPanel v-bind="config.contentPanel"/>
-
-        <template v-if="standings.ready">
-            <template v-for="(standing, i) in standings.value" :key="standing.house.name">
-                <ScoreGauge :house="standing.house"
-                            :points="housePoints[i]" :max-points="pointsCap"
-                            :show-points="config.showPoints"
-                />
-            </template>
-        </template>
-    </div>
-</template>
-
 <script lang="ts" setup>
 import { computed, PropType, reactive } from 'vue';
 
@@ -25,9 +6,8 @@ import { PanelSpecification } from '@com-pot/infotainment-app/panels';
 import { asyncComputed, AsyncRef, delayedValue } from '@typeful/vue-utils/reactivity';
 import ScoreGauge from '../components/ScoreGauge.vue';
 
-import { GameHouse, HouseScore } from '@custom/com-pot/con-game/model';
-
-import { assignScores, createStandings } from "@custom/com-pot/con-game/houseStandings"
+import { GameHouse, HouseScore } from '../model';
+import { assignScores, createStandings } from "../houseStandings"
 
 type HousePointsConfig = {
     contentPanel: PanelSpecification,
@@ -67,6 +47,25 @@ const gaugesVisible = delayedValue(() => standings.ready && standings.value.leng
     filter: (val) => val,
 })
 </script>
+
+<template>
+    <div class="panel house-points" :style="`--score-rows: ${overview.rows};`"
+         :class="[
+            '-houses-status-' + standings.status,
+            gaugesVisible && '-gauges-visible',
+        ]">
+        <ItPanel v-bind="config.contentPanel"/>
+
+        <template v-if="standings.ready">
+            <template v-for="(standing, i) in standings.value" :key="standing.house.name">
+                <ScoreGauge :house="standing.house"
+                            :points="housePoints[i]" :max-points="pointsCap"
+                            :show-points="config.showPoints"
+                />
+            </template>
+        </template>
+    </div>
+</template>
 
 <style lang="scss">
 .house-points {

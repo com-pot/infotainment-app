@@ -1,7 +1,7 @@
 import { computed, h } from "vue"
 import { useGlobalArgs } from "@com-pot/infotainment-app/panels/globalArgs"
-import { LocaleController, useLocaleController } from "@custom/com-pot/i18n/localeController"
 import { Localized, LocalizedTextContent } from "@typeful/model/types/I18n"
+import { LocaleController, useLocaleController } from "@cp-infotainment/i18n/localeController"
 
 const rendererCache = new WeakMap()
 const noController = {s: 'no locale'}

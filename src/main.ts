@@ -3,9 +3,9 @@ import App from './App.vue'
 import itPanelsVuePlugin from './panels/itPanels.vuePlugin'
 
 import itPanelsDefaultModuleItPanelModule from './panels/itPanelsDefaultModule.itPanelModule'
-import scheduleModuleItPanelModule from '../custom/com-pot/schedule/scheduleModule.itPanelModule'
-import conGameItPanelModule from '@custom/com-pot/con-game/conGame.itPanelModule'
-import i18nPlugin from '@custom/com-pot/i18n/i18n.plugin'
+import scheduleModuleItPanelModule from '@cp-infotainment/schedule/scheduleModule.itPanelModule'
+import conGameItPanelModule from '@cp-infotainment/con-game/conGame.itPanelModule'
+import i18nPlugin from '@cp-infotainment/i18n/i18n.plugin'
 
 import "./sass/infotainment.scss"
 import { importAsObj, mapImporters, selectImporter } from '@typeful/vite-custom/selectiveImport'

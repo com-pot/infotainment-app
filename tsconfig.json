@@ -18,6 +18,7 @@
       "@com-pot/infotainment-app/*": ["src/*"],
 
       "@custom/*": ["custom/*"],
+      "@cp-infotainment/*": ["libs/@cp-infotainment/*"],
 
       "@typeful/data/*": ["./libs/typeful-data/src/*"],
       "@typeful/model/*": ["./libs/typeful-model/src/*"],

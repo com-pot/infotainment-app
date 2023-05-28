@@ -21,19 +21,22 @@ export default defineDataProvider<any, Args>({
     async load(args) {
         let now = args.now || new Date()
 
-        const results = await Promise.all([
-            this.api.req('GET', 'com-pot/schedule/items.json'),
-            this.api.req('GET', 'com-pot/schedule/locations.json'),
-            this.api.req('GET', 'com-pot/schedule/occurrences-raw.json'),
+        const [
+            items,
+            locations,
+            occurrencesRaw,
+        ] = await Promise.all([
+            this.api.req<ProgramScheduleItem['app'][]>('GET', 'com-pot/schedule/items.json'),
+            this.api.req<OccurrenceLocation['app'][]>('GET', 'com-pot/schedule/locations.json'),
+            this.api.req<OccurrenceItemRawData[][]>('GET', 'com-pot/schedule/occurrences-raw.json'),
         ])
-        const items = results[0] as ProgramScheduleItem['app'][]
-        const locations = results[1] as OccurrenceLocation['app'][]
-        const occurrencesRaw = results[2] as OccurrenceItemRawData[][]
 
         const hydrator = createOccurrencesHydrator(new Date(args.from))
+        const groups = hydrator.hydrateOccurrences(occurrencesRaw, items, locations)
 
-        return hydrator.hydrateOccurrences(occurrencesRaw, items, locations)
-            .filter((group) => group.date.getDate() >= now.getDate())
+        const result = groups.filter((group) => group.date.getTime() >= now.getTime())
+
+        return result
     },
 })
 

@@ -1,12 +1,12 @@
 export function createSubstitutions(factories: SubstitutionsFactories) {
 
-    function replace(subject: string) {
-        const factory = factories[subject]
+    function replace(sub: SubstitutionRecipe) {
+        const factory = factories[sub.$get]
         if (!factory) {
-            console.warn("Unknown variable arg", subject);
+            console.warn("Unknown variable arg", sub);
             return null
         }
-        return factory()
+        return factory(sub)
     }
 
     function replaceMultiple(args: unknown, mode: 'async'): Promise<unknown>
@@ -18,8 +18,8 @@ export function createSubstitutions(factories: SubstitutionsFactories) {
 
         const entries = Object.entries(args)
             .map(([name, valSpec]) => {
-                const val = valSpec && typeof valSpec === 'object' && valSpec.$get
-                    ? replace(valSpec.$get)
+                const val = isSubstitution(valSpec)
+                    ? replace(valSpec)
                     : valSpec
 
                 if (val instanceof Promise && mode === 'sync') {
@@ -44,5 +44,12 @@ export function createSubstitutions(factories: SubstitutionsFactories) {
     }
 }
 
-export type SubstitutionsFactories = Record<string, () => any>
+export const isSubstitution = (arg: unknown): arg is SubstitutionRecipe => {
+    if (!arg || typeof arg !== "object") return false
+
+    return "$get" in arg
+}
+
+type SubstitutionRecipe<T extends object = object> = {$get: "string"} & T
+export type SubstitutionsFactories<T extends object = object> = Record<string, (s: SubstitutionRecipe<T>) => any>
 export type Substitutions = ReturnType<typeof createSubstitutions>

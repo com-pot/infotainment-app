@@ -1,10 +1,11 @@
 import { App } from "vue";
+import { isNil } from "lodash";
 import { ApiAdapter, ApiOpts } from "../ApiAdapter";
 import { ItPanelModule } from "../PanelModule";
 import { PanelDataProviderUntyped } from "./dataProviders";
 import { createLoader, provideLoader } from "./panelData";
 import { createPanelRegistry, providePanelRegistry } from "./panelRegistry";
-import {createGlobalArgs, provideGlobalArgs, type GlobalArgsData} from "./globalArgs"
+import { createGlobalArgs, provideGlobalArgs, type GlobalArgs } from "./globalArgs"
 import { createSubstitutions, SubstitutionsFactories } from "@typeful/data/substitutions";
 import { PanelAppRootSpec, providePanelAppRootSpec } from "../panels";
 
@@ -28,18 +29,34 @@ export default {
             })
         })
 
-        provideGlobalArgs(app, createGlobalArgs({}))
+        const globalArgs = createGlobalArgs({})
+        provideGlobalArgs(app, globalArgs)
 
         opts.rootSpec && providePanelAppRootSpec(app, opts.rootSpec)
 
-        const substitutionFactories: SubstitutionsFactories = {}
+        const substitutionFactories: SubstitutionsFactories<any> = {
+            "date:now": () => new Date(),
+            "global": (args: {name: string}) => {
+                if (!args.name) {
+                    console.warn("substitution global got invalid args", args);
+                    return null
+                }
+                const value = globalArgs.get(args.name)
+                if (isNil(value)) {
+                    console.warn(`globalArgs has no value for '${args.name}'`)
+                    return null
+                }
+
+                return value
+            },
+        }
+
         const debugNow = import.meta.env.VITE_DEBUG_TIME_TRAVEL_NOW as string
         if (debugNow) {
             console.warn("Using time travel debug to", debugNow);
             substitutionFactories['date:now'] = () => new Date(debugNow)
-        } else {
-            substitutionFactories['date:now'] = () => new Date()
         }
+
 
         const api = new ApiAdapter({
             baseUrl: createBaseUrl(opts.apiOptions.baseUrl),
