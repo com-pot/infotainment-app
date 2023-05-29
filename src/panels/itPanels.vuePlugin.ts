@@ -1,6 +1,6 @@
 import { App } from "vue";
 import { isNil } from "lodash";
-import { ApiAdapter, ApiOpts } from "../ApiAdapter";
+import { ApiAdapter, ApiOpts, RequestMiddleware } from "../ApiAdapter";
 import { ItPanelModule } from "../PanelModule";
 import { PanelDataProviderUntyped } from "./dataProviders";
 import { createLoader, provideLoader } from "./panelData";
@@ -13,6 +13,7 @@ type ItPanelsPluginOpts = {
     modules: ItPanelModule[],
 
     apiOptions: ApiOpts,
+    staticPaths?: string[],
 
     rootSpec: () => Promise<PanelAppRootSpec>,
 }
@@ -57,12 +58,15 @@ export default {
             substitutionFactories['date:now'] = () => new Date(debugNow)
         }
 
-
         const api = new ApiAdapter({
             baseUrl: createBaseUrl(opts.apiOptions.baseUrl),
             requestDefaults: {
                 accept: 'json',
             },
+
+            middlewareRequest: [
+                createStaticDataUrlReplaceMiddleware(opts.staticPaths || []),
+            ],
         })
 
         const loader = createLoader(api, {
@@ -72,6 +76,20 @@ export default {
 
         provideLoader(app, loader)
     },
+}
+
+function createStaticDataUrlReplaceMiddleware(staticPaths: string[]): RequestMiddleware {
+    const pathEntries = staticPaths.map((path) => ({
+        path,
+        pathNoExt: path.substring(0, ".json".length),
+    }))
+
+    return (config) => {
+        const staticPath = pathEntries.find((path) => config.url.includes(path.pathNoExt))
+        if (!staticPath) return
+
+        return {...config, url: config.url! + '.json'}
+    }
 }
 
 function createBaseUrl(baseUrl: string) {

@@ -5,7 +5,7 @@ export default defineDataProvider<QuickMessage[], {now: Date}>({
     async load(args) {
         const now = args.now || new Date()
 
-        let messages = (await this.api.req<any[]>('GET', 'com-pot/infotainment-app/quick-messages.json'))
+        let messages = (await this.api.req<any[]>('GET', 'com-pot/infotainment-app/quick-messages'))
             .map((message): QuickMessage => {
                 return {
                     id: message.id,

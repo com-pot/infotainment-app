@@ -27,6 +27,8 @@ createApp(App)
             conGameItPanelModule,
         ],
 
+        staticPaths: collectStaticDataKeys(),
+
         rootSpec: () => {
             const availableSpecs = mapImporters(import.meta.glob('../custom/**/(*.)?rootSpec.@(js|ts)'))
 
@@ -35,3 +37,15 @@ createApp(App)
         },
     })
     .mount('#app')
+
+function collectStaticDataKeys() {
+    const files = Object.keys(import.meta.glob("../custom/*/data/**/*.json"))
+
+    return files
+        .filter((path) => path.includes(import.meta.env.VITE_APP_CUSTOM_DATA_KEY))
+        .map((path) => {
+            const indexOfDataStr = path.indexOf("/data/", "../custom/".length)
+
+            return path.substring(indexOfDataStr + "/data/".length)
+        })
+}

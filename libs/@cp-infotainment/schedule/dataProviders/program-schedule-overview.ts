@@ -26,9 +26,9 @@ export default defineDataProvider<any, Args>({
             locations,
             occurrencesRaw,
         ] = await Promise.all([
-            this.api.req<ProgramScheduleItem['app'][]>('GET', 'com-pot/schedule/items.json'),
-            this.api.req<OccurrenceLocation['app'][]>('GET', 'com-pot/schedule/locations.json'),
-            this.api.req<OccurrenceItemRawData[][]>('GET', 'com-pot/schedule/occurrences-raw.json'),
+            this.api.req<ProgramScheduleItem['app'][]>('GET', 'com-pot/schedule/items'),
+            this.api.req<OccurrenceLocation['app'][]>('GET', 'com-pot/schedule/locations'),
+            this.api.req<OccurrenceItemRawData[][]>('GET', 'com-pot/schedule/occurrences-raw'),
         ])
 
         const hydrator = createOccurrencesHydrator(new Date(args.from))

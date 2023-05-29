@@ -13,12 +13,12 @@ export default defineItPanelModule({
     dataProviders: {
         'houses': defineDataProvider({
             load() {
-                return this.api.req('GET', 'com-pot/con-game/houses.json')
+                return this.api.req('GET', 'com-pot/con-game/houses')
             },
         }),
         'scores': defineDataProvider({
             load() {
-                return this.api.req('GET', 'com-pot/con-game/scores.json')
+                return this.api.req('GET', 'com-pot/con-game/scores')
             },
         }),
     }

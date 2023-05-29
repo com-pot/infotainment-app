@@ -4,13 +4,15 @@ export type ApiOpts = {
     baseUrl: string,
 
     requestDefaults?: Partial<RequestOpts>,
+
+    middlewareRequest?: RequestMiddleware[],
 }
 
 export class ApiAdapter {
 
     constructor(private opts: ApiOpts) { }
 
-    request<TResultPayload = any>(method: string, path: string, payload?: Record<string, unknown>, query?: Query, opts?: RequestOpts) {
+    request<TResultPayload = any>(method: string, path: string, payload?: Payload, query?: Query, opts?: RequestOpts) {
         const headers: RequestInit['headers'] = {}
         const o = defaults({}, opts, this.opts.requestDefaults)
 
@@ -18,11 +20,7 @@ export class ApiAdapter {
             headers.accept = 'application/json'
         }
 
-        const request: RequestConfig = {
-            method, url: this.createUrl(path, query).toString(),
-            headers,
-            body: JSON.stringify(payload),
-        }
+        const request = this.prepareRequestConfig(method, path, query, headers, payload)
 
         return fetch(request.url, request)
             .then(async (response) => {
@@ -50,6 +48,25 @@ export class ApiAdapter {
         return response.payload
     }
 
+    private prepareRequestConfig(
+        method: RequestConfig['method'] | undefined,
+        path: string, query: Query | undefined,
+        headers: RequestInit['headers'],
+        payload?: Payload,
+    ): RequestConfig {
+        let config: RequestConfig = {
+            method, url: this.createUrl(path, query).toString(),
+            headers,
+            body: JSON.stringify(payload),
+        }
+
+        this.opts?.middlewareRequest?.forEach((mw) => {
+            config = mw(config) || config
+        })
+
+        return config
+    }
+
     private createUrl(path: string, query?: Query) {
         const url = new URL(path, this.opts.baseUrl)
 
@@ -66,15 +83,18 @@ export class ApiAdapter {
 }
 
 type Query = Record<string, string|number|boolean> | string
+type Payload = Record<string, unknown>
 
 type RequestOpts = {
     accept?: 'json' | string,
     allowNoContent?: boolean,
 }
 
-type RequestConfig = {
+export type RequestConfig = {
     url: string
 } & RequestInit
+
+export type RequestMiddleware = (config: RequestConfig) => RequestConfig | undefined
 
 type ApiResponse<TJsonPayloadData = any> = Response & {
     payloadStr: string,
