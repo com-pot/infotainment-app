@@ -6,7 +6,7 @@ export const globalArgs = {
   "con.dateEnd": "2023-06-10",
 }
 
-const contentRoot: PanelSpecification = {
+const layoutPanel: PanelSpecification = {
   type: 'common.grid-layout',
   config: {
     panels: [
@@ -113,4 +113,4 @@ const contentRoot: PanelSpecification = {
   style: `grid-template-areas: "brand brand" "rough detail" "tray tray"; grid-template-rows: auto 1fr auto; grid-template-columns: 2fr 3fr;`,
 }
 
-export const rootPanel = contentRoot
+export const rootPanel = layoutPanel

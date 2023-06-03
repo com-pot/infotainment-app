@@ -1,4 +1,5 @@
-import { App, inject } from "vue"
+import { App, inject, unref } from "vue"
+import { MaybeRef } from "@vueuse/core"
 import { asyncReactive } from "@typeful/vue-utils/reactivity"
 
 export type PanelSpecification<TConfig extends object = any> = {
@@ -10,20 +11,22 @@ export type PanelSpecification<TConfig extends object = any> = {
     style?: Record<string, unknown>|string,
 }
 
-export type PanelAppRootSpec = {
+export type ScreenSpec = {
     rootPanel: PanelSpecification,
 
     globalArgs?: Record<string, any>,
 }
+export type ScreenSpecLoader = (name?: string) => Promise<ScreenSpec>
 
-export function providePanelAppRootSpec(app: App, spec: () => Promise<PanelAppRootSpec>) {
-    app.provide('@com-pot/infotainment-app.rootSpecLoadFn', spec)
+export function provideScreenSpec(app: App, spec: ScreenSpecLoader) {
+    app.provide('@com-pot/infotainment-app.screenSpecLoadFn', spec)
 }
-export function usePanelAppRootSpec() {
-    let loaderFn = inject('@com-pot/infotainment-app.rootSpecLoadFn') as () => Promise<PanelAppRootSpec>
+export function useScreenSpec(name?: MaybeRef<string | undefined>) {
+    let loaderFn = inject('@com-pot/infotainment-app.screenSpecLoadFn') as ScreenSpecLoader
     if (!loaderFn) {
-        loaderFn = () => Promise.reject(new Error('rootSpecLoadFn not provided'))
+        loaderFn = () => Promise.reject(new Error('screenSpecLoadFn not provided'))
     }
+    const nameVal = unref(name)
 
-    return asyncReactive(loaderFn())
+    return asyncReactive(loaderFn(nameVal))
 }

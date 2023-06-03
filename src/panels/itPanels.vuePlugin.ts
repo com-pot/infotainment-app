@@ -5,9 +5,9 @@ import { ItPanelModule } from "../PanelModule";
 import { PanelDataProviderUntyped } from "./dataProviders";
 import { createLoader, provideLoader } from "./panelData";
 import { createPanelRegistry, providePanelRegistry } from "./panelRegistry";
-import { createGlobalArgs, provideGlobalArgs, type GlobalArgs } from "./globalArgs"
+import { createGlobalArgs, provideGlobalArgs } from "./globalArgs"
 import { createSubstitutions, SubstitutionsFactories } from "@typeful/data/substitutions";
-import { PanelAppRootSpec, providePanelAppRootSpec } from "../panels";
+import { ScreenSpec, provideScreenSpec } from "../panels";
 
 type ItPanelsPluginOpts = {
     modules: ItPanelModule[],
@@ -15,7 +15,7 @@ type ItPanelsPluginOpts = {
     apiOptions: ApiOpts,
     staticPaths?: string[],
 
-    rootSpec: () => Promise<PanelAppRootSpec>,
+    screenSpec: () => Promise<ScreenSpec>,
 }
 export default {
     install(app: App, opts: ItPanelsPluginOpts) {
@@ -33,7 +33,7 @@ export default {
         const globalArgs = createGlobalArgs({})
         provideGlobalArgs(app, globalArgs)
 
-        opts.rootSpec && providePanelAppRootSpec(app, opts.rootSpec)
+        opts.screenSpec && provideScreenSpec(app, opts.screenSpec)
 
         const substitutionFactories: SubstitutionsFactories<any> = {
             "date:now": () => new Date(),

@@ -2,9 +2,10 @@ import { computed, reactive, ref } from "vue";
 import { usePoll } from "../time"
 
 type AsyncStatus = 'n/a' | 'busy' | 'ready' | 'error'
-type AsyncWrapper<T> =
+type AsyncWrapper<T, E extends Error = Error> =
     {status: Readonly<'ready'>, ready: Readonly<true>, value: T}
-    | {status: Readonly<'n/a' | 'busy' | 'error'>, ready: Readonly<false>}
+    | {readonly status: "error", readonly ready: false, error: E}
+    | {status: Readonly<'n/a' | 'busy'>, ready: Readonly<false>}
 type AsyncWrapperControls<T> = {
     poll: ReturnType<typeof usePoll>|null,
 
@@ -12,9 +13,9 @@ type AsyncWrapperControls<T> = {
     _clear: () => void,
     _set: (value: T) => void,
 }
-export type AsyncRef<T=unknown> = AsyncWrapper<T> & AsyncWrapperControls<T>
+export type AsyncRef<T=unknown, E extends Error = Error> = AsyncWrapper<T, E> & AsyncWrapperControls<T>
 
-export default function asyncReactive<T>(promise?: Promise<T>): AsyncRef<T> {
+export default function asyncReactive<T, E extends Error = Error>(promise?: Promise<T>): AsyncRef<T> {
     const status = ref<AsyncStatus>('n/a')
 
     const awaitValue = (promise: Promise<T>) => {
@@ -28,6 +29,8 @@ export default function asyncReactive<T>(promise?: Promise<T>): AsyncRef<T> {
 
         status.value = 'busy'
         ar.value = null
+        ar.error = null
+
         return promise
             .then((value) => {
                 ar.value = value as typeof ar['value']
@@ -35,6 +38,7 @@ export default function asyncReactive<T>(promise?: Promise<T>): AsyncRef<T> {
                 return value
             })
             .catch((err) => {
+                ar.error = err
                 status.value = 'error'
 
                 throw err
@@ -46,6 +50,7 @@ export default function asyncReactive<T>(promise?: Promise<T>): AsyncRef<T> {
         ready: computed(() => status.value === 'ready'),
 
         value: null as null | T,
+        error: null as null | E,
 
         poll: null,
 
@@ -64,7 +69,7 @@ export default function asyncReactive<T>(promise?: Promise<T>): AsyncRef<T> {
         awaitValue(promise)
     }
 
-    return ar as AsyncRef<T>
+    return ar as AsyncRef<T, E>
 }
 export function asyncComputed<TRes, T1>(cb: (v1: T1) => TRes, aRef1: AsyncWrapper<T1>): AsyncWrapper<TRes>;
 export function asyncComputed<TRes, T1, T2>(cb: (v1: T1, v2: T2) => TRes, aRef1: AsyncWrapper<T1>, aRef2: AsyncWrapper<T2>): AsyncWrapper<TRes>;

@@ -7,8 +7,6 @@ import {viteStaticCopy as copy} from "vite-plugin-static-copy"
 export default defineConfig(({mode}) => {
   const env = loadEnv(mode, process.cwd(), '')
 
-  const rootPanelSpecModule = `@custom/${env.VITE_APP_CUSTOM_DATA_KEY}/${env.VITE_APP_CUSTOM_PANEL_FILE || 'rootSpec'}`
-
   return {
     plugins: [
       copy({
@@ -26,10 +24,6 @@ export default defineConfig(({mode}) => {
       vue(),
       externalCSSPlugin(`/custom/${env.VITE_APP_CUSTOM_DATA_KEY}/theme.scss`),
     ],
-
-    define: {
-      __ROOT_PANEL_SPEC_MODULE__: `"${rootPanelSpecModule}"`,
-    },
   }
 })
 

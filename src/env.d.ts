@@ -6,5 +6,3 @@ declare module '*.vue' {
   const component: DefineComponent<{}, {}, any>
   export default component
 }
-
-declare const __ROOT_PANEL_SPEC_MODULE__: string;

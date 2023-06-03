@@ -29,10 +29,19 @@ createApp(App)
 
         staticPaths: collectStaticDataKeys(),
 
-        rootSpec: () => {
-            const availableSpecs = mapImporters(import.meta.glob('../custom/**/(*.)?rootSpec.@(js|ts)'))
+        screenSpec: (name?: string) => {
+            const availableSpecs = mapImporters(import.meta.glob('../custom/**/(*.)?screen.@(js|ts)'), {
+                trim: {
+                    start: /^\.\.\/custom\//,
+                    end: /\.?screen\.(js|ts)$/,
+                },
+            })
+            const app = import.meta.env.VITE_APP_CUSTOM_DATA_KEY
+            const screen = name || 'default'
+            const key = `${app}/${screen}`
 
-            const importFn = selectImporter(availableSpecs, __ROOT_PANEL_SPEC_MODULE__)
+            const importFn = selectImporter(availableSpecs, key)
+
             return importAsObj(importFn)
         },
     })

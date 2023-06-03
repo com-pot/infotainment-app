@@ -1,18 +1,20 @@
 <script setup lang="ts">
-import { watch } from 'vue';
+import { computed, watch } from 'vue';
 import ItPanel from './it-panels/ItPanel.vue';
-import { usePanelAppRootSpec } from './panels';
+import { useScreenSpec } from './panels';
 import BusySpinner from './components/BusySpinner.vue';
 import { useGlobalArgs } from './panels/globalArgs';
 
+const url = new URL(window.location.toString())
+const screenSpecName = computed(() => url.searchParams.get("screen") || undefined)
 
 const globalArgs = useGlobalArgs()
-const appRootSpec = usePanelAppRootSpec()
+const screenSpec = useScreenSpec(screenSpecName)
 
-watch(() => appRootSpec.ready && appRootSpec.value, (spec) => {
-  globalArgs.spliceSource('rootSpec')
+watch(() => screenSpec.ready && screenSpec.value, (spec) => {
+  globalArgs.spliceSource('screenSpec')
   const args = spec && spec.globalArgs
-  args && globalArgs.addSource('rootSpec', args)
+  args && globalArgs.addSource('screenSpec', args)
 }, {immediate: true})
 
 
@@ -23,8 +25,15 @@ watch(() => globalArgs.get('con.title'), (title) => {
 </script>
 
 <template>
-  <BusySpinner v-if="!appRootSpec.ready" :order="6">Preparing holy crusade critical information</BusySpinner>
-  <ItPanel v-else v-bind="appRootSpec.value.rootPanel" class="root"/>
+  <div v-if="screenSpec.status === 'error'">
+    <p>Screen not ready</p>
+    <p v-if="screenSpecName">
+      Requested screen: <code>{{ screenSpecName }}</code>
+    </p>
+    <code>{{ screenSpec.error }}</code>
+  </div>
+  <BusySpinner v-else-if="!screenSpec.ready" :order="6">Preparing holy crusade critical information</BusySpinner>
+  <ItPanel v-else v-bind="screenSpec.value.rootPanel" class="root"/>
 </template>
 
 <style lang="scss">
