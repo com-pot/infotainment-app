@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, watch } from 'vue';
+import BusySpinner from '@typeful/vue-utils/components/BusySpinner.vue';
 import ItPanel from './it-panels/ItPanel.vue';
 import { useScreenSpec } from './panels';
-import BusySpinner from './components/BusySpinner.vue';
 import { useGlobalArgs } from './panels/globalArgs';
 
 const url = new URL(window.location.toString())

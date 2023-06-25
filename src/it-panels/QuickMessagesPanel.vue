@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import { computed, ref, PropType } from 'vue';
 import { useRender } from '@typeful/data/rendering';
+import AsyncContent from "@typeful/vue-utils/components/AsyncContent.vue";
+import { stateHubUi } from "@typeful/vue-utils/reactivity/stateHub"
 
-import AsyncContent from '../components/AsyncContent.vue';
-import { stateHubUi } from '../components/stateHub';
 import { QuickMessage } from '../dataProviders/quickMessages';
 import { createRotationController, rotationUi } from '../rotation';
 

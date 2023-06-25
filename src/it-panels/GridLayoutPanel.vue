@@ -1,8 +1,9 @@
 <script lang="ts" setup>
 import { onBeforeUnmount, PropType, watch } from 'vue'
+import { createHub } from "@typeful/vue-utils/reactivity/stateHub"
+
 import ItPanel from '../it-panels/ItPanel.vue'
 import type { PanelSpecification } from "../panels"
-import { createHub } from "../components/stateHub"
 import { createRotationFollowController } from '../rotation/engines/follow'
 
 type GridLayoutPanelConfig = {

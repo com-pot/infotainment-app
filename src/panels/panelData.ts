@@ -1,10 +1,10 @@
 import { isNil } from "lodash"
 import { App, inject, onBeforeUnmount, watch } from "vue"
 import { asyncReactive } from "@typeful/vue-utils/reactivity"
+import { StateHub } from "@typeful/vue-utils/reactivity/stateHub";
 import { Substitutions } from "@typeful/data/substitutions"
 
 import { ApiAdapter } from "../ApiAdapter"
-import { StateHub } from "../components/stateHub"
 import { defineDataProvider, PanelDataProviderUntyped } from "./dataProviders"
 import { PollConfig, usePoll } from "@typeful/vue-utils/time"
 

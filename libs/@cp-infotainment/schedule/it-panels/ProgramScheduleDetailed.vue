@@ -1,10 +1,10 @@
 <script lang="ts" setup>
 import { PropType, ref } from "vue";
 import { AsyncRef } from "@typeful/vue-utils/reactivity";
+import AsyncContent from "@typeful/vue-utils/components/AsyncContent.vue";
+import { stateHubUi } from "@typeful/vue-utils/reactivity/stateHub";
 
-import AsyncContent from "@com-pot/infotainment-app/components/AsyncContent.vue";
 import { createRotationController, rotationUi } from "@com-pot/infotainment-app/rotation";
-import { stateHubUi } from "@com-pot/infotainment-app/components/stateHub";
 import { createLinearRotation } from "@com-pot/infotainment-app/rotation/linearRotationConsumer"
 import { ProgramItemOccurence } from "@com-pot/schedule/model/ProgramItemOccurrence";
 import ProgramEntryDetail from "../components/ProgramEntryDetail.vue"

@@ -1,14 +1,14 @@
 <script lang="ts" setup>
 import { PropType, ref } from "vue";
-import AsyncContent from "@com-pot/infotainment-app/components/AsyncContent.vue";
+import AsyncContent from "@typeful/vue-utils/components/AsyncContent.vue";
 import { useRender } from "@typeful/data/rendering";
 import { AsyncRef } from "@typeful/vue-utils/reactivity";
+import { stateHubUi } from "@typeful/vue-utils/reactivity/stateHub";
 
 import { createLinearRotation } from "@com-pot/infotainment-app/rotation/linearRotationConsumer";
 import { ProgramEntriesGroup } from "../dataProviders/program-schedule-overview";
 import ProgramEntryDetail from "../components/ProgramEntryDetail.vue"
 import { createRotationController, rotationUi } from "@com-pot/infotainment-app/rotation";
-import { stateHubUi } from "@com-pot/infotainment-app/components/stateHub";
 
 const props = defineProps({
     panelData: {type: Object as PropType<AsyncRef<ProgramEntriesGroup[]>>, required: true},

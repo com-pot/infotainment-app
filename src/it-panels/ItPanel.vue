@@ -2,8 +2,9 @@
 import { computed, defineComponent, h, PropType, watch } from 'vue'
 import { AsyncRef } from "@typeful/vue-utils/reactivity"
 import { getMissingParams, watchPolling } from "@typeful/vue-utils/components/declarations"
-import BusySpinnerVue from '../components/BusySpinner.vue'
-import { useStateHub } from '../components/stateHub'
+import BusySpinner from '@typeful/vue-utils/components/BusySpinner.vue'
+import { useStateHub } from "@typeful/vue-utils/reactivity/stateHub"
+
 import { prepareProviderConfig, useLoader } from '../panels/panelData'
 import { usePanelRegistry } from "../panels/panelRegistry"
 
@@ -66,18 +67,18 @@ export default defineComponent({
                 ])
             }
 
-            const unavailableProviders = hydratedPanelParams.value?.filter(([name, param]) => {
+            const unavailableProviders = hydratedPanelParams.value.filter(([name, param]) => {
                 if (param && typeof param === "object" && param.status) {
                     return param.status === 'n/a'
                 }
             })
             if (unavailableProviders?.length) {
-                return h(BusySpinnerVue, {
+                return h(BusySpinner, {
                     class: 'panel',
                 }, ["Providers not available: " + unavailableProviders.join(', ')])
             }
 
-            const applicableProps: Record<string, any> = Object.fromEntries(hydratedPanelParams.value || []);
+            const applicableProps: Record<string, any> = Object.fromEntries(hydratedPanelParams.value);
             return h(entry.component, applicableProps)
         }
     },
