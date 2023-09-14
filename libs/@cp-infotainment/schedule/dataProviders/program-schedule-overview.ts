@@ -22,17 +22,19 @@ export default defineDataProvider<any, Args>({
         let now = args.now || new Date()
 
         const [
-            items,
+            activities,
             locations,
             occurrencesRaw,
         ] = await Promise.all([
-            this.api.req<ProgramScheduleItem['app'][]>('GET', 'com-pot/schedule/items'),
-            this.api.req<OccurrenceLocation['app'][]>('GET', 'com-pot/schedule/locations'),
-            this.api.req<OccurrenceItemRawData[][]>('GET', 'com-pot/schedule/occurrences-raw'),
+            this.api.req<{items: ProgramScheduleItem['app'][]}>('GET', 'backstage/typeful/collection/_compot_schedule__Activities/items?_perPage=100&meet=furrstein2023'),
+            this.api.req<{items: OccurrenceLocation['app'][]}>('GET', 'backstage/typeful/collection/_compot_locations__Places/items?_perPage=100&meet=furrstein2023'),
+            this.api.req<{items: OccurrencePersistedData[]}>('GET', 'backstage/typeful/collection/_compot_schedule__ActivityOccurrences/items?_perPage=150&meet=furrstein2023'),
         ])
 
         const hydrator = createOccurrencesHydrator(new Date(args.from))
-        const groups = hydrator.hydrateOccurrences(occurrencesRaw, items, locations)
+
+        const groups = hydrator.hydrateOccurrences(occurrencesRaw.items, activities.items, locations.items)
+        console.log(groups)
 
         const result = groups.filter((group) => group.date.getTime() >= now.getTime())
 
@@ -66,18 +68,18 @@ function createOccurrencesHydrator(startDate: Date) {
 
     const createOccurrencesGroup = (
         group: OccurrenceItemRawData[], iDay: number,
-        scheduleItems: ProgramScheduleItem['app'][],
+        activities: ProgramScheduleItem['app'][],
         locations: OccurrenceLocation['app'][],
-    ): ProgramEntriesGroup => {
+    ): ProgramEntriesGroup | null => {
         const itemsOrInvalid = group
             .map((occurrence: OccurrenceItemRawData, iOcc): ProgramEntriesGroup['items'][number]|null => {
-                const item = scheduleItems.find((item) => item.id === occurrence.item)!
+                const item = activities.find((item) => item.id === occurrence.item || item.slug === occurrence.item)!
                 const time = makeOccurenceTime(occurrence.time, iDay)
                 if (!item || !time) {
                     console.error(`Invalid occurrence spec '${iDay}:${iOcc}'`, occurrence)
                     return null
                 }
-                const location = occurrence.location ? locations.find((location) => location.id === occurrence.location) : undefined
+                const location = occurrence.location ? locations.find((location) => location.id === occurrence.location || location.slug === occurrence.location) : undefined
                 if (occurrence.location && !location) {
                     console.warn(`Occurrence location '${occurrence.location}' not found in '${iDay}:${iOcc}'`);
                 }
@@ -92,17 +94,57 @@ function createOccurrencesHydrator(startDate: Date) {
         const items = itemsOrInvalid
             .filter(Boolean) as NonNullable<typeof itemsOrInvalid[number]>[]
 
+        if (!items.length) {
+            console.warn("No valid items", group)
+            return null
+        }
+
         const date = new Date(items[0].time.start)
-        date.setHours(0, 0, 0, 0)
+        date.setHours(24, 0, 0, -1)
 
         return { date, items }
     }
 
-    const hydrateOccurrences = (scheduleOccurencesGroupedByDay: OccurrenceItemRawData[][], scheduleItems: ProgramScheduleItem['app'][], locations: OccurrenceLocation['app'][]): ProgramEntriesGroup[] => {
-        return scheduleOccurencesGroupedByDay.map((group, iDay) => createOccurrencesGroup(group, iDay, scheduleItems, locations))
+    const hydrateOccurrences = (scheduleOccurences: OccurrencePersistedData[], activities: ProgramScheduleItem['app'][], locations: OccurrenceLocation['app'][]): ProgramEntriesGroup[] => {
+        const scheduleOccurencesGroupedByDay = groupOccurrencesByDay(scheduleOccurences)
+        return scheduleOccurencesGroupedByDay
+            .map((group, iDay) => createOccurrencesGroup(group, iDay, activities, locations))
+            .filter((item): item is NonNullable<typeof item> => !!item)
     }
 
     return {
         hydrateOccurrences,
     }
+}
+
+type OccurrencePersistedData = {
+    activity: OccurrenceItemRawData["item"],
+    location: OccurrenceItemRawData["location"],
+    day: number,
+    start: OccurrenceItemRawData["time"][0],
+    end: OccurrenceItemRawData["time"][1],
+
+    params: OccurrenceItemRawData["params"],
+}
+
+function groupOccurrencesByDay(occurrences: OccurrencePersistedData[]) {
+    const groups: Record<string, OccurrenceItemRawData[]> = {}
+
+    occurrences.forEach((occurrence) => {
+        if (!groups[occurrence.day]) groups[occurrence.day] = []
+        groups[occurrence.day].push({
+            item: occurrence.activity,
+            location: occurrence.location,
+            time: [occurrence.start, occurrence.end],
+            params: occurrence.params,
+        })
+    })
+
+    return Object.entries(groups)
+        .map(([day, group]) => [Number(day), group] as const)
+        .sort(([a], [b]) => a - b)
+        .map(([day, group]) => group.sort((a, b) => {
+            if (!a.time[0] || !b.time) return 0
+            return a.time[0].localeCompare(b.time[0])
+        }))
 }

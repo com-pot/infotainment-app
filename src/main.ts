@@ -14,7 +14,7 @@ createApp(App)
     .use(i18nPlugin, {
         availableLocales: [
             { value: 'cs', icon: "twemoji:flag-czechia" },
-            { value: 'en', icon: "twemoji:flag-united-kingdom" },
+            // { value: 'en', icon: "twemoji:flag-united-kingdom" },
         ],
     })
     .use(itPanelsVuePlugin, {
