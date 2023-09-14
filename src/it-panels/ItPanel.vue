@@ -63,7 +63,7 @@ export default defineComponent({
                 return h('div', {
                     class: 'panel error-panel',
                 }, [
-                    h('p', `Misconfigured panel, missing props [${missingParams.map((entry) => entry[0]).join(', ')}]`)
+                    h('p', `Misconfigured panel '${panelEntry.value.fullName}', missing props [${missingParams.map((entry) => entry[0]).join(', ')}]`)
                 ])
             }
 
