@@ -52,12 +52,6 @@ export default {
             },
         }
 
-        const debugNow = import.meta.env.VITE_DEBUG_TIME_TRAVEL_NOW as string
-        if (debugNow) {
-            console.warn("Using time travel debug to", debugNow);
-            substitutionFactories['date:now'] = () => new Date(debugNow)
-        }
-
         const api = new ApiAdapter({
             baseUrl: createBaseUrl(opts.apiOptions.baseUrl),
             requestDefaults: {

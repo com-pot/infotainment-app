@@ -1,10 +1,9 @@
 import { LocalizedTextContent } from "@typeful/model/types/I18n";
 import { defineDataProvider } from "../panels/dataProviders";
+import { ValiditySpec } from "@typeful/model/types/time";
 
 export default defineDataProvider<QuickMessage[], {now: Date}>({
-    async load(args) {
-        const now = args.now || new Date()
-
+    async load() {
         let messages = (await this.api.req<any[]>('GET', 'com-pot/infotainment-app/quick-messages'))
             .map((message): QuickMessage => {
                 return {
@@ -15,7 +14,7 @@ export default defineDataProvider<QuickMessage[], {now: Date}>({
                 }
             })
 
-        return messages.filter((message) => isValid(now, message.valid))
+        return messages
     }
 })
 
@@ -24,7 +23,7 @@ function parseValidSpec(valid: any): QuickMessage['valid'] {
         return valid
     }
     if (typeof valid === 'object') {
-        const res: QuickMessageValidObj = {}
+        const res: ValiditySpec = {}
         if (valid.since) res.since = new Date(valid.since)
         if (valid.until) res.until = new Date(valid.until)
         return res
@@ -35,24 +34,10 @@ function parseValidSpec(valid: any): QuickMessage['valid'] {
     }
     return true
 }
-function isValid(now: Date, valid: QuickMessage['valid']) {
-    if (typeof valid === 'boolean') {
-        return valid
-    }
-
-    const result = (
-        (!valid.since || valid.since <= now)
-        && (!valid.until || valid.until >= now)
-    )
-
-    return result
-}
-
-type QuickMessageValidObj = {since?: Date, until?: Date}
 
 export type QuickMessage = {
     id: string,
-    valid: boolean | QuickMessageValidObj,
+    valid: boolean | ValiditySpec,
     content: LocalizedTextContent,
     author?: LocalizedTextContent,
 }

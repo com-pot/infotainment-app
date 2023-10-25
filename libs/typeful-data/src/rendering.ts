@@ -33,6 +33,7 @@ export function createRenderer(opts: RendererOpts, globalArgs: GlobalArgs,locale
                 hour: '2-digit',
                 minute: '2-digit',
             }),
+            timeHms: new Intl.DateTimeFormat(opts.localeOverride?.time || localeStr, {hour: '2-digit', minute: '2-digit', second: '2-digit'}),
             date: new Intl.DateTimeFormat(opts.localeOverride?.date || localeStr, {
                 // year: '2-digit',
                 month: '2-digit',
@@ -49,6 +50,9 @@ export function createRenderer(opts: RendererOpts, globalArgs: GlobalArgs,locale
         },
         time(val: Date) {
             return formatters.value.time.format(val)
+        },
+        timeHms(val: Date) {
+            return formatters.value.timeHms.format(val)
         },
         date(val: Date) {
             return formatters.value.date.format(val)

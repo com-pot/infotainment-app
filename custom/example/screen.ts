@@ -32,7 +32,6 @@ const layoutPanel: PanelSpecification = {
             eval: "provider",
             name: '@com-pot/schedule.program-schedule-overview',
             args: {
-              now: { $get: 'date:now' },
               from: { $get: "global", name: "con.dateStart" },
               to: { $get: "global", name: "con.dateEnd" },
             },
@@ -89,9 +88,6 @@ const layoutPanel: PanelSpecification = {
               config: {
                 messages: {
                   eval: "provider", name: "common.quickMessages",
-                  args: {
-                    now: {$get: "date:now"},
-                  },
                 },
 
                 rotationConfig: {

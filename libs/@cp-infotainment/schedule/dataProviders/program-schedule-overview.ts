@@ -19,7 +19,7 @@ type Args = FromSchema<typeof argsSchema> & {now: Date}
 
 export default defineDataProvider<any, Args>({
     async load(args) {
-        let now = args.now || new Date()
+        // let now = args.now || new Date()
 
         const [
             items,
@@ -35,8 +35,10 @@ export default defineDataProvider<any, Args>({
         const groups = hydrator.hydrateOccurrences(occurrencesRaw, items, locations)
 
         const result = groups.filter((group) => group.date.getTime() >= now.getTime())
+        return groups
 
-        return result
+        // const result = groups.filter((group) => group.date.getTime() >= now.getTime())
+        // return result
     },
 })
 
