@@ -9,10 +9,6 @@ export function createTime() {
             _date.setTime(time.timestamp)
             return _date
         },
-
-        format(formatOptions: Intl.DateTimeFormatOptions) {
-            return time.date.toLocaleString(['cs'], formatOptions)
-        },
     })
 
     return time
