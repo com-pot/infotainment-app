@@ -1,28 +1,32 @@
-import { reactive, onBeforeMount, onBeforeUnmount } from "vue"
+import { reactive, onBeforeMount, onBeforeUnmount, inject, provide, App, getCurrentInstance } from "vue"
 
-type UseTimeOptions = {
-    syncWithSystemTime?: true,
-}
-export default function useTime(options?: UseTimeOptions) {
-    const date = new Date()
+export function createTime() {
+    const _date = new Date()
 
     const time = reactive({
-        timestamp: date.getTime(),
-
-        format(formatOptions: Intl.DateTimeFormatOptions) {
-            date.setTime(time.timestamp)
-            return date.toLocaleString(['cs'], formatOptions)
+        timestamp: _date.getTime(),
+        get date(): Date {
+            _date.setTime(time.timestamp)
+            return _date
         },
     })
-
-    if (options?.syncWithSystemTime) {
-        vueLifecycleTicker(() => time.timestamp = Date.now(), 1000)
-    }
 
     return time
 }
 
-export function vueLifecycleTicker(cb: () => any, tDiff: number) {
+export type TimeRef = ReturnType<typeof createTime>
+
+export function provideTime(time: TimeRef, app?: App) {
+    app ? app.provide('app.time', time) : provide('app.time', time)
+}
+export default function useTime(): TimeRef {
+    const time = inject('app.time', null) as TimeRef | null
+    if (time) return time
+
+    return createTime()
+}
+
+export function calibratedTicker(cb: () => any, tDiff: number) {
     let timer: ReturnType<typeof setTimeout>
 
     function tick(tExpected: number) {
@@ -34,10 +38,24 @@ export function vueLifecycleTicker(cb: () => any, tDiff: number) {
         timer = setTimeout(tick, tDiffNext, tNow + tDiffNext)
     }
 
-    onBeforeMount(() => {
-        tick(Date.now())
-    })
-    onBeforeUnmount(() => {
-        clearTimeout(timer)
-    })
+    return {
+        tick,
+        destroy: () => clearTimeout(timer),
+    }
+}
+
+export function syncTimeWithSystem(time: TimeRef) {
+    const ticker = calibratedTicker(() => time.timestamp = Date.now(), 1000)
+
+    if (getCurrentInstance()) {
+        onBeforeMount(() => {
+            ticker.tick(Date.now())
+        })
+        onBeforeUnmount(() => {
+            ticker.destroy() 
+        })
+    } else {
+        // If we're outside of component, run permanently
+        ticker.tick(Date.now())
+    }
 }

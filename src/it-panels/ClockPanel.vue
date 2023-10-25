@@ -1,15 +1,15 @@
 <script lang="ts" setup>
+import { useRender } from '@typeful/data/rendering';
 import useTime from '../components/useTime';
 
-const time = useTime({
-    syncWithSystemTime: true,
-})
+const time = useTime()
+const r = useRender()
 
 </script>
 
 <template>
     <div class="time-box panel">
-        <span class="date">{{ time.format({year: 'numeric', month: '2-digit', day: '2-digit'}) }}</span>
-        <span class="time">{{ time.format({hour: '2-digit', minute: '2-digit', second: '2-digit'}) }}</span>
+        <span class="date">{{ r.date(time.date) }}</span>
+        <span class="time">{{ r.timeHms(time.date) }}</span>
     </div>
 </template>
