@@ -11,6 +11,8 @@ import { createLinearRotation } from '../rotation/linearRotationConsumer';
 import { AsyncRef } from '@typeful/vue-utils/reactivity';
 import { isValid } from '@typeful/model/types/time';
 import useTime from '../components/useTime';
+import { bindScroll } from '../components/snapScroll.vue';
+import { consumers } from 'stream';
 
 
 const props = defineProps({
@@ -40,11 +42,10 @@ const visibleMessages = computed(() => {
 
 const panelEl = ref<HTMLElement>()
 const rotate = createLinearRotation(props.rotationConfig, () => visibleMessages.value.length)
-    .bindScroll(panelEl, {
-        sel: { target: '.active'},
-        offset: 0,
-    })
     .onStep((step) => emit('update:panelState', ['highlightEvent'], step))
+
+bindScroll(panelEl, () => rotate.step, { sel: { target: '.active'}, offset: 0 })
+
 const rotateEngine = createRotationController(props.rotationConfig, (e) => rotate.tick(e), emit)
     .bindReady(() => props.messages, (ready) => ready && rotate.restart?.())
     .bindComponent('ignore')
