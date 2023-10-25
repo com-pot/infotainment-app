@@ -1,9 +1,7 @@
 <script lang="ts" setup>
 import useTime from '../components/useTime';
 
-const time = useTime({
-    syncWithSystemTime: true,
-})
+const time = useTime()
 
 </script>
 

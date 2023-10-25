@@ -9,6 +9,8 @@ import { createRotationController, rotationUi } from '../rotation';
 
 import { createLinearRotation } from '../rotation/linearRotationConsumer';
 import { AsyncRef } from '@typeful/vue-utils/reactivity';
+import { isValid } from '@typeful/model/types/time';
+import useTime from '../components/useTime';
 
 
 const props = defineProps({
@@ -21,14 +23,23 @@ const emit = defineEmits({
 })
 
 const render = useRender()
+const time = useTime()
 
-const messagesComponents = computed(() => !props.messages.ready ? [] : props.messages.value.map((message) => ({
-    content: render.localizedComponent('p', {class: 'content'}, message.content),
-    author: message.author && render.localizedComponent('span', {class: 'author'}, message.author),
-})))
+const visibleMessages = computed(() => {
+    if (!props.messages.ready) return []
+    return props.messages.value
+        .filter((message) => isValid(time.date, message.valid))
+        .map((message) => ({
+            message,
+            components: {
+                content: render.localizedComponent('p', {class: 'content'}, message.content),
+                author: message.author && render.localizedComponent('span', {class: 'author'}, message.author),
+            },
+        }))
+})
 
 const panelEl = ref<HTMLElement>()
-const rotate = createLinearRotation(props.rotationConfig, () => props.messages.ready && props.messages.value.length)
+const rotate = createLinearRotation(props.rotationConfig, () => visibleMessages.value.length)
     .bindScroll(panelEl, {
         sel: { target: '.active'},
         offset: 0,
@@ -44,10 +55,10 @@ const rotateEngine = createRotationController(props.rotationConfig, (e) => rotat
     <div class="panel messages custom-scroll" ref="panelEl">
         <AsyncContent :ctrl="messages">
         <template v-if="messages.ready">
-            <template v-for="(message, i) of messages.value" :key="message.id">
+            <template v-for="(message, i) of visibleMessages" :key="message.id">
                 <div class="message" :class="i === rotate.step && 'active'">
-                    <component :is="messagesComponents[i].content"/>
-                    <component :is="messagesComponents[i].author"/>
+                    <component :is="message.components.content"/>
+                    <component :is="message.components.author"/>
                 </div>
             </template>
         </template>

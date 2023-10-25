@@ -1,6 +1,7 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import itPanelsVuePlugin from './panels/itPanels.vuePlugin'
+import timeVuePlugin from './panels/time.vuePlugin'
 
 import itPanelsDefaultModuleItPanelModule from './panels/itPanelsDefaultModule.itPanelModule'
 import scheduleModuleItPanelModule from '@cp-infotainment/schedule/scheduleModule.itPanelModule'
@@ -20,6 +21,7 @@ createApp(App)
             { value: 'en', icon: "twemoji:flag-united-kingdom" },
         ],
     })
+    .use(timeVuePlugin)
     .use(function typefulRendererPlugin(app) {
         const locCtrl = app._context.provides[localeControllerInjectionKey]
         const renderer =  createRenderer({
