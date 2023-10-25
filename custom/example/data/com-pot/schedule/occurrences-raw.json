@@ -1,146 +1,170 @@
 [
-    [
-      {
-        "item": "reg",
-        "location": "main-courtyard",
-        "time": ["15:00","20:00"]
-      },
-      {
-        "item": "meal:dinner",
-        "time": ["18:00","20:00"]
-      },
-      {
-        "item": "ceremony:opening",
-        "location": "chapel",
-        "time": ["20:30","21:15"]
-      },
-      {
-        "item": "bestiary",
-        "location": "forbidden-forest",
-        "time": ["21:30","22:00"]
-      },
-      {
-        "item": "movie-time",
-        "location": "main-courtyard",
-        "time": ["22:00","23:30"],
-        "params": {
-          "movie.title": {
-            "cs": "Dračí srdce",
-            "en": "Dragonheart"
-          }
-        }
+  {
+    "activity": "reg",
+    "location": "main-courtyard",
+    "day": 1,
+    "time": ["15:00","20:00"]
+  },
+  {
+    "activity": "meal:dinner",
+    "day": 1,
+    "time": ["18:00","20:00"]
+  },
+  {
+    "activity": "ceremony:opening",
+    "location": "chapel",
+    "day": 1,
+    "time": ["20:30","21:15"]
+  },
+  {
+    "activity": "bestiary",
+    "location": "forbidden-forest",
+    "day": 1,
+    "time": ["21:30","22:00"]
+  },
+  {
+    "activity": "movie-time",
+    "location": "main-courtyard",
+    "day": 1,
+    "time": ["22:00","23:30"],
+    "params": {
+      "movie.title": {
+        "cs": "Dračí srdce",
+        "en": "Dragonheart"
       }
-    ],
-    [
-      {
-        "item": "meal:breakfast",
-        "location": "main-courtyard",
-        "time": ["08:00","09:30"]
-      },
-      {
-        "item": "nargyle-attack",
-        "location": "main-courtyard",
-        "time": ["10:00"]
-      },
-      {
-        "item": "live-chess",
-        "location": "second-courtyard",
-        "time": ["10:45","12:00"]
-      },
-      {
-        "item": "meal:lunch",
-        "location": "feast-hall",
-        "time": ["12:00","13:00"]
-      },
-      {
-        "item": "magical-goblet",
-        "time": ["13:45","16:00"]
-      },
-      {
-        "item": "furditch",
-        "location": "meadow:parking-lot",
-        "time": ["16:30","17:45"]
-      },
-      {
-        "item": "meal:dinner",
-        "location": "feast-hall",
-        "time": ["18:00","19:00"]
-      },
-      {
-        "item": "o_w_l-exams",
-        "location": "feast-hall",
-        "time": ["19:15","19:45"]
-      },
-      {
-        "item": "friend-in-need",
-        "location": "main-courtyard",
-        "time": ["20:30","21:00"]
-      },
-      {
-        "item": "house-competition-wrapup",
-        "location": "main-courtyard",
-        "time": ["21:15"]
-      }
-    ],
-    [
-      {
-        "item": "meal:breakfast",
-        "location": "main-courtyard",
-        "time": ["08:00","09:30"]
-      },
-      {
-        "item": "castles-thunderstorm",
-        "location": "main-courtyard",
-        "time": ["10:00","17:00"]
-      },
-      {
-        "item": "meal:lunch",
-        "location": "feast-hall",
-        "time": ["12:00","13:00"]
-      },
-      {
-        "item": "group-photo",
-        "location": "second-courtyard",
-        "time": ["14:00","14:30"],
-        "description": {
-          "en": "Come to the second courtyard to be immortalized in our group photo. Fursuiters are welcome!"
-        }
-      },
-      {
-        "item": "theater:hpf",
-        "location": "theater",
-        "time": ["17:00","17:30"]
-      },
-      {
-        "item": "galleons-fight",
-        "location": "second-courtyard",
-        "time": ["17:30","18:00"]
-      },
-      {
-        "item": "meal:dinner",
-        "location": "feast-hall",
-        "time": ["18:00","19:00"]
-      },
-      {
-        "item": "castle-ball",
-        "location": "main-courtyard",
-        "time": ["20:00","21:00"]
-      }
-    ],
-    [
-      {
-        "item": "meal:breakfast",
-        "location": "main-courtyard",
-        "time": ["08:00","09:30"]
-      },
-      {
-        "item": "meal:lunch",
-        "location": "feast-hall",
-        "time": ["12:00","13:00"]
-      },
-      {
-        "item": "the-end",
-        "time": ["14:00"]
-      }
-    ]
-  ]
+    }
+  },
+
+
+  {
+    "activity": "meal:breakfast",
+    "location": "main-courtyard",
+    "day": 2,
+    "time": ["08:00","09:30"]
+  },
+  {
+    "activity": "nargyle-attack",
+    "location": "main-courtyard",
+    "day": 2,
+    "time": ["10:00"]
+  },
+  {
+    "activity": "live-chess",
+    "location": "second-courtyard",
+    "day": 2,
+    "time": ["10:45","12:00"]
+  },
+  {
+    "activity": "meal:lunch",
+    "location": "feast-hall",
+    "day": 2,
+    "time": ["12:00","13:00"]
+  },
+  {
+    "activity": "magical-goblet",
+    "day": 2,
+    "time": ["13:45","16:00"]
+  },
+  {
+    "activity": "furditch",
+    "location": "meadow:parking-lot",
+    "day": 2,
+    "time": ["16:30","17:45"]
+  },
+  {
+    "activity": "meal:dinner",
+    "location": "feast-hall",
+    "day": 2,
+    "time": ["18:00","19:00"]
+  },
+  {
+    "activity": "o_w_l-exams",
+    "location": "feast-hall",
+    "day": 2,
+    "time": ["19:15","19:45"]
+  },
+  {
+    "activity": "friend-in-need",
+    "location": "main-courtyard",
+    "day": 2,
+    "time": ["20:30","21:00"]
+  },
+  {
+    "activity": "house-competition-wrapup",
+    "location": "main-courtyard",
+    "day": 2,
+    "time": ["21:15"]
+  },
+
+
+  {
+    "activity": "meal:breakfast",
+    "location": "main-courtyard",
+    "day": 3,
+    "time": ["08:00","09:30"]
+  },
+  {
+    "activity": "castles-thunderstorm",
+    "location": "main-courtyard",
+    "day": 3,
+    "time": ["10:00","17:00"]
+  },
+  {
+    "activity": "meal:lunch",
+    "location": "feast-hall",
+    "day": 3,
+    "time": ["12:00","13:00"]
+  },
+  {
+    "activity": "group-photo",
+    "location": "second-courtyard",
+    "day": 3,
+    "time": ["14:00","14:30"],
+    "description": {
+      "en": "Come to the second courtyard to be immortalized in our group photo. Fursuiters are welcome!"
+    }
+  },
+  {
+    "activity": "theater:hpf",
+    "location": "theater",
+    "day": 3,
+    "time": ["17:00","17:30"]
+  },
+  {
+    "activity": "galleons-fight",
+    "location": "second-courtyard",
+    "day": 3,
+    "time": ["17:30","18:00"]
+  },
+  {
+    "activity": "meal:dinner",
+    "location": "feast-hall",
+    "day": 3,
+    "time": ["18:00","19:00"]
+  },
+  {
+    "activity": "castle-ball",
+    "location": "main-courtyard",
+    "day": 3,
+    "time": ["20:00","21:00"]
+  },
+
+
+  {
+    "activity": "meal:breakfast",
+    "location": "main-courtyard",
+    "day": 4,
+    "time": ["08:00","09:30"]
+  },
+  {
+    "activity": "meal:lunch",
+    "location": "feast-hall",
+    "day": 4,
+    "time": ["12:00","13:00"]
+  },
+  {
+    "activity": "the-end",
+    "day": 4,
+    "time": ["14:00"]
+  }
+]

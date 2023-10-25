@@ -6,12 +6,12 @@ import { stateHubUi } from "@typeful/vue-utils/reactivity/stateHub";
 
 import { createRotationController, rotationUi } from "@com-pot/infotainment-app/rotation";
 import { createLinearRotation } from "@com-pot/infotainment-app/rotation/linearRotationConsumer"
-import { ProgramItemOccurence } from "@com-pot/schedule/model/ProgramItemOccurrence";
+import { ActivityOccurrence } from "@com-pot/schedule/model/ProgramItemOccurrence";
 import ProgramEntryDetail from "../components/ProgramEntryDetail.vue"
 import { useRender } from "@typeful/data/rendering";
 
 const props = defineProps({
-    panelData: {type: Object as PropType<AsyncRef<ProgramItemOccurence['app'][]>>, required: true},
+    panelData: {type: Object as PropType<AsyncRef<ActivityOccurrence['app'][]>>, required: true},
     ...rotationUi.props,
 })
 
