@@ -109,7 +109,7 @@ export const createLoader = (api: ApiAdapter, opts: LoaderOpts): PanelDataLoader
 }
 
 const $nada = Symbol('nada')
-const prepareArgument = (arg: any, stateHub?: StateHub) => {
+export const prepareArgument = (arg: any, stateHub?: StateHub) => {
     if (!arg || typeof arg !== 'object') {
         return arg
     }

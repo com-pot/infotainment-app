@@ -3,13 +3,14 @@ import { PropType, ref } from "vue";
 import { AsyncRef } from "@typeful/vue-utils/reactivity";
 import AsyncContent from "@typeful/vue-utils/components/AsyncContent.vue";
 
-import { ActivityOccurrence } from "@com-pot/schedule/model/ProgramItemOccurrence";
 import ProgramEntryDetail from "../components/ProgramEntryDetail.vue"
 import { useRender } from "@typeful/data/rendering";
 import { bindScroll } from "@com-pot/infotainment-app/components/snapScroll.vue";
+import { ProgramEntriesGroup } from "../dataProviders/program-schedule-overview";
 
 const props = defineProps({
-    panelData: {type: Object as PropType<AsyncRef<ActivityOccurrence['app'][]>>, required: true},
+    groups: {type: Object as PropType<AsyncRef<ProgramEntriesGroup[]>>, required: true},
+    iGroup: { type: Number, required: true },
     iActiveOccurrence: {type: Number},
 })
 
@@ -24,6 +25,8 @@ const headerLocalized = {
 const panelEl = ref<HTMLElement>()
 bindScroll(panelEl, () => props.iActiveOccurrence, { sel: { container: '.content', target: '.active'} })
 
+console.log('detailed', props.groups, props.iGroup, props.iActiveOccurrence)
+
 </script>
 
 <template>
@@ -31,11 +34,11 @@ bindScroll(panelEl, () => props.iActiveOccurrence, { sel: { container: '.content
          ref="panelEl"
     >
         <div class="caption separator -lines">{{ render.localized(headerLocalized) }}</div>
-        <AsyncContent :ctrl="panelData" v-if="panelData">
-            <template v-if="panelData.status === 'ready'">
+        <!-- <AsyncContent :state="group ? 'ready' : 'pending'">
+            <template v-if="group">
             <div class="content custom-scroll">
                 <div class="entries auto-flow">
-                    <ProgramEntryDetail v-for="(entry, i) in panelData.value" :key="i"
+                    <ProgramEntryDetail v-for="(entry, i) in group.items" :key="i"
                                         :entry="entry"
                                         :class="i === iActiveOccurrence && 'active'"
 
@@ -44,7 +47,7 @@ bindScroll(panelEl, () => props.iActiveOccurrence, { sel: { container: '.content
                 </div>
             </div>
             </template>
-        </AsyncContent>
+        </AsyncContent> -->
     </div>
 </template>
 
