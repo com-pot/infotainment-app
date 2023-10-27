@@ -24,11 +24,13 @@ function createRender(localeCtrl?: LocaleController) {
 
     const formatters = computed(() => {
         return {
-            time: new Intl.DateTimeFormat(locale.value, {
+            // "cs" to use 24H format
+            time: new Intl.DateTimeFormat("cs", {
                 hour: '2-digit',
                 minute: '2-digit',
             }),
-            date: new Intl.DateTimeFormat(locale.value, {
+            // "cs" to avoid nasty MM/DD format
+            date: new Intl.DateTimeFormat("cs", {
                 // year: '2-digit',
                 month: '2-digit',
                 day: '2-digit',
