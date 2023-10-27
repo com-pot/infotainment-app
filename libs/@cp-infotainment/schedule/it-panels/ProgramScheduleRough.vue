@@ -97,6 +97,7 @@ const rotateEngine = createRotationController(props.rotationConfig, (e) => rotat
          'title title'
          'time location';
         transition: var(--entry-transition);
+        column-gap: 0.5rem;
 
         .title {
             grid-area: title;
