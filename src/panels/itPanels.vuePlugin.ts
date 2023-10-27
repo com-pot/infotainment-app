@@ -78,7 +78,7 @@ function createStaticDataUrlReplaceMiddleware(staticPaths: string[]): RequestMid
         path,
         pathNoExt: path.substring(0, path.length - ".json".length),
     }))
-    
+
     const staticBase = createBaseUrl(import.meta.env.VITE_APP_API_STATIC_URL || "")
     if (!staticBase) {
         if (pathEntries.length) {
@@ -105,7 +105,7 @@ function createBackstageCollectionReplacerMiddleware(): RequestMiddleware {
 
     return (config) => {
         const entry = backstageAliases.find((entry) => config.url.includes(entry.match))
-        console.log("backstage alias", config.url, entry)
+        // console.log("backstage alias", config.url, entry)
         if (!entry) return
 
         return { ...config, url: config.url.replace(entry.match, entry.replace) }

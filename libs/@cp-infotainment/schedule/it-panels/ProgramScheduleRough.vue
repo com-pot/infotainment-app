@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { PropType, ref } from "vue";
+import { PropType, ref, computed } from "vue";
 import AsyncContent from "@typeful/vue-utils/components/AsyncContent.vue";
 import { useRender } from "@typeful/data/rendering";
 import { AsyncRef } from "@typeful/vue-utils/reactivity";
@@ -9,6 +9,7 @@ import { createLinearRotation } from "@com-pot/infotainment-app/rotation/linearR
 import { ProgramEntriesGroup } from "../dataProviders/program-schedule-overview";
 import ProgramEntryDetail from "../components/ProgramEntryDetail.vue"
 import { createRotationController, rotationUi } from "@com-pot/infotainment-app/rotation";
+import { bindScroll } from "@com-pot/infotainment-app/components/snapScroll.vue";
 
 const props = defineProps({
     panelData: {type: Object as PropType<AsyncRef<ProgramEntriesGroup[]>>, required: true},
@@ -26,23 +27,52 @@ const headerLocalized = ref({
     en: "Upcoming program",
 })
 
-const panelEl = ref<HTMLElement>()
-const rotate = createLinearRotation(props.rotationConfig, () => props.panelData.ready && props.panelData.value.length)
-    .bindScroll(panelEl, { sel: { container: '.content', target: '.active'} })
-    .onStep((step) => {
-        const groups = props.panelData.ready && props.panelData.value || []
-        const group = groups[step!]
-        if (!group) {
-            console.warn("No group for step", {groups, step});
-        }
+type PanelEntry = {
+    group: ProgramEntriesGroup,
+    iGroup: number,
+    occurrence: ProgramEntriesGroup["items"][0],
+    iInGroup: number,
+}
+const panelItems = computed(() => {
+    if (!props.panelData.ready) return []
 
-        emit('update:panelState', ['currentDay'], group && group.date || undefined)
+    const entries: PanelEntry[] = []
+    props.panelData.value.forEach((group, iGroup) => {
+        group.items.forEach((occurrence, iInGroup) => {
+            entries.push({
+                group,
+                iGroup,
+                occurrence,
+                iInGroup,
+            })
+        })
     })
+
+    return entries
+})
+const activePanelItem = computed(() => panelItems.value?.[rotate.step ?? -1])
+
+const panelEl = ref<HTMLElement>()
+
+function emitPanelState(step: number) {
+    const entries = panelItems.value
+        const entry = entries[step!]
+        if (!entry) {
+            console.warn("No group for step", {entries, step});
+        }
+        const {group, iGroup, iInGroup} = entry || {}
+
+        emit('update:panelState', ['currentDay'], group?.date)
+        emit('update:panelState', ['iCurrentGroup'], iGroup)
+        emit('update:panelState', ['iActiveOccurrence'], iInGroup)
+}
+
+const rotate = createLinearRotation(props.rotationConfig, () => panelItems.value.length)
+    .onStep((step) => emitPanelState(step!))
+bindScroll(panelEl, () => rotate.step, { sel: { container: '.content', target: '.active'} })
+
 const rotateEngine = createRotationController(props.rotationConfig, (e) => rotate.tick(e), emit)
-    .bindReady(() => props.panelData, () => {
-        const date = props.panelData.ready && props.panelData.value[0]?.date || undefined
-        emit('update:panelState', ['currentDay'], date)
-    })
+    .bindReady(() => props.panelData, () => emitPanelState(0))
     .bindComponent('start')
 
 </script>
@@ -59,8 +89,8 @@ const rotateEngine = createRotationController(props.rotationConfig, (e) => rotat
                 <div class="content auto-flow custom-scroll">
                     <template v-for="(group, i) in panelData.value" :key="group.date.getTime()">
                         <hr class="separator -dots -spaced" v-if="i"/>
-                        <div class="group auto-flow" :class="i === rotate.step && 'active'">
-                            <div class="caption ">{{ render.day(group.date) }}  {{ render.date(group.date) }}</div>
+                        <div class="group auto-flow" :class="i === activePanelItem?.iGroup && 'active'">
+                            <div class="caption">{{ render.day(group.date) }}  {{ render.date(group.date) }}</div>
 
                             <ProgramEntryDetail v-for="(entry, i) in group.items" :key="i"
                                           :entry="entry"

@@ -1,5 +1,6 @@
 import { ComputedRef, watch } from "vue"
 import { AsyncRef } from "../reactivity"
+import { isNil } from "lodash"
 
 export function getMissingParams(component: any, hydratedParams?: [string, AsyncRef|null][]) {
     return Object.entries((component.props || {}) as Record<string, any>)
@@ -7,7 +8,7 @@ export function getMissingParams(component: any, hydratedParams?: [string, Async
             if (!prop.required) {
                 return false
             }
-            const paramValueEntry = hydratedParams?.find(([hydratedName, param]) => name === hydratedName && !!param)
+            const paramValueEntry = hydratedParams?.find(([hydratedName, param]) => name === hydratedName && !isNil(param))
             return !paramValueEntry
         })
 }

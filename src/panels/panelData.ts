@@ -108,19 +108,18 @@ export const createLoader = (api: ApiAdapter, opts: LoaderOpts): PanelDataLoader
     return loader
 }
 
-const $nada = Symbol('nada')
-const prepareArgument = (arg: any, stateHub?: StateHub) => {
+export const prepareArgument = (arg: any, stateHub?: StateHub) => {
     if (!arg || typeof arg !== 'object') {
         return arg
     }
 
     if (arg.eval === 'state') {
         if (!stateHub) {
-            return $nada
+            return null
         }
         const value = stateHub.get(arg.path)
         if (isNil(value) && arg.required) {
-            return $nada
+            return null
         }
         return value
     }
@@ -145,7 +144,7 @@ export const prepareProviderConfig = (config: ProviderConfig, stateHub?: StateHu
     const entries = Object.entries(config.args)
     for (let entry of entries) {
         const value = prepareArgument(entry[1], stateHub)
-        if (value === $nada) {
+        if (value === null) {
             return undefined
         }
         entry[1] = value

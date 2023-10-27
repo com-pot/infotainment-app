@@ -19,8 +19,6 @@ type Args = FromSchema<typeof argsSchema> & {now: Date}
 
 export default defineDataProvider<any, Args>({
     async load(args) {
-        // let now = args.now || new Date()
-
         const [
             activities,
             locations,
@@ -35,14 +33,10 @@ export default defineDataProvider<any, Args>({
             // this.api.req<{items: ActivityOccurrence["api"][]}>('GET', 'com-pot/schedule/occurrences-raw'),
         ])
 
-        const hydrator = createOccurrencesHydrator(new Date(args.from)) 
+        const hydrator = createOccurrencesHydrator(new Date(args.from))
 
         const groups = hydrator.hydrateOccurrences(occurrencesRaw.items, activities.items, locations.items)
         return groups
-
-        // const result = groups.filter((group) => group.date.getTime() >= now.getTime())
-
-        // return result
     },
 })
 
@@ -79,7 +73,7 @@ function createOccurrencesHydrator(startDate: Date) {
             .map((occurrence): ProgramEntriesGroup['items'][number]|null => {
                 const activity = activities.find((activity) => activity.id === occurrence.activity || activity.slug === occurrence.activity)!
                 const time = makeOccurenceTime(occurrence)
-                
+
                 if (!activity || !time?.start) {
                     console.error(`Invalid occurrence spec '[${occurrence.day}]${occurrence.activity}'`, occurrence)
                     return null
@@ -99,7 +93,7 @@ function createOccurrencesHydrator(startDate: Date) {
                     params: occurrence.params as any,
                 }
             })
-            
+
         return itemsOrInvalid
             .filter(Boolean) as NonNullable<typeof itemsOrInvalid[number]>[]
     }
