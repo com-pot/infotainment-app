@@ -1,34 +1,39 @@
-import { computed, h } from "vue"
-import { useGlobalArgs } from "@com-pot/infotainment-app/panels/globalArgs"
+import { App, computed, h, inject, provide } from "vue"
+import { GlobalArgs } from "@com-pot/infotainment-app/panels/globalArgs"
 import { Localized, LocalizedTextContent } from "@typeful/model/types/I18n"
-import { LocaleController, useLocaleController } from "@cp-infotainment/i18n/localeController"
+import { LocaleController } from "@cp-infotainment/i18n/localeController"
 
-const rendererCache = new WeakMap()
-const noController = {s: 'no locale'}
 
-export function useRender(): ReturnType<typeof createRender> {
-    const localeController = useLocaleController()
-    const key = localeController || noController
-    if (!rendererCache.has(key)) {
-        rendererCache.set(key, createRender(localeController))
-    }
-
-    return rendererCache.get(key)
+export const rendererDiKey = '@typeful/data:renderer'
+export function provideRenderer(renderer: ReturnType<typeof createRenderer>, app?: App) {
+    app ? app.provide(rendererDiKey, renderer) : provide(rendererDiKey, renderer)
+}
+export function useRender(): ReturnType<typeof createRenderer> {
+    return inject(rendererDiKey)!
 }
 
-function createRender(localeCtrl?: LocaleController) {
-    const globalArgs = useGlobalArgs()
+type RendererOpts = {
+    defaultLocale: string,
+    localeOverride?: {
+        // "cs" to use 24H format
+        time?: string,
+        date?: string,
+        day?: string,
+    },
+}
+export function createRenderer(opts: RendererOpts, globalArgs: GlobalArgs,localeCtrl?: LocaleController) {
     const locale = computed(() => {
-        return localeCtrl?.activeLocale || 'cs'
+        return localeCtrl?.activeLocale || opts.defaultLocale
     })
 
     const formatters = computed(() => {
+        const localeStr = locale.value
         return {
-            time: new Intl.DateTimeFormat(locale.value, {
+            time: new Intl.DateTimeFormat(opts.localeOverride?.time || localeStr, {
                 hour: '2-digit',
                 minute: '2-digit',
             }),
-            date: new Intl.DateTimeFormat(locale.value, {
+            date: new Intl.DateTimeFormat(opts.localeOverride?.date || localeStr, {
                 // year: '2-digit',
                 month: '2-digit',
                 day: '2-digit',
@@ -38,7 +43,7 @@ function createRender(localeCtrl?: LocaleController) {
 
     return {
         day(val: Date) {
-            return val.toLocaleDateString(locale.value, {
+            return val.toLocaleDateString(opts.localeOverride?.day || locale.value, {
                 weekday: 'long',
             })
         },

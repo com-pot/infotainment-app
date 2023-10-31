@@ -9,6 +9,9 @@ import i18nPlugin from '@cp-infotainment/i18n/i18n.plugin'
 
 import "./sass/infotainment.scss"
 import { importAsObj, mapImporters, selectImporter } from '@typeful/vite-custom/selectiveImport'
+import { provideRenderer, createRenderer } from '@typeful/data/rendering'
+import { localeControllerInjectionKey } from '@cp-infotainment/i18n/localeController'
+import { globalArgsInjectionKey } from './panels/globalArgs'
 
 createApp(App)
     .use(i18nPlugin, {
@@ -44,6 +47,19 @@ createApp(App)
 
             return importAsObj(importFn)
         },
+    })
+    .use(function typefulRendererPlugin(app) {
+        const globalArgs = app._context.provides[globalArgsInjectionKey]
+        const locCtrl = app._context.provides[localeControllerInjectionKey]
+        const renderer =  createRenderer({
+            defaultLocale: "cs",
+            localeOverride: {
+                time: "cs", // to use 24h format
+                date: "cs", // to avoid MM/DD format
+            },
+        }, globalArgs, locCtrl)
+
+        provideRenderer(renderer, app)
     })
     .mount('#app')
 
