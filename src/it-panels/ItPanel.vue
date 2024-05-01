@@ -35,7 +35,6 @@ export default defineComponent({
             const paramEntries: [string, AsyncRef|null|any][] = providerParams
                 .map(([name, param]) => {
                     if (param?.eval === "state") {
-                        if (name === 'group') return [name, null]
                         const value = prepareArgument(param, stateHub)
                         return [name, value]
                     }
@@ -56,6 +55,7 @@ export default defineComponent({
         return () => {
             const entry = panelEntry.value
             if (!entry) {
+                console.error("no panel")
                 return h('div', {
                     class: 'panel error-panel',
                 }, [
@@ -65,6 +65,7 @@ export default defineComponent({
 
             const missingParams = getMissingParams(entry.component, hydratedPanelParams.value)
             if (missingParams?.length) {
+                console.error("no params", entry.fullName)
                 return h('div', {
                     class: 'panel error-panel',
                 }, [
@@ -78,6 +79,7 @@ export default defineComponent({
                 }
             })
             if (unavailableProviders?.length) {
+                console.error("busy panel")
                 return h(BusySpinner, {
                     class: 'panel',
                 }, ["Providers not available: " + unavailableProviders.join(', ')])
@@ -85,8 +87,7 @@ export default defineComponent({
 
             const applicableProps: Record<string, any> = Object.fromEntries(hydratedPanelParams.value);
 
-            console.log("create panel", entry.fullName, applicableProps)
-
+            console.log("render", entry.fullName)
             return h(entry.component, applicableProps)
         }
     },

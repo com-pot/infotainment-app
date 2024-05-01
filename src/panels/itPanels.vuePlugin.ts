@@ -53,7 +53,7 @@ export default {
         }
 
         const api = new ApiAdapter({
-            baseUrl: createBaseUrl(opts.apiOptions.baseUrl),
+            baseUrl: createBaseUrl(opts.apiOptions.baseUrl || ""),
             requestDefaults: {
                 accept: 'json',
             },
@@ -93,6 +93,7 @@ function createStaticDataUrlReplaceMiddleware(staticPaths: string[]): RequestMid
         return {...config, url: staticBase + staticPath.path}
     }
 }
+
 
 function createBaseUrl(baseUrl: string) {
     if (baseUrl.startsWith('//')) {

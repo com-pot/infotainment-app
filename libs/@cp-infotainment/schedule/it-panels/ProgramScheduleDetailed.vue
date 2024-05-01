@@ -1,7 +1,5 @@
 <script lang="ts" setup>
-import { PropType, ref } from "vue";
-import { AsyncRef } from "@typeful/vue-utils/reactivity";
-import AsyncContent from "@typeful/vue-utils/components/AsyncContent.vue";
+import { PropType, computed, ref } from "vue";
 
 import ProgramEntryDetail from "../components/ProgramEntryDetail.vue"
 import { useRender } from "@typeful/data/rendering";
@@ -9,12 +7,10 @@ import { bindScroll } from "@com-pot/infotainment-app/components/snapScroll.vue"
 import { ProgramEntriesGroup } from "../dataProviders/program-schedule-overview";
 
 const props = defineProps({
-    groups: {type: Object as PropType<AsyncRef<ProgramEntriesGroup[]>>, required: true},
+    groups: {type: Object as PropType<ProgramEntriesGroup[]>, required: true},
     iGroup: { type: Number, required: true },
     iActiveOccurrence: {type: Number},
 })
-
-const emit = defineEmits({})
 
 const render = useRender()
 const headerLocalized = {
@@ -22,10 +18,15 @@ const headerLocalized = {
     en: "Daily overview",
 }
 
+const group = computed(() => {
+    const group = props.groups[props.iGroup]
+    
+    return group
+})
+
 const panelEl = ref<HTMLElement>()
 bindScroll(panelEl, () => props.iActiveOccurrence, { sel: { container: '.content', target: '.active'} })
 
-console.log('detailed', props.groups, props.iGroup, props.iActiveOccurrence)
 
 </script>
 
@@ -34,20 +35,16 @@ console.log('detailed', props.groups, props.iGroup, props.iActiveOccurrence)
          ref="panelEl"
     >
         <div class="caption separator -lines">{{ render.localized(headerLocalized) }}</div>
-        <!-- <AsyncContent :state="group ? 'ready' : 'pending'">
-            <template v-if="group">
-            <div class="content custom-scroll">
-                <div class="entries auto-flow">
-                    <ProgramEntryDetail v-for="(entry, i) in group.items" :key="i"
-                                        :entry="entry"
-                                        :class="i === iActiveOccurrence && 'active'"
+        <div class="content custom-scroll">
+            <div class="entries auto-flow">
+                <ProgramEntryDetail v-for="(entry, i) in group.items" :key="i"
+                                    :entry="entry"
+                                    :class="i === iActiveOccurrence && 'active'"
 
-                                        show-description
-                    />
-                </div>
+                                    show-description
+                />
             </div>
-            </template>
-        </AsyncContent> -->
+        </div>
     </div>
 </template>
 

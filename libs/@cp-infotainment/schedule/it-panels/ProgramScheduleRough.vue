@@ -63,6 +63,7 @@ function emitPanelState(step: number) {
         const {group, iGroup, iInGroup} = entry || {}
 
         emit('update:panelState', ['currentDay'], group?.date)
+        emit('update:panelState', ['groups'], props.panelData.ready && props.panelData.value || [])
         emit('update:panelState', ['iCurrentGroup'], iGroup)
         emit('update:panelState', ['iActiveOccurrence'], iInGroup)
 }

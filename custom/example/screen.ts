@@ -54,14 +54,9 @@ const layoutPanel: PanelSpecification = {
         name: 'schedule-detail',
         type: '@com-pot/schedule.program-schedule-detailed',
         config: {
-          panelData: {
-            eval: "provider",
-            name: '@com-pot/schedule.program-schedule',
-            args: {
-              groups: { eval: "provider", name: "~shared", args: { key: "schedule-groups" } },
-              day: { eval: 'state', required: true, path: ['schedule-rough', 'currentDay'], },
-            },
-          },
+          groups: { required: true, eval: "state", path: ["schedule-rough", "groups"] },
+          iGroup: { required: true, eval: 'state', path: ['schedule-rough', 'iCurrentGroup'], },
+          iActiveOccurrence: { required: true, eval: 'state', path: ['schedule-rough', 'iActiveOccurrence'], },
 
           rotationConfig: {
             type: 'interval',

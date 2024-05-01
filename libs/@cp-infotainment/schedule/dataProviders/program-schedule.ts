@@ -12,9 +12,9 @@ const argsSchema = {
 type Args = FromSchema<typeof argsSchema>
 
 export default defineDataProvider<any, Args>({
-    async load(args) {
+    async load(loader, args) {
         const day = args.day as unknown as Date
-        const overviewGroups = await this.load(args.groups as any) as ProgramEntriesGroup[]
+        const overviewGroups = await loader.load(args.groups as any) as ProgramEntriesGroup[]
 
         const group = overviewGroups.find((group) => group.date.getDate() === day.getDate())
         if (!group) {

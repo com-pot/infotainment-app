@@ -1,37 +1,40 @@
-import { defineDataProvider } from "@com-pot/infotainment-app/panels/dataProviders";
-import { Activity } from "@com-pot/schedule/model/Activity";
+import { defineDataProvider, PanelDataLoader } from "@com-pot/infotainment-app/panels/dataProviders";
+import { ModelState } from "@typeful/model";
+import { Activity } from "@com-pot/schedule/model/ProgramScheduleItem";
 import { OccurrenceLocation } from "@com-pot/schedule/model/OccurrenceLocation";
-import { ActivityOccurrence } from "libs/com-pot/schedule/src/model/ActivityOccurrence";
+import { ActivityOccurrence } from "libs/com-pot/schedule/src/model/ProgramItemOccurrence";
 
 import { FromSchema } from "json-schema-to-ts";
-import { createOccurrencesHydrator } from "./program-schedule-overview";
+import { createOccurrencesHydrator } from "./_programData";
+
 
 const argsSchema = {
     type: 'object',
     properties: {
+        meet: {type: "string"},
         from: {type: 'string', format: 'date'},
         to: {type: 'string', format: 'date'},
-        meet: {type: "string"},
     },
-    required: ['from', 'to', 'meet'],
+    required: ['meet', 'from', 'to'],
 } as const
-type Args = FromSchema<typeof argsSchema>
+type Args = FromSchema<typeof argsSchema> & {now: Date}
 
-export default defineDataProvider<any, Args>({
-    async load(args) {
+export default defineDataProvider<unknown, Args>({
+    async load(loader, args) {
+        const { meet } = args
         const [
             activities,
             locations,
             occurrencesRaw,
         ] = await Promise.all([
-            this.api.req<{items: Activity['app'][]}>('GET', 'backstage/typeful/collection/_compot_schedule__Activities/items?_perPage=100&meet=fhp'),
-            this.api.req<{items: OccurrenceLocation['app'][]}>('GET', 'backstage/typeful/collection/_compot_locations__Places/items?_perPage=100&meet=fhp'),
-            this.api.req<{items: ActivityOccurrence["api"][]}>('GET', 'backstage/typeful/collection/_compot_schedule__ActivityOccurrences/items?_perPage=150&meet=fhp'),
+            loader.api.req<{items: Activity['app'][]}>('GET', 'backstage/typeful/collection/_compot_schedule__Activities/items?_perPage=100&meet=' + meet),
+            loader.api.req<{items: OccurrenceLocation['app'][]}>('GET', 'backstage/typeful/collection/_compot_locations__Places/items?_perPage=100&meet=' + meet),
+            loader.api.req<{items: ActivityOccurrence["api"][]}>('GET', 'backstage/typeful/collection/_compot_schedule__ActivityOccurrences/items?_perPage=150&meet=' + meet),
         ])
 
-        const hydrator = createOccurrencesHydrator(new Date(args.from))
-        const groups = hydrator.hydrateOccurrences(occurrencesRaw.items, activities.items, locations.items)
+        const hydrator = createOccurrencesHydrator(new Date(args.from)) 
 
+        const groups = hydrator.hydrateOccurrences(occurrencesRaw.items, activities.items, locations.items)
         return groups
     },
 })

@@ -2,14 +2,26 @@ import { ComputedRef, watch } from "vue"
 import { AsyncRef } from "../reactivity"
 
 export function getMissingParams(component: any, hydratedParams?: [string, AsyncRef|null][]) {
-    return Object.entries((component.props || {}) as Record<string, any>)
-        .filter(([name, prop]) => {
-            if (!prop.required) {
-                return false
-            }
-            const paramValueEntry = hydratedParams?.find(([hydratedName, param]) => name === hydratedName && !!param)
-            return !paramValueEntry
-        })
+    const requiredPropsEntries = Object.entries((component.props || {}) as Record<string, any>)
+        .filter(([name, prop]) => prop.required)
+
+        const hydrated = Object.fromEntries(hydratedParams || [])
+
+        const unprovidedPropsEntries = requiredPropsEntries
+            .filter(([name]) => {
+                if (!(name in hydrated)) return true
+
+                const value = hydrated[name]
+                return !value && value !== 0
+            })
+
+    // unprovidedPropsEntries.length && console.log({
+    //     required: Object.fromEntries(requiredPropsEntries),
+    //     unprovided: Object.fromEntries(unprovidedPropsEntries),
+    //     hydrated: Object.fromEntries(hydratedParams || []),
+    // })
+
+    return unprovidedPropsEntries
 }
 
 export function watchPolling(ref: ComputedRef<[string, any][]>) {
