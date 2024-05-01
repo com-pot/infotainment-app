@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { PropType, ref } from "vue";
+import { PropType, ref, computed } from "vue";
 import AsyncContent from "@typeful/vue-utils/components/AsyncContent.vue";
 import { useRender } from "@typeful/data/rendering";
 import { AsyncRef } from "@typeful/vue-utils/reactivity";
@@ -9,6 +9,7 @@ import { createLinearRotation } from "@com-pot/infotainment-app/rotation/linearR
 import { ProgramEntriesGroup } from "../dataProviders/program-schedule-overview";
 import ProgramEntryDetail from "../components/ProgramEntryDetail.vue"
 import { createRotationController, rotationUi } from "@com-pot/infotainment-app/rotation";
+import { bindScroll } from "@com-pot/infotainment-app/components/snapScroll.vue";
 
 const props = defineProps({
     panelData: {type: Object as PropType<AsyncRef<ProgramEntriesGroup[]>>, required: true},
@@ -26,23 +27,40 @@ const headerLocalized = ref({
     en: "Upcoming program",
 })
 
-const panelEl = ref<HTMLElement>()
-const rotate = createLinearRotation(props.rotationConfig, () => props.panelData.ready && props.panelData.value.length)
-    .bindScroll(panelEl, { sel: { container: '.content', target: '.active'} })
-    .onStep((step) => {
-        const groups = props.panelData.ready && props.panelData.value || []
-        const group = groups[step!]
-        if (!group) {
-            console.warn("No group for step", {groups, step});
-        }
+type PanelEntry = {
+    group: ProgramEntriesGroup,
+    occurrence: ProgramEntriesGroup["items"][0],
+    iInGroup: number,
+}
+const panelItems = computed(() => {
+    if (!props.panelData.ready) return []
 
-        emit('update:panelState', ['currentDay'], group && group.date || undefined)
-    })
+    const entries: PanelEntry[] = []
+
+    return entries
+})
+
+const panelEl = ref<HTMLElement>()
+
+function emitPanelState(step: number) {
+    const entries = panelItems.value
+        const entry = entries[step!]
+        if (!entry) {
+            console.warn("No group for step", {entries, step});
+        }
+        const {group, occurrence, iInGroup} = entry || {}
+
+        emit('update:panelState', ['currentDay'], group?.date)
+        emit('update:panelState', ['currentGroup'], group)
+        emit('update:panelState', ['iActiveOccurrence'], iInGroup)
+}
+
+const rotate = createLinearRotation(props.rotationConfig, () => panelItems.value.length)
+    .onStep((step) => emitPanelState(step!))
+bindScroll(panelEl, () => rotate.step, { sel: { container: '.content', target: '.active'} })
+
 const rotateEngine = createRotationController(props.rotationConfig, (e) => rotate.tick(e), emit)
-    .bindReady(() => props.panelData, () => {
-        const date = props.panelData.ready && props.panelData.value[0]?.date || undefined
-        emit('update:panelState', ['currentDay'], date)
-    })
+    .bindReady(() => props.panelData, () => emitPanelState(0))
     .bindComponent('start')
 
 </script>

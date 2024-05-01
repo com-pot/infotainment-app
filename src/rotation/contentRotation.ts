@@ -49,8 +49,8 @@ export function createRotationController(rotationConfig: RotationConfig, tick: (
             ctrlConsumer.tick(e || new Event('tick:manual'))
         },
         bindComponent(onMount = 'ignore', beforeUnmount = 'stop') {
-            onMount === 'start' && onMounted(() => engineCtrl.start())
-            beforeUnmount === 'stop' && onBeforeUnmount(() => engineCtrl.stop())
+            onMounted(() => engineCtrl.start())
+            onBeforeUnmount(() => engineCtrl.stop())
 
             return this
         },

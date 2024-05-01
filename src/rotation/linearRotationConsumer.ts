@@ -1,12 +1,9 @@
-import { isNil } from "lodash";
-import { nextTick, onMounted, reactive, Ref, watch, WatchOptions } from "vue";
-import { scrollContentTo, ScrollContentToOptions } from "../components/snapScroll";
+import { reactive, watch, WatchOptions } from "vue";
+
 import { RotationConsumer } from "./rotationConsumer";
 
 export type LinearRotationConsumer = RotationConsumer & {
     step: number | undefined,
-
-    bindScroll(parent: Ref<HTMLElement|undefined>, opts: ScrollContentToOptions): LinearRotationConsumer,
     onStep(cb: (step: number | undefined) => void, options?: WatchOptions): LinearRotationConsumer,
 }
 
@@ -42,15 +39,6 @@ export function createLinearRotation(rotationConfig: LinearRotationConfig, total
                 step, prevStep,
                 totalSteps,
             }
-        },
-
-        bindScroll(el, opts) {
-            onMounted(() => {
-                watch(() => consumer.step, (step) => nextTick(() => {
-                    !isNil(step) && el.value && scrollContentTo(el.value, opts)
-                }))
-            })
-            return this
         },
 
         onStep(cb, options) {
