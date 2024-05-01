@@ -19,8 +19,8 @@
     },
     {
         "content": {
-            "type": "plain",
-            "text": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Expedita animi magni excepturi, mollitia dolores explicabo, molestiae fuga culpa recusandae, totam obcaecati consequuntur corporis iure labore nesciunt sequi."
+            "cs": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Expedita animi magni excepturi, mollitia dolores explicabo, molestiae fuga culpa recusandae, totam obcaecati consequuntur corporis iure labore nesciunt sequi.",
+            "en": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Expedita animi magni excepturi, mollitia dolores explicabo, molestiae fuga culpa recusandae, totam obcaecati consequuntur corporis iure labore nesciunt sequi."
         },
         "author": {
             "cs": "Latinomancer",
