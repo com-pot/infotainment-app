@@ -1,17 +1,16 @@
 <script lang="ts" setup>
-import { PropType, ref } from "vue";
-import { AsyncRef } from "@typeful/vue-utils/reactivity";
-import AsyncContent from "@typeful/vue-utils/components/AsyncContent.vue";
+import { PropType, ref, watch } from "vue";
 import { stateHubUi } from "@typeful/vue-utils/reactivity/stateHub";
 
 import { createRotationController, rotationUi } from "@com-pot/infotainment-app/rotation";
 import { createLinearRotation } from "@com-pot/infotainment-app/rotation/linearRotationConsumer"
-import { ActivityOccurrence } from "@com-pot/schedule/model/ActivityOccurrence";
+
 import ProgramEntryDetail from "../components/ProgramEntryDetail.vue"
 import { useRender } from "@typeful/data/rendering";
+import { ProgramEntriesGroup } from "../dataProviders/program-schedule-overview";
 
 const props = defineProps({
-    panelData: {type: Object as PropType<AsyncRef<ActivityOccurrence['app'][]>>, required: true},
+    group: {type: Object as PropType<ProgramEntriesGroup>, required: true},
     ...rotationUi.props,
 })
 
@@ -27,12 +26,13 @@ const headerLocalized = {
 }
 
 const panelEl = ref<HTMLElement>()
-const rotate = createLinearRotation(props.rotationConfig, () => props.panelData?.ready && props.panelData.value.length)
+const rotate = createLinearRotation(props.rotationConfig, () => props.group.items.length)
     .bindScroll(panelEl, { sel: { container: '.content', target: '.active'} })
     .onStep((step) => emit('update:panelState', ['highlightEvent'], step))
 const rotateEngine = createRotationController(props.rotationConfig, (e) => rotate.tick(e), emit)
-    .bindReady(() => props.panelData, (ready) => ready && rotate.restart?.())
     .bindComponent('ignore')
+
+watch(() => props.group, () => rotate.restart?.())
 
 </script>
 
@@ -43,20 +43,17 @@ const rotateEngine = createRotationController(props.rotationConfig, (e) => rotat
         <div class="caption separator -lines"
              @click.raw="rotateEngine.tick($event)"
         >{{ render.localized(headerLocalized) }}</div>
-        <AsyncContent :ctrl="panelData" v-if="panelData">
-            <template v-if="panelData.status === 'ready'">
-            <div class="content custom-scroll">
-                <div class="entries auto-flow">
-                    <ProgramEntryDetail v-for="(entry, i) in panelData.value" :key="i"
-                                        :entry="entry"
-                                        :class="i === rotate.step && 'active'"
+        
+        <div class="content custom-scroll">
+            <div class="entries auto-flow">
+                <ProgramEntryDetail v-for="(entry, i) in group.items" :key="i"
+                                    :entry="entry"
+                                    :class="i === rotate.step && 'active'"
 
-                                        show-description
-                    />
-                </div>
+                                    show-description
+                />
             </div>
-            </template>
-        </AsyncContent>
+        </div>
     </div>
 </template>
 

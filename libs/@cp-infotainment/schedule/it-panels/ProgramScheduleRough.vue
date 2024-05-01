@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { PropType, ref } from "vue";
+import { PropType, computed, ref } from "vue";
 import AsyncContent from "@typeful/vue-utils/components/AsyncContent.vue";
 import { useRender } from "@typeful/data/rendering";
 import { AsyncRef } from "@typeful/vue-utils/reactivity";
@@ -9,6 +9,8 @@ import { createLinearRotation } from "@com-pot/infotainment-app/rotation/linearR
 import { ProgramEntriesGroup } from "../dataProviders/program-schedule-overview";
 import ProgramEntryDetail from "../components/ProgramEntryDetail.vue"
 import { createRotationController, rotationUi } from "@com-pot/infotainment-app/rotation";
+import useTime from "@com-pot/infotainment-app/components/useTime";
+import { groupOnlyVisible } from "../utils/schedule";
 
 const props = defineProps({
     panelData: {type: Object as PropType<AsyncRef<ProgramEntriesGroup[]>>, required: true},
@@ -19,6 +21,7 @@ const emit = defineEmits({
     ...stateHubUi.emits,
 })
 
+const time = useTime()
 const render = useRender()
 
 const headerLocalized = ref({
@@ -26,22 +29,34 @@ const headerLocalized = ref({
     en: "Upcoming program",
 })
 
+const visibleGroups = computed(() => {
+    const groups = props.panelData.ready && props.panelData.value || []
+
+    return groups
+        .map((group) => groupOnlyVisible(group, time.timestamp))
+        .filter((group) => group.items.length)
+})
+
 const panelEl = ref<HTMLElement>()
-const rotate = createLinearRotation(props.rotationConfig, () => props.panelData.ready && props.panelData.value.length)
+const rotate = createLinearRotation(props.rotationConfig, () => props.panelData.ready && visibleGroups.value.length)
     .bindScroll(panelEl, { sel: { container: '.content', target: '.active'} })
     .onStep((step) => {
-        const groups = props.panelData.ready && props.panelData.value || []
+        const groups = visibleGroups.value || []
         const group = groups[step!]
         if (!group) {
             console.warn("No group for step", {groups, step});
         }
 
+        emit('update:panelState', ['visibleGroup'], group)
         emit('update:panelState', ['currentDay'], group && group.date || undefined)
     })
 const rotateEngine = createRotationController(props.rotationConfig, (e) => rotate.tick(e), emit)
     .bindReady(() => props.panelData, () => {
-        const date = props.panelData.ready && props.panelData.value[0]?.date || undefined
-        emit('update:panelState', ['currentDay'], date)
+        const group = props.panelData.ready ? visibleGroups.value[0] : null
+        
+        emit('update:panelState', ['visibleGroup'], group)
+        emit('update:panelState', ['currentDay'], group?.date)
+        
     })
     .bindComponent('start')
 
@@ -57,7 +72,7 @@ const rotateEngine = createRotationController(props.rotationConfig, (e) => rotat
         <AsyncContent :ctrl="panelData">
             <template v-if="panelData.status === 'ready'">
                 <div class="content auto-flow custom-scroll">
-                    <template v-for="(group, i) in panelData.value" :key="group.date.getTime()">
+                    <template v-for="(group, i) in visibleGroups" :key="group.date.getTime()">
                         <hr class="separator -dots -spaced" v-if="i"/>
                         <div class="group auto-flow" :class="i === rotate.step && 'active'">
                             <div class="caption ">{{ render.day(group.date) }}  {{ render.date(group.date) }}</div>
