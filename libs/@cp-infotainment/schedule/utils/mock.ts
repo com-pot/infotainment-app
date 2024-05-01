@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker"
-import { ProgramItemOccurence } from "@com-pot/schedule/model/ProgramItemOccurrence"
+import { ActivityOccurrence } from "@com-pot/schedule/model/ActivityOccurrence"
 import { OccurrenceLocation } from "@com-pot/schedule/model/OccurrenceLocation"
-import { ProgramScheduleItem } from "@com-pot/schedule/model/ProgramScheduleItem"
+import { Activity } from "@com-pot/schedule/model/Activity"
 
 const programEntryParams = {
     adjs: ['Heinous', 'Frivolous', 'Wealthy', 'Ground-shattering', 'Fruitless', 'Gruesome', 'Humble', 'Throne'],
@@ -12,21 +12,21 @@ const programEntryParams = {
 function randomPick<T>(items: T[]): T {
     return items[Math.floor(Math.random() * items.length)]
 }
-export const mockItemOccurence = (locales: string[], day?: Date): ProgramItemOccurence['app'] => {
-
-    const start = day ? new Date(day) : new Date()
+export const mockItemOccurence = (locales: string[], day: number, startDate: Date): ActivityOccurrence['app'] => {
+    const start = new Date(startDate)
     start.setHours(Math.random() * 24, Math.random() * 60)
     const end = new Date(start)
     end.setMinutes(end.getMinutes() + Math.floor(2 + Math.random() * 4) * 15)
     
     return {
-        item: mockProgramItem(locales),
+        activity: mockProgramItem(locales),
         location: mockOccurrenceLocation(locales),
-        time: { start, end },
+        day,
+        start, end,
     }
 }
 
-export const mockProgramItem = (locales: string[]): ProgramScheduleItem['app'] => {
+export const mockProgramItem = (locales: string[]): Activity['app'] => {
     const adj = randomPick(programEntryParams.adjs)
     const noun = randomPick(programEntryParams.nouns)
 

@@ -1,8 +1,8 @@
 import { defineDataProvider } from "@com-pot/infotainment-app/panels/dataProviders";
 import { ModelState } from "@typeful/model";
-import { ProgramScheduleItem } from "@com-pot/schedule/model/ProgramScheduleItem";
+import { Activity } from "@com-pot/schedule/model/Activity";
 import { OccurrenceLocation } from "@com-pot/schedule/model/OccurrenceLocation";
-import { OccurrenceItemRawData, ProgramItemOccurence } from "libs/com-pot/schedule/src/model/ProgramItemOccurrence";
+import { ActivityOccurrenceRawSpec, ActivityOccurrence } from "libs/com-pot/schedule/src/model/ActivityOccurrence";
 
 import { FromSchema } from "json-schema-to-ts";
 import * as tinyduration from "tinyduration"
@@ -20,17 +20,17 @@ type Args = FromSchema<typeof argsSchema>
 export default defineDataProvider<any, Args>({
     async load(args) {
         const [
-            items,
+            activities,
             locations,
             occurrencesRaw,
         ] = await Promise.all([
-            this.api.req<ProgramScheduleItem['app'][]>('GET', 'com-pot/schedule/items'),
+            this.api.req<Activity['app'][]>('GET', 'com-pot/schedule/items'),
             this.api.req<OccurrenceLocation['app'][]>('GET', 'com-pot/schedule/locations'),
-            this.api.req<OccurrenceItemRawData[][]>('GET', 'com-pot/schedule/occurrences-raw'),
+            this.api.req<ActivityOccurrenceRawSpec[]>('GET', 'com-pot/schedule/occurrences-raw'),
         ])
 
         const hydrator = createOccurrencesHydrator(new Date(args.from))
-        const groups = hydrator.hydrateOccurrences(occurrencesRaw, items, locations)
+        const groups = hydrator.hydrateOccurrences(occurrencesRaw, activities, locations)
 
         return groups
     },
@@ -38,7 +38,7 @@ export default defineDataProvider<any, Args>({
 
 export type ProgramEntriesGroup<TState extends ModelState = 'app'> = {
     date: Date,
-    items: ProgramItemOccurence[TState][],
+    items: ActivityOccurrence[TState][],
 }
 
 function createOccurrencesHydrator(startDate: Date) {
@@ -56,20 +56,20 @@ function createOccurrencesHydrator(startDate: Date) {
         return date
     }
 
-    const makeOccurenceTime = (range: string[], iDay: number): ProgramItemOccurence['app']['time'] => {
+    const makeOccurenceTime = (range: string[], iDay: number): Pick<ActivityOccurrence['app'], "start" | "end"> => {
         return {start: makeDate(iDay, range[0])!, end: makeDate(iDay, range[1])}
     }
 
     const createOccurrencesGroup = (
-        group: OccurrenceItemRawData[], iDay: number,
-        scheduleItems: ProgramScheduleItem['app'][],
+        group: ActivityOccurrenceRawSpec[], iDay: number,
+        activities: Activity['app'][],
         locations: OccurrenceLocation['app'][],
     ): ProgramEntriesGroup => {
         const itemsOrInvalid = group
-            .map((occurrence: OccurrenceItemRawData, iOcc): ProgramEntriesGroup['items'][number]|null => {
-                const item = scheduleItems.find((item) => item.id === occurrence.item)!
+            .map((occurrence: ActivityOccurrenceRawSpec, iOcc): ProgramEntriesGroup['items'][number]|null => {
+                const activity = activities.find((activity) => activity.id === occurrence.activity)!
                 const time = makeOccurenceTime(occurrence.time, iDay)
-                if (!item || !time) {
+                if (!activity || !time) {
                     console.error(`Invalid occurrence spec '${iDay}:${iOcc}'`, occurrence)
                     return null
                 }
@@ -79,23 +79,34 @@ function createOccurrencesHydrator(startDate: Date) {
                 }
 
                 return {
-                    item,
-                    time,
+                    activity: activity,
+                    day: iDay,
+                    ...time,
                     location,
+
                     params: occurrence.params,
                 }
             })
         const items = itemsOrInvalid
             .filter(Boolean) as NonNullable<typeof itemsOrInvalid[number]>[]
 
-        const date = new Date(items[0].time.start)
+        const date = new Date(items[0].start)
         date.setHours(0, 0, 0, 0)
 
         return { date, items }
     }
 
-    const hydrateOccurrences = (scheduleOccurencesGroupedByDay: OccurrenceItemRawData[][], scheduleItems: ProgramScheduleItem['app'][], locations: OccurrenceLocation['app'][]): ProgramEntriesGroup[] => {
-        return scheduleOccurencesGroupedByDay.map((group, iDay) => createOccurrencesGroup(group, iDay, scheduleItems, locations))
+    const hydrateOccurrences = (activityOccurrences: ActivityOccurrenceRawSpec[], activities: Activity['app'][], locations: OccurrenceLocation['app'][]): ProgramEntriesGroup[] => {
+        const occurrencesByDay = {} as Record<string, ActivityOccurrenceRawSpec[]>
+        activityOccurrences.forEach((occurrence) => {
+            if (!occurrencesByDay[occurrence.day]) occurrencesByDay[occurrence.day] = []
+
+            occurrencesByDay[occurrence.day].push(occurrence)
+        })
+
+
+        return Object.entries(occurrencesByDay)
+            .map(([iDay, group]) => createOccurrencesGroup(group, Number(iDay), activities, locations))
     }
 
     return {
