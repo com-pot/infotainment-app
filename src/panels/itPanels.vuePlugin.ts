@@ -77,7 +77,7 @@ function createStaticDataUrlReplaceMiddleware(staticPaths: string[]): RequestMid
         path,
         pathNoExt: path.substring(0, path.length - ".json".length),
     }))
-    
+
     const staticBase = createBaseUrl(import.meta.env.VITE_APP_API_STATIC_URL || "")
     if (!staticBase) {
         if (pathEntries.length) {

@@ -29,6 +29,7 @@ const headerLocalized = ref({
 
 type PanelEntry = {
     group: ProgramEntriesGroup,
+    iGroup: number,
     occurrence: ProgramEntriesGroup["items"][0],
     iInGroup: number,
 }
@@ -36,9 +37,20 @@ const panelItems = computed(() => {
     if (!props.panelData.ready) return []
 
     const entries: PanelEntry[] = []
+    props.panelData.value.forEach((group, iGroup) => {
+        group.items.forEach((occurrence, iInGroup) => {
+            entries.push({
+                group,
+                iGroup,
+                occurrence,
+                iInGroup,
+            })
+        })
+    })
 
     return entries
 })
+const activePanelItem = computed(() => panelItems.value?.[rotate.step || -1])
 
 const panelEl = ref<HTMLElement>()
 
@@ -48,10 +60,10 @@ function emitPanelState(step: number) {
         if (!entry) {
             console.warn("No group for step", {entries, step});
         }
-        const {group, occurrence, iInGroup} = entry || {}
+        const {group, iGroup, iInGroup} = entry || {}
 
         emit('update:panelState', ['currentDay'], group?.date)
-        emit('update:panelState', ['currentGroup'], group)
+        emit('update:panelState', ['iCurrentGroup'], iGroup)
         emit('update:panelState', ['iActiveOccurrence'], iInGroup)
 }
 
@@ -77,7 +89,7 @@ const rotateEngine = createRotationController(props.rotationConfig, (e) => rotat
                 <div class="content auto-flow custom-scroll">
                     <template v-for="(group, i) in panelData.value" :key="group.date.getTime()">
                         <hr class="separator -dots -spaced" v-if="i"/>
-                        <div class="group auto-flow" :class="i === rotate.step && 'active'">
+                        <div class="group auto-flow" :class="i === activePanelItem?.iGroup && 'active'">
                             <div class="caption ">{{ render.day(group.date) }}  {{ render.date(group.date) }}</div>
 
                             <ProgramEntryDetail v-for="(entry, i) in group.items" :key="i"
