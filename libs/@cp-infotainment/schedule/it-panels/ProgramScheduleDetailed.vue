@@ -30,9 +30,12 @@ const rotate = createLinearRotation(props.rotationConfig, () => props.group.item
     .bindScroll(panelEl, { sel: { container: '.content', target: '.active'} })
     .onStep((step) => emit('update:panelState', ['highlightEvent'], step))
 const rotateEngine = createRotationController(props.rotationConfig, (e) => rotate.tick(e), emit)
-    .bindComponent('ignore')
+    .bindComponent('start')
 
-watch(() => props.group, () => rotate.restart?.())
+watch(() => props.group, () => {
+    rotate.restart?.()
+    rotateEngine.start()
+})
 
 </script>
 
