@@ -12,7 +12,7 @@ export default defineConfig(({mode}) => {
       copy({
         targets: [
           {
-            src: `./custom/${env.VITE_APP_CUSTOM_DATA_KEY}/data/**/*`, dest: 'api',
+            src: `./custom/${env.VITE_APP_CUSTOM_DATA_KEY}/data/**/*`, dest: '.',
           },
         ],
         flatten: false,
