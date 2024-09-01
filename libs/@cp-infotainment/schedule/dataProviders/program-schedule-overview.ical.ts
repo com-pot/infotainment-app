@@ -1,8 +1,6 @@
 import { parseICS, CalendarResponse } from "node-ical"
 import { defineDataProvider } from "@com-pot/infotainment-app/panels/dataProviders";
 import { ModelState } from "@typeful/model";
-import { Activity } from "@com-pot/schedule/model/Activity";
-import { OccurrenceLocation } from "@com-pot/schedule/model/OccurrenceLocation";
 import { ActivityOccurrence } from "libs/com-pot/schedule/src/model/ActivityOccurrence";
 
 import { FromSchema } from "json-schema-to-ts";
@@ -13,8 +11,13 @@ const argsSchema = {
     type: 'object',
     properties: {
         from: {type: 'string', format: 'date'},
+        template: { type: "string"},
+        locales: {
+            type: "array",
+            items: {type: "string"},
+        },
     },
-    required: ['from'],
+    required: ['from', 'template', 'locales'],
 } as const
 type Args = FromSchema<typeof argsSchema>
 
@@ -24,15 +27,15 @@ const fetchIcalText = (src: string) => fetch(src)
 
 export default defineDataProvider<ProgramEntriesGroup[], Args>({
     async load(loader, args) {
-
-        const template = "/custom/_furrstein/data/ical/furrstein-2024.{locale}.all.ics"
-        const locales = ['cs', 'en']
-
-        const perLocaleEntries = await Promise.all(
-            locales.map(async (locale): Promise<[string, CalendarResponse]> => [
-                locale, await fetchIcalText(template.replace("{locale}", locale))
+        const perLocaleEntriesResult = await Promise.allSettled(
+            args.locales.map(async (locale): Promise<[string, CalendarResponse]> => [
+                locale, await fetchIcalText(args.template.replace("{locale}", locale))
             ])
         )
+        const perLocaleEntries = perLocaleEntriesResult
+            .filter((result) => result.status === "fulfilled")
+            .map((result) => result.value)
+
 
         const from = new Date(args.from)
         const [occurrencesRaw, activities, locations] = _parseIcalEntries(from, perLocaleEntries)

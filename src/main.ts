@@ -11,8 +11,8 @@ import i18nPlugin from '@cp-infotainment/i18n/i18n.plugin'
 import "./sass/infotainment.scss"
 import { importAsObj, mapImporters, selectImporter } from '@typeful/vite-custom/selectiveImport'
 import { provideRenderer, createRenderer } from '@typeful/data/rendering'
-import { localeControllerInjectionKey } from '@cp-infotainment/i18n/localeController'
-import { globalArgsInjectionKey } from './panels/globalArgs'
+import { LocaleController, localeControllerInjectionKey } from '@cp-infotainment/i18n/localeController'
+import { GlobalArgs, globalArgsInjectionKey } from './panels/globalArgs'
 
 createApp(App)
     .use(i18nPlugin, {
@@ -51,8 +51,14 @@ createApp(App)
         },
     })
     .use(function typefulRendererPlugin(app) {
-        const globalArgs = app._context.provides[globalArgsInjectionKey]
-        const locCtrl = app._context.provides[localeControllerInjectionKey]
+        const globalArgs = app._context.provides[globalArgsInjectionKey] as GlobalArgs
+        const locCtrl = app._context.provides[localeControllerInjectionKey] as LocaleController
+
+        // This registration probably should not be in "renderer" plugin 🐷
+        globalArgs.addSource("i18n", {
+            'i18n.availableLocaleCodes': locCtrl.opts.availableLocales.map((locale) => locale.value),
+        })
+
         const renderer =  createRenderer({
             defaultLocale: "cs",
             localeOverride: {

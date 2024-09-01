@@ -5,7 +5,7 @@ import { ActivityOccurrence, groupOccurrencesByDay } from "@com-pot/schedule/mod
 import { Activity } from "@com-pot/schedule/model/Activity";
 import { OccurrenceLocation } from "@com-pot/schedule/model/OccurrenceLocation";
 
-async function mockGroups(days: number, firstDay: Date): Promise<ProgramEntriesGroup[]> {
+async function mockGroups(days: number, firstDay: Date, locales: string[]): Promise<ProgramEntriesGroup[]> {
     const mock = await import("../utils/mock");
     
     const groups: ProgramEntriesGroup[] = []
@@ -17,7 +17,6 @@ async function mockGroups(days: number, firstDay: Date): Promise<ProgramEntriesG
         group.date.setDate(group.date.getDate() + day)
 
         const count = Math.floor(2 + Math.random() * 4)
-        const locales = ['cs', 'en']
         for (let i = 0; i < count; i++) {
             group.items.push(mock.mockItemOccurence(locales, day, group.date))
         }
