@@ -42,11 +42,17 @@ export function groupOccurrencesByDay<T extends Pick<ActivityOccurrence["app"], 
         groups[occurrence.day].push(occurrence)
     })
 
+    const dayMs = 1 * 24 * 60 * 60 * 1_000
+    function timeSortValue(time: Date): number {
+        const compensation = time.getHours() < 5 ? dayMs : 0
+        return time.getTime() + compensation
+    }
+
     return Object.entries(groups)
         .map(([day, group]) => [Number(day), group] as const)
         .sort(([a], [b]) => a - b)
         .map(([day, group]) => group.sort((a, b) => {
             if (!a.start || !b.start) return 0
-            return a.start.getTime() - b.start.getTime()
+            return timeSortValue(a.start) - timeSortValue(b.start)
         }))
 }

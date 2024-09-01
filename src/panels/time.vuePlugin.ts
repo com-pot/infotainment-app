@@ -1,5 +1,5 @@
 import { App } from "vue"
-import createTime, { TimeRef, provideTime, syncTimeWithSystem } from "../components/useTime";
+import { createTime, TimeRef, provideTime, syncTimeWithSystem } from "../components/useTime";
 
 export default {
     install(app: App) {

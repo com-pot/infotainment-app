@@ -1,23 +1,15 @@
 <script lang="ts" setup>
-import { PropType, ref } from "vue";
-import { AsyncRef } from "@typeful/vue-utils/reactivity";
-import AsyncContent from "@typeful/vue-utils/components/AsyncContent.vue";
-import { stateHubUi } from "@typeful/vue-utils/reactivity/stateHub";
+import { PropType, computed, ref } from "vue";
 
-import { createRotationController, rotationUi } from "@com-pot/infotainment-app/rotation";
-import { createLinearRotation } from "@com-pot/infotainment-app/rotation/linearRotationConsumer"
-import { ActivityOccurrence } from "@com-pot/schedule/model/ActivityOccurrence";
 import ProgramEntryDetail from "../components/ProgramEntryDetail.vue"
 import { useRender } from "@typeful/data/rendering";
+import { bindScroll } from "@com-pot/infotainment-app/components/snapScroll.vue";
+import { ProgramEntriesGroup } from "../dataProviders/program-schedule-overview";
 
 const props = defineProps({
-    panelData: {type: Object as PropType<AsyncRef<ActivityOccurrence['app'][]>>, required: true},
-    ...rotationUi.props,
-})
-
-const emit = defineEmits({
-    ...rotationUi.emits,
-    ...stateHubUi.emits,
+    groups: {type: Object as PropType<ProgramEntriesGroup[]>, required: true},
+    iGroup: { type: Number, required: true },
+    iActiveOccurrence: {type: Number},
 })
 
 const render = useRender()
@@ -26,37 +18,33 @@ const headerLocalized = {
     en: "Daily overview",
 }
 
+const group = computed(() => {
+    const group = props.groups[props.iGroup]
+    
+    return group
+})
+
 const panelEl = ref<HTMLElement>()
-const rotate = createLinearRotation(props.rotationConfig, () => props.panelData?.ready && props.panelData.value.length)
-    .bindScroll(panelEl, { sel: { container: '.content', target: '.active'} })
-    .onStep((step) => emit('update:panelState', ['highlightEvent'], step))
-const rotateEngine = createRotationController(props.rotationConfig, (e) => rotate.tick(e), emit)
-    .bindReady(() => props.panelData, (ready) => ready && rotate.restart?.())
-    .bindComponent('ignore')
+bindScroll(panelEl, () => props.iActiveOccurrence, { sel: { container: '.content', target: '.active'} })
+
 
 </script>
 
 <template>
-    <div class="panel -stretch-content program-schedule-detailed" :class="rotate.step !== undefined && '-has-active'"
+    <div class="panel -stretch-content program-schedule-detailed" :class="iActiveOccurrence !== undefined && '-has-active'"
          ref="panelEl"
     >
-        <div class="caption separator -lines"
-             @click.raw="rotateEngine.tick($event)"
-        >{{ render.localized(headerLocalized) }}</div>
-        <AsyncContent :ctrl="panelData" v-if="panelData">
-            <template v-if="panelData.status === 'ready'">
-            <div class="content custom-scroll">
-                <div class="entries auto-flow">
-                    <ProgramEntryDetail v-for="(entry, i) in panelData.value" :key="i"
-                                        :entry="entry"
-                                        :class="i === rotate.step && 'active'"
+        <div class="caption separator -lines">{{ render.localized(headerLocalized) }}</div>
+        <div class="content custom-scroll">
+            <div class="entries auto-flow">
+                <ProgramEntryDetail v-for="(entry, i) in group.items" :key="i"
+                                    :entry="entry"
+                                    :class="i === iActiveOccurrence && 'active'"
 
-                                        show-description
-                    />
-                </div>
+                                    show-description
+                />
             </div>
-            </template>
-        </AsyncContent>
+        </div>
     </div>
 </template>
 

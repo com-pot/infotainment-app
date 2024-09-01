@@ -3,8 +3,8 @@ import { defineDataProvider } from "../panels/dataProviders";
 import { ValiditySpec } from "@typeful/model/types/time";
 
 export default defineDataProvider<QuickMessage[], {now: Date}>({
-    async load() {
-        let messages = (await this.api.req<any[]>('GET', 'com-pot/infotainment-app/quick-messages'))
+    async load(loader) {
+        let messages = (await loader.api.req<any[]>('GET', 'com-pot/infotainment-app/quick-messages'))
             .map((message): QuickMessage => {
                 return {
                     id: message.id,

@@ -53,7 +53,7 @@ export default {
         }
 
         const api = new ApiAdapter({
-            baseUrl: createBaseUrl(opts.apiOptions.baseUrl),
+            baseUrl: createBaseUrl(opts.apiOptions.baseUrl || ""),
             requestDefaults: {
                 accept: 'json',
             },
@@ -75,16 +75,25 @@ export default {
 function createStaticDataUrlReplaceMiddleware(staticPaths: string[]): RequestMiddleware {
     const pathEntries = staticPaths.map((path) => ({
         path,
-        pathNoExt: path.substring(0, ".json".length),
+        pathNoExt: path.substring(0, path.length - ".json".length),
     }))
+
+    const staticBase = createBaseUrl(import.meta.env.VITE_APP_API_STATIC_URL || "")
+    if (!staticBase) {
+        if (pathEntries.length) {
+            console.warn("Static entries found but no VITE_APP_API_STATIC_URL available");
+        }
+        return (config) => config
+    }
 
     return (config) => {
         const staticPath = pathEntries.find((path) => config.url.includes(path.pathNoExt))
         if (!staticPath) return
 
-        return {...config, url: config.url! + '.json'}
+        return {...config, url: staticBase + staticPath.path}
     }
 }
+
 
 function createBaseUrl(baseUrl: string) {
     if (baseUrl.startsWith('//')) {

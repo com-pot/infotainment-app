@@ -12,7 +12,8 @@ const props = defineProps({
 })
 
 const descriptionComponent = computed(() => {
-    const desc = props.showDescription && props.entry.description || props.entry.activity.description
+    if (!props.showDescription) return null
+    const desc = props.entry.description || props.entry.activity.description
     return desc && render.localizedComponent('p', {class: 'description'}, desc)
 })
 </script>

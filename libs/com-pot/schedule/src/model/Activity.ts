@@ -5,10 +5,11 @@ import { LocalizedTextContent, localizedType } from "@typeful/model/types/I18n"
 export const activitySchema = {
     type: 'object',
     properties: {
+        id: { type: "string" },
         title: localizedType({type: 'string'} as const),
         description: localizedType({type: 'string'} as const),
     },
-    required: ['title'],
+    required: ['id', 'title'],
 } as const
 
 type AsApi = FromSchema<typeof activitySchema>

@@ -5,7 +5,7 @@ import { getMissingParams, watchPolling } from "@typeful/vue-utils/components/de
 import BusySpinner from '@typeful/vue-utils/components/BusySpinner.vue'
 import { useStateHub } from "@typeful/vue-utils/reactivity/stateHub"
 
-import { prepareProviderConfig, useLoader } from '../panels/panelData'
+import { prepareArgument, prepareProviderConfig, useLoader } from '../panels/panelData'
 import { usePanelRegistry } from "../panels/panelRegistry"
 
 export default defineComponent({
@@ -34,6 +34,10 @@ export default defineComponent({
 
             const paramEntries: [string, AsyncRef|null|any][] = providerParams
                 .map(([name, param]) => {
+                    if (param?.eval === "state") {
+                        const value = prepareArgument(param, stateHub)
+                        return [name, value]
+                    }
                     const config = param?.eval === 'provider' && prepareProviderConfig(param, stateHub)
                     if (!config) {
                         return [name, param]
@@ -51,6 +55,7 @@ export default defineComponent({
         return () => {
             const entry = panelEntry.value
             if (!entry) {
+                console.error("no panel")
                 return h('div', {
                     class: 'panel error-panel',
                 }, [
@@ -60,6 +65,7 @@ export default defineComponent({
 
             const missingParams = getMissingParams(entry.component, hydratedPanelParams.value)
             if (missingParams?.length) {
+                console.error("no params", entry.fullName)
                 return h('div', {
                     class: 'panel error-panel',
                 }, [
@@ -73,12 +79,15 @@ export default defineComponent({
                 }
             })
             if (unavailableProviders?.length) {
+                console.error("busy panel")
                 return h(BusySpinner, {
                     class: 'panel',
                 }, ["Providers not available: " + unavailableProviders.join(', ')])
             }
 
             const applicableProps: Record<string, any> = Object.fromEntries(hydratedPanelParams.value);
+
+            console.log("render", entry.fullName)
             return h(entry.component, applicableProps)
         }
     },

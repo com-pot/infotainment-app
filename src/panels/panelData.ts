@@ -32,11 +32,11 @@ export const createLoader = (api: ApiAdapter, opts: LoaderOpts): PanelDataLoader
     const providers: LoaderOpts['providers'] = {
         ...opts.providers,
         '~shared': defineDataProvider({
-            async load(args) {
+            async load(loader, args) {
                 if (args.key in sharedData) {
                     return sharedData[args.key]
                 }
-                return Promise.reject(`Key ${args.key} is not shared`)
+                return Promise.reject(new Error(`Key ${args.key} is not shared`))
             },
         }),
     }
@@ -50,9 +50,11 @@ export const createLoader = (api: ApiAdapter, opts: LoaderOpts): PanelDataLoader
                 return Promise.reject(new Error(`No provider with name ${loaderConfig.name}`))
             }
 
-            const loadPromise = provider.load.call(this, await opts.substitutions.replaceMultiple(loaderConfig.args, 'async'))
-            if (loaderConfig.shareAs) {
-                sharedData[loaderConfig.shareAs] = loadPromise
+            const loadPromise = provider.load(this, await opts.substitutions.replaceMultiple(loaderConfig.args, 'async'))
+            const shareKey = loaderConfig.shareAs
+            if (shareKey) {
+                loadPromise.then((data) => sharedData[shareKey] = data)
+                
             }
 
             return loadPromise
@@ -108,19 +110,18 @@ export const createLoader = (api: ApiAdapter, opts: LoaderOpts): PanelDataLoader
     return loader
 }
 
-const $nada = Symbol('nada')
-const prepareArgument = (arg: any, stateHub?: StateHub) => {
+export const prepareArgument = (arg: any, stateHub?: StateHub) => {
     if (!arg || typeof arg !== 'object') {
         return arg
     }
 
     if (arg.eval === 'state') {
         if (!stateHub) {
-            return $nada
+            return null
         }
         const value = stateHub.get(arg.path)
         if (isNil(value) && arg.required) {
-            return $nada
+            return null
         }
         return value
     }
@@ -145,7 +146,7 @@ export const prepareProviderConfig = (config: ProviderConfig, stateHub?: StateHu
     const entries = Object.entries(config.args)
     for (let entry of entries) {
         const value = prepareArgument(entry[1], stateHub)
-        if (value === $nada) {
+        if (value === null) {
             return undefined
         }
         entry[1] = value
