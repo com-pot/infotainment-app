@@ -31,6 +31,7 @@ export const mockProgramItem = (locales: string[]): Activity['app'] => {
     const noun = randomPick(programEntryParams.nouns)
 
     return {
+        id: "id:" + Math.ceil(Math.random() * 1_000_000),
         title: mockLocalized(`${adj} ${noun}`, locales),
         description: Math.random() < 0.8 ? mockLocalized(() => faker.lorem.sentences(Math.floor(6 + Math.random() * 10)), locales) : undefined,
     }
