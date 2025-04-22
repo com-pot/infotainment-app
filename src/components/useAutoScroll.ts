@@ -67,7 +67,6 @@ export default function useAutoScroll(el: HTMLDivElement, opts?: Partial<AutoScr
                 requestAnimationFrame(scroll.tick)
             } else {
                 setTimeout(() => {
-                    console.log('reverse');
                     if (scroll.direction === 1) {
                         scroll.start(resp.duration * 0.33, -1)
                     } else {

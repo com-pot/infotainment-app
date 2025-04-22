@@ -87,7 +87,6 @@ export default defineComponent({
 
             const applicableProps: Record<string, any> = Object.fromEntries(hydratedPanelParams.value);
 
-            console.log("render", entry.fullName)
             return h(entry.component, applicableProps)
         }
     },
