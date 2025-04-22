@@ -102,6 +102,7 @@ export function createRenderer(opts: RendererOpts, globalArgs: GlobalArgs,locale
                 children.push(this.insertParams(localeEntry))
             } else if (typeof localeEntry === 'object' && localeEntry.html) {
                 renderProps.innerHTML = this.insertParams(localeEntry.html)
+                return h(tag, renderProps)
             } else {
                 console.warn("Unknown content type", content);
                 return
