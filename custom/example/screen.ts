@@ -39,11 +39,10 @@ const layoutPanel: PanelSpecification = {
           },
 
           rotationConfig: {
-            type: 'follow',
-            target: 'schedule-detail',
-            filter: ['done'],
-
+            type: 'interval',
+            period: 'PT10S',
             whenDone: 'loop',
+
             scroll: {
               sel: { container: '.content', target: '.active' },
             },
@@ -57,16 +56,6 @@ const layoutPanel: PanelSpecification = {
           groups: { required: true, eval: "state", path: ["schedule-rough", "groups"] },
           iGroup: { required: true, eval: 'state', path: ['schedule-rough', 'iCurrentGroup'], },
           iActiveOccurrence: { required: true, eval: 'state', path: ['schedule-rough', 'iActiveOccurrence'], },
-
-          rotationConfig: {
-            type: 'interval',
-            period: 'PT7S',
-            whenDone: 'stop',
-
-            scroll: {
-              sel: { container: '.content', target: '.active' },
-            },
-          },
         },
       },
       {
