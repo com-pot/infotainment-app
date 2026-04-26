@@ -64,6 +64,7 @@ function _parseIcalEntries(from: Date, entries: [string, CalendarResponse][]): I
 
     entries.forEach(([locale, response], i) => {
         Object.entries(response).forEach(([id, component]) => {
+            if (component.type === "VCALENDAR") { return }
             if (component.type !== "VEVENT") {
                 console.warn("Unknown ical component type", component)
                 return
@@ -96,7 +97,7 @@ function _parseIcalEntries(from: Date, entries: [string, CalendarResponse][]): I
                 activities.push(activity)
             }
             activity.title[locale] = component.summary
-            activity.description![locale] = component.summary
+            activity.description![locale] = component.description
 
             if (!idToEntries[id]) {
                 idToEntries[id] = {
